@@ -14,6 +14,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { WebSocketServer } from 'ws';
 import { SIM } from './game.mjs';
+import { installCrashLog, recordError, recentErrors, saveReport, reportCount } from './errors.mjs';
 
 const PORT = Number(process.env.PORT || 8600), HOST = process.env.HOST || '127.0.0.1';
 const INSTANCES = (process.env.INSTANCES || '8611,8612,8613').split(',').map(Number);
@@ -23,6 +24,7 @@ const PUBLIC = process.env.DUEL_PUBLIC || fileURLToPath(new URL('../public', imp
 const SHELL = join(PUBLIC, 'index.html'), SINGLE = join(PUBLIC, 'duel-flow.html');
 const hasPage = () => existsSync(SHELL) || existsSync(SINGLE);
 const log = (s) => console.log(`[gateway] ${s}`);
+installCrashLog('gateway');
 
 // ---- instances: polled for load, the least loaded one gets the next match --------------------------------------------
 const inst = new Map(INSTANCES.map((p) => [p, { port: p, up: false, matches: 0, players: 0, list: [] }]));
@@ -107,7 +109,7 @@ setInterval(async () => {
     const group = here.slice(0, MAX);
     queue = queue.filter((s) => !group.includes(s));
     try { await createMatch('multiOperationMatch', group, group.length < MAX); }
-    catch (e) { for (const s of group) { s.state = 'idle'; send(s, { t: 'error', msg: '匹配失败：' + e.message }); } }
+    catch (e) { recordError('gateway', 'create match (queue)', e); for (const s of group) { s.state = 'idle'; send(s, { t: 'error', msg: '匹配失败：' + e.message }); } }
   }
 }, 500);
 
@@ -165,7 +167,7 @@ function onMessage(s, m) {
       if (!r || r.host !== s) break;
       if (r.members.length < MIN_ROOM && !r.npc) { send(s, { t: 'error', msg: `至少需要 ${MIN_ROOM} 名玩家，或勾选“开局时添加NPC进行补位”` }); break; }
       rooms.delete(r.code);
-      createMatch(r.mode, r.members, r.npc).catch((e) => { for (const x of r.members) send(x, { t: 'error', msg: '开局失败：' + e.message }); });
+      createMatch(r.mode, r.members, r.npc).catch((e) => { recordError('gateway', 'create match (room)', e); for (const x of r.members) send(x, { t: 'error', msg: '开局失败：' + e.message }); });
       break;
     }
     default:
@@ -200,6 +202,32 @@ function sendFile(req, res, path, type, cache) {
   createReadStream(file).on('error', () => res.destroy()).pipe(res);
 }
 
+// ---- players' error reports (the page's 发送给服务器主机): one file each under logs/reports/ --------------------------
+// at most 64 kB, 5 a minute and 30 an hour from one address
+const REPORT_MAX = 64 * 1024, reportsBy = new Map();
+function takeReport(req, res) {
+  const from = req.socket.remoteAddress || '?', now = Date.now();
+  const times = (reportsBy.get(from) || []).filter((t) => now - t < 3600e3);
+  if (times.filter((t) => now - t < 60e3).length >= 5 || times.length >= 30) { res.writeHead(429, { 'Content-Type': 'application/json' }); res.end('{"error":"too many reports"}'); return; }
+  let body = '', over = false;
+  req.on('data', (c) => { if (over) return; body += c; if (body.length > REPORT_MAX) { over = true; res.writeHead(413, { 'Content-Type': 'application/json' }); res.end('{"error":"too large"}'); req.destroy(); } });
+  req.on('end', () => {
+    if (over) return;
+    let o;
+    try { o = JSON.parse(body); } catch (e) { o = null; }
+    // the report as text (control characters other than newlines and tabs dropped), the sender's display name
+    // eslint-disable-next-line no-control-regex -- the report loses control characters on purpose
+    const text = o && typeof o.text === 'string' ? o.text.replace(/[\u0000-\u0008\u000b-\u001f\u007f]/g, '').trim() : '';
+    if (!text) { res.writeHead(400, { 'Content-Type': 'application/json' }); res.end('{"error":"empty report"}'); return; }
+    times.push(now); reportsBy.set(from, times);
+    const name = typeof o.name === 'string' ? cleanName(o.name) : '';
+    let id;
+    try { id = saveReport(text, { from, name }); } catch (e) { recordError('gateway', 'save report', e); res.writeHead(500, { 'Content-Type': 'application/json' }); res.end('{"error":"could not save"}'); return; }
+    log(`error report #${id} from ${name || from} → logs/reports/`);
+    res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ id }));
+  });
+}
+
 // ---- HTTP + WebSocket ---------------------------------------------------------------------------------------------------
 const server = http.createServer((req, res) => {
   const u = new URL(req.url, 'http://x');
@@ -212,12 +240,13 @@ const server = http.createServer((req, res) => {
   // the asset pack: only names the build writes; the hash in the name makes it immutable
   const pk = /^\/pack\/(duel-pack\.[0-9a-f]{16}\.json)$/.exec(u.pathname);
   if (pk) { sendFile(req, res, join(PUBLIC, 'pack', pk[1]), 'application/json; charset=utf-8', 'public, max-age=31536000, immutable'); return; }
+  if (u.pathname === '/report' && req.method === 'POST') { takeReport(req, res); return; }
   if (u.pathname === '/favicon.ico') { res.writeHead(204); res.end(); return; }
   // a liveness probe for containers and CI: the gateway answers, and how many instances it can reach
   if (u.pathname === '/healthz') { res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ ok: true, instances: [...inst.values()].filter((i) => i.up).length, page: hasPage() })); return; }
   if (u.pathname === '/status') {
     res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-    res.end(JSON.stringify({ gateway: { port: PORT, sessions: sessions.size, queue: queue.map((s) => s.name) },
+    res.end(JSON.stringify({ gateway: { port: PORT, pid: process.pid, sessions: sessions.size, queue: queue.map((s) => s.name), errors: recentErrors(), reports: reportCount() },
       rooms: [...rooms.values()].map((r) => ({ code: r.code, host: r.host.name, members: r.members.map((m) => m.name), npc: r.npc })),
       instances: [...inst.values()].map((i) => ({ port: i.port, up: i.up, matches: i.matches, players: i.players, list: i.list })) }, null, 1));
     return;

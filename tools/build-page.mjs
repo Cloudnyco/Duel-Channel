@@ -24,6 +24,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { brotliCompressSync, gzipSync, constants as Z } from 'node:zlib';
+import { execFileSync } from 'node:child_process';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
@@ -82,11 +83,19 @@ if (fighters.length < lite.length) console.warn(`models for ${fighters.length} o
 const audio = Object.fromEntries(readdirSync(join(A, 'audio')).filter((f) => f.endsWith('.ogg')).sort().map((f) => [f.slice(0, -4), b64(join(A, 'audio', f))]));
 const fxtex = Object.fromEntries(Object.entries(FX).map(([k, f]) => [k, `data:image/${f.endsWith('.jpg') ? 'jpeg' : 'png'};base64,${b64(join(A, 'fx', f))}`]));
 const ui = rd(join(A, 'ui.json'));
+// what this build is (shown in the settings panel, written into error reports): the version, the commit (marked
+// -dirty when the page's sources differ from it; 'source' outside a git checkout, e.g. a release's source archive)
+const git = (args) => { try { return execFileSync('git', args, { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim(); } catch (e) { return null; } };
+const head = git(['rev-parse', '--short', 'HEAD']);
+const dirty = head && git(['status', '--porcelain', '--', 'web', 'shared', 'data', 'assets', 'tools/build-page.mjs']);
+const BUILD = { version: JSON.parse(rd(join(ROOT, 'package.json'))).version, commit: head ? head + (dirty ? '-dirty' : '') : 'source', date: new Date().toISOString().slice(0, 16).replace('T', ' ') + ' UTC' };
 const code = {
   ...Object.fromEntries(await Promise.all(FONTS.map(async (f) => [f.key, await fontSrc(f)]))),
   '/*PIXI*/': safe(rd(join(ROOT, 'node_modules', 'pixi.js', 'dist', 'pixi.min.js'))),
   '/*PIXISPINE*/': safe(rd(join(ROOT, 'node_modules', 'pixi-spine', 'dist', 'pixi-spine.js'))),
   '/*DUELCFG*/': 'const DUELCFG = ' + safe(rd(join(ROOT, 'data', 'duelcfg.json'))) + ';',
+  '/*BUILD*/': 'const BUILD = ' + JSON.stringify(BUILD) + ';',
+  '/*REPORT*/': safe(rd(join(ROOT, 'web', 'src', 'report.js'))),
   '/*ENGINE*/': safe(rd(join(ROOT, 'web', 'src', 'engine.js'))),
   '/*PARTICLES*/': safe(rd(join(ROOT, 'web', 'src', 'particles.js'))),
   '/*SIM*/': safe(rd(join(ROOT, 'shared', 'sim.js'))),

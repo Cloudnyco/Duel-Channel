@@ -86,6 +86,7 @@ class Link {
 const RECONNECT = {
   scr: null, n: 0,
   state(s) {
+    REPORT.note('net', s);
     if (s === 'reconnecting') {
       if (this.n++ === 0) {
         phase('连接中断，正在重新连接……');
@@ -366,7 +367,7 @@ async function stGameOnline() {
     const rd = DCFG.rounds[m.roundId], r = m.r;
     G.round = r;
     const lineups = m.lineups.map((s) => s.map(([k, n]) => ({ f: byKey(k), n })));
-    G.log.push({ r, lineups: lineups.map((x) => x.map((g) => `${g.f.name}×${g.n}`).join(' + ')), cost: lineups.map(sideScore), len: 0 });
+    G.log.push({ r, seed: m.seed, lineups: lineups.map((x) => x.map((g) => `${g.f.name}×${g.n}`).join(' + ')), cost: lineups.map(sideScore), len: 0 });
     setupRound(lineups, m.seed);
     G.serverResult = null; G.battleAt = 0;
     await betPhase(r, rd, lineups, null, { betMs: m.betMs, at: m._at });

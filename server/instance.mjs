@@ -5,11 +5,13 @@
 import http from 'node:http';
 import { WebSocketServer } from 'ws';
 import { Match } from './game.mjs';
+import { installCrashLog, recordError, recentErrors } from './errors.mjs';
 
 const PORT = Number(process.env.PORT), HOST = process.env.HOST || '127.0.0.1', NAME = process.env.NAME || `instance-${PORT}`;
 const matches = new Map();
 let seq = 0;
 const log = (s) => console.log(`[${NAME}] ${s}`);
+installCrashLog(NAME);
 
 // a JSON body (≤ 256 kB: eight seats with their own avatar pictures of ≤ 16 kB each)
 function body(req) {
@@ -28,7 +30,7 @@ const server = http.createServer(async (req, res) => {
       if (!fromLocal(req)) return json(res, 403, { error: 'local only' });
       const o = await body(req);
       const id = `${PORT}-${++seq}`;
-      const m = new Match({ id, mode: o.mode, humans: o.humans || [], npcFill: !!o.npcFill, log });
+      const m = new Match({ id, mode: o.mode, humans: o.humans || [], npcFill: !!o.npcFill, log, onError: (e) => recordError(NAME, `match ${id}`, e) });
       matches.set(id, m);
       // kept two minutes after the end: a seat whose connection dropped near the end can still fetch the standings
       m.run().then(() => setTimeout(() => matches.delete(id), 120000));
@@ -36,7 +38,7 @@ const server = http.createServer(async (req, res) => {
     }
     if (req.url === '/status') {
       const live = [...matches.values()].filter((m) => !m.done);
-      return json(res, 200, { name: NAME, port: PORT, matches: live.length,
+      return json(res, 200, { name: NAME, port: PORT, pid: process.pid, errors: recentErrors(), matches: live.length,
         players: live.reduce((a, m) => a + m.humans().filter((p) => p.connected).length, 0),
         list: live.map((m) => ({ id: m.id, mode: m.mode, phase: m.phase, round: m.round ? m.round.round : 0, humans: m.humans().map((p) => p.name), seats: m.players.length })) });
     }

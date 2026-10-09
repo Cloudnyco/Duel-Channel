@@ -30,6 +30,8 @@ COPY data ./data
 COPY --from=page /src/public ./public
 # browsers connect to the gateway (8600) and, during a match, straight to its instance (8611-8613)
 EXPOSE 8600 8611 8612 8613
+# error logs and players' reports (logs/server-errors.log, logs/reports/)
+RUN mkdir -p logs && chown node:node logs
 USER node
 HEALTHCHECK --interval=30s --timeout=3s CMD wget -qO- http://127.0.0.1:8600/healthz || exit 1
 CMD ["node", "server/launch.mjs", "--instances", "3", "--host", "0.0.0.0"]

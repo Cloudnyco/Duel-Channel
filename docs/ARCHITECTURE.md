@@ -11,6 +11,7 @@
 
 | 文件 | 职责 |
 |---|---|
+| `src/report.js` | 错误报告：捕获未处理的错误与 Promise 拒绝，记录最近的操作（阶段、提示、连接状态、警告），生成报告（版本、浏览器与显卡、对局状态、每轮的阵容与种子），错误面板与提示；复制、预先填好的 GitHub Issue、发送给服务器主机 |
 | `src/engine.js` | UGUI 重建：RectTransform 布局（锚点、轴心、布局组、ContentSizeFitter、LayoutElement）、Image / UIAtlasImage（九宫格画进一张画布图）、平铺与 UV 滚动、模板遮罩（`UIStencilComponent` / `UIStencilGraphic`，形状着色器 `ShapeCircle` / `ShapeRect`）、富文本与换行、旧版 AnimationClip（Hermite 插值）、UI Spine、`Screen` / `instantiate` |
 | `src/particles.js` | UIParticle：按导出的发射器参数在 DOM 上模拟粒子 |
 | `../shared/sim.js` | 对战模拟、阵容生成、NPC 选边、结算（页面和服务端共用） |
@@ -32,8 +33,9 @@
 
 | 文件 | 职责 |
 |---|---|
-| `launch.mjs` | 启动网关和 N 个实例（子进程，统一日志，Ctrl+C 全部停止） |
-| `gateway.mjs` | 提供页面（按浏览器支持发送 brotli / gzip 压缩副本，带 ETag；素材包可长期缓存）；大厅（昵称、头像校验、匹配队列、群组房间）；`/status`、`/healthz`；把新比赛交给负载最低的实例 |
+| `launch.mjs` | 启动网关和 N 个实例（子进程，统一日志，Ctrl+C 全部停止）；子进程异常退出时自动重启（退避，一分钟内超过 5 次则放弃） |
+| `errors.mjs` | 服务端错误记录（控制台、`logs/server-errors.log`、`/status` 中的最近错误）；未捕获异常记录后退出交给启动器重启；玩家错误报告写入 `logs/reports/` |
+| `gateway.mjs` | 接收玩家的错误报告（`POST /report`，限大小与频率）；提供页面（按浏览器支持发送 brotli / gzip 压缩副本，带 ETag；素材包可长期缓存）；大厅（昵称、头像校验、匹配队列、群组房间）；`/status`、`/healthz`；把新比赛交给负载最低的实例 |
 | `instance.mjs` | 对战实例：`POST /create`（仅本机）、`/status`、比赛的 WebSocket |
 | `game.mjs` | 一场礼物对决：NPC 补位、轮次、押注校验（观望 / 全力支持的条件）、预先模拟、等待所有人看完战斗、结算与排名、表情转发（校验与限频）和 NPC 的表情 |
 | `bots.mjs` | 机器人客户端（无渲染），测试与陪玩 |

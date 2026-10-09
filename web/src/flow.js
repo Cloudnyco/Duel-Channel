@@ -45,11 +45,12 @@ const rankOf = (p) => ranked().indexOf(p) + 1;
 
 // ---- small helpers -------------------------------------------------------------------------------------------------
 function toast(msg, sec = 2.2) {
+  REPORT.note('toast', msg);
   const el = $('toast');
   el.textContent = msg; el.classList.add('on');
   clearTimeout(toast.h); toast.h = setTimeout(() => el.classList.remove('on'), sec * 1000);
 }
-function phase(txt) { $('phase').textContent = txt; }
+function phase(txt) { $('phase').textContent = txt; REPORT.note('phase', txt); }
 const spinners = [];
 function spin(s, degPerSec) { if (s) spinners.push({ s, v: degPerSec }); }
 function tickSpinners(dt) { for (const x of spinners) if (!x.s.scr.dead) x.s.rt.rotz += x.v * dt; for (let i = spinners.length - 1; i >= 0; i--) if (spinners[i].s.scr.dead) spinners.splice(i, 1); }
@@ -849,7 +850,7 @@ async function stGame() {
     const seed = (Math.random() * 2 ** 31) | 0;
     const lineups = makeLineups(rd, mulberry32(seed ^ 0x5bd1e995));
     const pred = predict(lineups, seed);
-    G.log.push({ r, lineups: lineups.map((x) => x.map((g) => `${g.f.name}×${g.n}`).join(' + ')), cost: lineups.map(sideScore), pred: pred.winner, len: pred.time });
+    G.log.push({ r, seed, lineups: lineups.map((x) => x.map((g) => `${g.f.name}×${g.n}`).join(' + ')), cost: lineups.map(sideScore), pred: pred.winner, len: pred.time });
     setupRound(lineups, seed);
     await betPhase(r, rd, lineups, pred.winner);
     const w = await battlePhase(r);
@@ -1099,6 +1100,7 @@ function startScreen() {
 }
 const startStatus = (t) => { $('startStatus').textContent = t; $('go').setAttribute('aria-busy', 'true'); };
 async function boot() {
+  REPORT.init();
   try {
     fit();
     installVfs();
@@ -1138,9 +1140,9 @@ async function boot() {
     $('start').hidden = true;
     let st = back || 'entry';
     for (;;) st = await STATES[st](FLOW.ctx);
-  } catch (e) { $('err').textContent = String(e.stack || e); console.error(e); }
+  } catch (e) { REPORT.fatal(e); }
 }
-window.__flow = { SND, DCFG, NET, EMO, dbg: { STATES, FLOW, get playing() { return playing; }, POOL, startBattle, clearArena, Screen, roundEnd, scoreboard, settle, setupRound, makeLineups, predict, makeWorld, simStep, mulberry32, roundsOf, betPhase, battlePhase, stFinish, stShow, play, get me() { return me; } }, G, get players() { return players; }, CLOCK, screens, arena: () => arena, phase: () => $('phase').textContent,
+window.__flow = { SND, DCFG, NET, EMO, REPORT, dbg: { STATES, FLOW, get playing() { return playing; }, POOL, startBattle, clearArena, Screen, roundEnd, scoreboard, settle, setupRound, makeLineups, predict, makeWorld, simStep, mulberry32, roundsOf, betPhase, battlePhase, stFinish, stShow, play, get me() { return me; } }, G, get players() { return players; }, CLOCK, screens, arena: () => arena, phase: () => $('phase').textContent,
   // test hook: click the topmost shown, clickable node whose path ends with the suffix
   tap: (suf) => { for (const scr of screens.slice().reverse()) { const s = scr.q(suf).find((x) => x.shown && x.el.onclick); if (s) { s.el.click(); return true; } } return false; } };
 boot();

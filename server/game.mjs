@@ -32,8 +32,8 @@ const token = () => randomBytes(12).toString('hex');
 const avatarKeys = () => SIM.POOL.map((f) => f.key);
 
 export class Match {
-  constructor({ id, mode, humans, npcFill, log = () => {} }) {
-    this.id = id; this.mode = mode; this.log = log; this.done = false; this.round = null; this.phase = 'wait'; this.later = new Set();
+  constructor({ id, mode, humans, npcFill, log = () => {}, onError = null }) {
+    this.id = id; this.mode = mode; this.log = log; this.onError = onError; this.done = false; this.round = null; this.phase = 'wait'; this.later = new Set();
     this.hist = []; this.seq = 0; this.roundFrom = 0;
     this.rounds = Object.values(SIM.DCFG.rounds).filter((r) => r.modeId === mode).sort((a, b) => a.round - b.round);
     const max = (SIM.DCFG.modes[mode] || {}).maxPlayer || 8;
@@ -151,7 +151,7 @@ export class Match {
       this.phase = 'finish';
       this.bcast({ t: 'finish', players: this.snapshot() });
       this.log(`match ${this.id} finished: ${this.players.slice().sort((a, b) => b.pts - a.pts).map((p) => `${p.name} ${p.pts}`).join(', ')}`);
-    } catch (e) { this.log(`match ${this.id} error: ${e.stack || e}`); }
+    } catch (e) { if (this.onError) this.onError(e); else this.log(`match ${this.id} error: ${e.stack || e}`); }
     for (const h of this.later) clearTimeout(h);
     await sleep(3000);
     for (const p of this.players) if (p.ws) try { p.ws.close(1000, 'match over'); } catch (e) { /* gone */ }

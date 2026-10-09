@@ -187,8 +187,42 @@ canvas.video { position: absolute; inset: 0; width: 100%; height: 100%; }
   border-radius: 4px; background: #1b1c1c; box-shadow: inset 0 3px 0 #f6e033, 0 12px 32px rgba(0, 0, 0, .5); font-size: 12px; color: #efeee6; }
 #logbox b { display: block; margin: 6px 0 2px; color: var(--accent); }
 #logbox .l { color: #ff8c84; } #logbox .r { color: #7db7ff; }
-#err { position: fixed; left: 10px; top: 10px; z-index: 3000; color: #ff8a7a; white-space: pre-wrap; font-size: 12px; max-width: 80vw; }
-@media (prefers-reduced-motion: reduce) { #toast, #gear, #gear svg, #settings, #settings .st-sec { transition: none; animation: none; } }
+#settings .st-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding-top: 4px; border-top: 1px solid rgba(255, 255, 255, .06); }
+#settings .st-foot small { color: #7d817d; font: 500 11px/1.4 var(--bender); letter-spacing: .04em; }
+/* an error the page did not expect: a red dot on the gear and a notice above it; the report panel (web/src/report.js) */
+#gear.alert::after { content: ""; position: absolute; right: 1px; top: 1px; width: 10px; height: 10px; border-radius: 50%; background: #ff5a4e; box-shadow: 0 0 0 2px #161616; }
+/* beside the gear (left of it, on its line), never over the settings panel that opens above it */
+#rpNotice { position: fixed; right: calc(var(--gear-in) * 2 + var(--gear) + 6px); bottom: calc(var(--gear-in) + (var(--gear) - 36px) / 2); min-height: 36px; z-index: 2002; display: flex; align-items: center; gap: 10px;
+  padding: 9px 14px 9px 12px; border: 0; border-radius: 4px; cursor: pointer; color: #efeee6; background: #1b1c1c; font: 500 13px/1.3 var(--cn);
+  box-shadow: inset 3px 0 0 #ff5a4e, 0 10px 26px rgba(0, 0, 0, .45); animation: rp-in .25s cubic-bezier(.2, .9, .25, 1.1) both; }
+#rpNotice[hidden] { display: none; }
+#rpNotice b { color: #f6e033; font-weight: 700; }
+#rpNotice:focus-visible { outline: 2px solid #f6e033; outline-offset: 2px; }
+#report { position: fixed; inset: 0; z-index: 3000; display: grid; place-items: center; padding: 16px; background: rgba(8, 8, 8, .58); }
+#report[hidden] { display: none; }
+#report .rp { width: min(640px, 100%); max-height: calc(100vh - 32px); overflow: auto; display: grid; gap: 14px; padding: 20px 20px 18px;
+  color: #efeee6; background: #1b1c1c; font: 500 13px/1.55 var(--cn); clip-path: polygon(22px 0, 100% 0, 100% 100%, 0 100%, 0 22px);
+  box-shadow: inset 0 3px 0 #f6e033; animation: rp-in .3s cubic-bezier(.2, .9, .25, 1.1) both; }
+#report h2 { margin: 0; padding-left: 10px; font: 900 21px/1.25 var(--cn); letter-spacing: .03em; text-wrap: balance; }
+#report .rp-msg { margin: 0; padding-left: 10px; color: #c9ccc6; white-space: pre-line; overflow-wrap: anywhere; }
+#report label { display: grid; gap: 6px; color: #9fa39f; font-size: 12px; }
+#rpDesc { min-height: 72px; resize: vertical; padding: 9px 11px; border: 1px solid rgba(255, 255, 255, .1); border-radius: 4px; color: #efeee6; background: #121313; font: 500 13px/1.5 var(--cn); }
+#rpDesc:focus-visible { outline: 2px solid #f6e033; outline-offset: 1px; }
+#report details { border-radius: 4px; background: #121313; }
+#report summary { padding: 8px 11px; color: #9fa39f; font-size: 12px; cursor: pointer; }
+#rpBody { margin: 0; max-height: 34vh; overflow: auto; padding: 0 11px 10px; color: #c9ccc6; font: 12px/1.5 ui-monospace, "Cascadia Mono", Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+#report .rp-row { display: flex; flex-wrap: wrap; gap: 8px; }
+#report .rp-row button { font: 500 13px/1 var(--cn); color: #efeee6; background: #282a2a; border: 1px solid rgba(255, 255, 255, .08); border-radius: 4px; padding: 9px 14px; cursor: pointer; }
+#report .rp-row button:hover { background: #333636; }
+#report .rp-row button.main { color: #161616; background: #f6e033; border-color: #f6e033; font-weight: 700; }
+#report .rp-row button.main:hover { background: #ffe94a; }
+#report .rp-row button:disabled { opacity: .5; cursor: progress; }
+#report .rp-row button:focus-visible { outline: 2px solid #f6e033; outline-offset: 2px; }
+#report .rp-row button[hidden] { display: none; }
+#rpStatus { min-height: 1.4em; margin: 0; color: #9fa39f; font-size: 12px; }
+#report .rp-privacy { margin: 0; color: #7d817d; font-size: 11px; }
+@keyframes rp-in { from { opacity: 0; transform: translateY(10px) scale(.97); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { #toast, #gear, #gear svg, #settings, #settings .st-sec, #rpNotice, #report .rp { transition: none; animation: none; } }
 </style>
 </head>
 <body>
@@ -241,15 +275,35 @@ canvas.video { position: absolute; inset: 0; width: 100%; height: 100%; }
   <div class="st-sec" style="--i:3"><span class="st-label">比赛</span>
     <div class="st-row"><button id="ff" type="button" class="st-btn">快进本场战斗</button><button id="log" type="button" class="st-btn">回合记录</button></div>
   </div>
+  <div class="st-sec st-foot" style="--i:4"><small id="buildTag"></small><button id="feedback" type="button" class="st-btn">反馈问题…</button></div>
 </section>
 <div id="logbox" hidden></div>
-<div id="err"></div>
+<button id="rpNotice" type="button" hidden><span>出现了一个错误</span><b>反馈</b></button>
+<div id="report" hidden role="dialog" aria-modal="true" aria-labelledby="rpTitle">
+  <div class="rp">
+    <h2 id="rpTitle">反馈问题</h2>
+    <p class="rp-msg" id="rpMsg"></p>
+    <label>发生了什么、做了哪些操作（可选）<textarea id="rpDesc" maxlength="2000" placeholder="例如：第 3 轮押注时点了全力支持，画面卡住不动"></textarea></label>
+    <details><summary>报告内容（发送前可以查看）</summary><pre id="rpBody"></pre></details>
+    <div class="rp-row">
+      <button id="rpCopy" type="button" class="main">复制报告</button>
+      <button id="rpIssue" type="button">在 GitHub 提交</button>
+      <button id="rpSend" type="button" hidden>发送给服务器主机</button>
+      <button id="rpReload" type="button" hidden>刷新页面</button>
+      <button id="rpClose" type="button">关闭</button>
+    </div>
+    <p id="rpStatus" role="status"></p>
+    <p class="rp-privacy">报告包含版本、浏览器与显卡、窗口大小、当前对局的状态与每轮的阵容种子、错误与最近的操作记录；不含账号、密码或本机文件路径。</p>
+  </div>
+</div>
 <script>/*PIXI*/</script>
 <script>/*PIXISPINE*/</script>
-<script>/*DUELCFG*/</script>
+<script>/*DUELCFG*/
+/*BUILD*/</script>
 <script>
 // the game; it reads the asset pack's globals (DUEL, FIGHTERS, AUDIO, FXTEX), so it starts once they are in
 function duelMain() {
+/*REPORT*/
 /*ENGINE*/
 /*PARTICLES*/
 /*SIM*/

@@ -14,11 +14,11 @@ const check = (ok, msg) => { if (!ok) fails.push(msg); };
 
 // the template: each placeholder once
 const tpl = rd('web/index.src.html');
-for (const k of ['FONT_BENDER', 'FONT_NOVECENTO', 'PIXI', 'PIXISPINE', 'DUELCFG', 'PACK', 'ENGINE', 'PARTICLES', 'SIM', 'ARENA', 'NET', 'EMOTE', 'FLOW']) {
+for (const k of ['FONT_BENDER', 'FONT_NOVECENTO', 'PIXI', 'PIXISPINE', 'DUELCFG', 'BUILD', 'PACK', 'REPORT', 'ENGINE', 'PARTICLES', 'SIM', 'ARENA', 'NET', 'EMOTE', 'FLOW']) {
   check(tpl.split(`/*${k}*/`).length === 2, `web/index.src.html: /*${k}*/ must appear exactly once`);
 }
 // the page's scripts are concatenated into one function body: together they must parse
-const body = ['web/src/engine.js', 'web/src/particles.js', 'shared/sim.js', 'web/src/arena.js', 'web/src/net.js', 'web/src/emote.js', 'web/src/flow.js'].map(rd).join('\n');
+const body = ['web/src/report.js', 'web/src/engine.js', 'web/src/particles.js', 'shared/sim.js', 'web/src/arena.js', 'web/src/net.js', 'web/src/emote.js', 'web/src/flow.js'].map(rd).join('\n');
 try { new Function(body); } catch (e) { fails.push('web sources do not parse together: ' + e.message); }
 // the served page's loader runs on its own, before the game
 try { new Function(rd('web/src/loader.js')); } catch (e) { fails.push('web/src/loader.js does not parse: ' + e.message); }

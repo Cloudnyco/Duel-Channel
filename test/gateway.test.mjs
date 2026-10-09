@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createServer } from 'node:net';
 import { request } from 'node:http';
-import { mkdtempSync, mkdirSync, writeFileSync, utimesSync, rmSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, utimesSync, rmSync, readdirSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -18,10 +18,10 @@ const get = (port, path, headers = {}, method = 'GET') => new Promise((res, rej)
   const r = request({ host: '127.0.0.1', port, path, method, headers }, (m) => { const b = []; m.on('data', (c) => b.push(c)); m.on('end', () => res({ status: m.statusCode, h: m.headers, body: Buffer.concat(b) })); });
   r.on('error', rej); r.end();
 });
-async function gateway(dir) {
+async function gateway(dir, logs = join(dir, 'logs')) {
   const port = await free(), ip = await free();
   const p = spawn(process.execPath, [fileURLToPath(new URL('../server/gateway.mjs', import.meta.url))], {
-    env: { ...process.env, PORT: String(port), HOST: '127.0.0.1', INSTANCES: String(ip), DUEL_PUBLIC: dir }, stdio: 'ignore' });
+    env: { ...process.env, PORT: String(port), HOST: '127.0.0.1', INSTANCES: String(ip), DUEL_PUBLIC: dir, DUEL_LOGS: logs }, stdio: 'ignore' });
   for (let i = 0; i < 100; i++) { try { await get(port, '/healthz'); return { port, stop: () => p.kill() }; } catch (e) { await new Promise((r) => setTimeout(r, 100)); } }
   p.kill(); throw new Error('gateway did not start');
 }
@@ -114,4 +114,54 @@ test('the lobby: a dropped viewer keeps their room seat and takes the session ba
     assert.equal((await c.next('resume.fail')).t, 'resume.fail');
     for (const x of [a2, b, c]) x.ws.close();
   } finally { gw.stop(); rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('error reports: saved one file each under logs/reports, refused when empty, too large or too frequent', { timeout: 30000 }, async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'duel-pub-')), logs = join(dir, 'logs');
+  const gw = await gateway(dir, logs);
+  const post = (body) => new Promise((res, rej) => {
+    const data = Buffer.from(typeof body === 'string' ? body : JSON.stringify(body));
+    const r = request({ host: '127.0.0.1', port: gw.port, path: '/report', method: 'POST', agent: false, headers: { 'Content-Type': 'application/json', 'Content-Length': data.length } },
+      (m) => { const b = []; m.on('data', (c) => b.push(c)); m.on('end', () => res({ status: m.statusCode, body: Buffer.concat(b).toString() })); });
+    r.on('error', (e) => res({ status: 0, body: String(e) })); r.end(data);
+  });
+  try {
+    let r = await post({ text: '### 争锋频道 错误报告\n- 版本：0.1.0\u0007', name: '测试员' });
+    assert.equal(r.status, 200, r.body);
+    assert.equal(JSON.parse(r.body).id, 1);
+    const files = readdirSync(join(logs, 'reports'));
+    assert.equal(files.length, 1);
+    const saved = readFileSync(join(logs, 'reports', files[0]), 'utf8');
+    // the control character is gone
+    assert.match(saved, /name 测试员/); assert.match(saved, /- 版本：0\.1\.0\n/);
+    assert.equal((await post({ text: '   ' })).status, 400);
+    assert.equal((await post('not json')).status, 400);
+    assert.equal((await post({ text: 'x'.repeat(70 * 1024) })).status, 413);
+    // five a minute from one address: four more pass (five saved), the sixth is refused
+    for (let i = 0; i < 4; i++) assert.equal((await post({ text: 'again ' + i })).status, 200);
+    assert.equal((await post({ text: 'one too many' })).status, 429);
+    const st = JSON.parse((await get(gw.port, '/status')).body);
+    assert.equal(st.gateway.reports, 5);
+    assert.ok(Array.isArray(st.gateway.errors));
+  } finally { gw.stop(); rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('the launcher starts a battle instance again after it dies', { timeout: 60000 }, async () => {
+  // a base port whose instance port (+11) is free too
+  let base;
+  for (;;) { base = await free(); if (base + 11 < 65535) break; }
+  const dir = mkdtempSync(join(tmpdir(), 'duel-pub-'));
+  const p = spawn(process.execPath, [fileURLToPath(new URL('../server/launch.mjs', import.meta.url)), '--instances', '1', '--port', String(base)],
+    { env: { ...process.env, DUEL_PUBLIC: dir, DUEL_LOGS: join(dir, 'logs') }, stdio: ['ignore', 'pipe', 'pipe'] });
+  let out = '';
+  p.stdout.on('data', (d) => { out += d; }); p.stderr.on('data', (d) => { out += d; });
+  const status = async () => JSON.parse((await get(base + 11, '/status')).body);
+  const until = async (fn, ms) => { const t0 = Date.now(); for (;;) { try { const v = await fn(); if (v) return v; } catch (e) { /* not yet */ } if (Date.now() - t0 > ms) throw new Error('timed out\n' + out); await new Promise((r) => setTimeout(r, 200)); } };
+  try {
+    const first = await until(status, 15000);
+    process.kill(first.pid);
+    const again = await until(async () => { const s = await status(); return s.pid !== first.pid && s; }, 20000);
+    assert.notEqual(again.pid, first.pid);
+    assert.match(out, /starting it again in 1 s/);
+  } finally { p.kill(); rmSync(dir, { recursive: true, force: true }); }
 });

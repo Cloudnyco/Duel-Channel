@@ -63,7 +63,7 @@ body:
     id: env
     attributes:
       label: 环境
-      description: 版本（提交号，`git rev-parse --short HEAD`）、系统、浏览器及版本、Node 版本（服务器问题）。
+      description: 版本（提交号，`git rev-parse --short HEAD`；页面的「设置」底部也有）、系统、浏览器及版本、Node 版本（服务器问题）。从页面的「设置 → 反馈问题 → 在 GitHub 提交」打开时会自动填好。
       placeholder: |
         提交：9c0885d
         系统：Windows 11
@@ -75,7 +75,7 @@ body:
     id: logs
     attributes:
       label: 控制台 / 服务器日志（可选）
-      description: 浏览器开发者工具的控制台错误（F12 → Console），或服务器的输出。会自动按代码格式显示。
+      description: 页面的错误报告（「设置 → 反馈问题 → 复制报告」，含每轮的阵容与种子），浏览器控制台的错误（F12 → Console），或服务器的输出与 `logs/server-errors.log`。会自动按代码格式显示。
       render: shell
   - type: textarea
     id: screenshots
