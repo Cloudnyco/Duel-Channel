@@ -16,7 +16,10 @@ assets/
   fonts/novecento-wide-normal.woff2
 ```
 
-`npm run assets:check` 会列出缺少的文件；齐全后 `npm run build` 把它们和代码一起内联成 `public/duel-flow.html`。
+`npm run assets:check` 会列出缺少的文件；齐全后 `npm run build`（或一键开服脚本）构建页面：
+
+- `public/duel-flow.html`：单文件，素材内联，直接打开即可单机游玩；
+- `public/index.html` + `public/pack/duel-pack.<哈希>.json`：网关提供的版本，代码和素材包分开，素材包按内容命名，浏览器可以长期缓存；两者都附带 `.br` / `.gz` 压缩副本。
 
 ## 各部分来源
 

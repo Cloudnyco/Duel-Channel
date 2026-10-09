@@ -113,6 +113,12 @@ canvas.video { position: absolute; inset: 0; width: 100%; height: 100%; }
 #start .sb-foot a:focus-visible { outline: 2px solid #161616; outline-offset: 2px; }
 #start .sb-skel i { width: 20px; height: 20px; border-radius: 50%; background: rgba(22, 22, 22, .14); }
 #start .sb-skel b { width: 74px; height: 14px; border-radius: 7px; background: rgba(22, 22, 22, .14); }
+/* while the served page fetches the asset pack, the placeholders fill in ink, left to right (web/src/loader.js) */
+#start .sb-skel.loading b { background: linear-gradient(to right, #161616 var(--fill, 0%), rgba(22, 22, 22, .14) var(--fill, 0%)); }
+#start .sb-skel.loading i { animation: sb-pulse 1.2s ease-in-out infinite alternate; }
+#start .sb-skel.loading i:nth-child(2) { animation-delay: .2s; }
+#start .sb-skel.loading i:nth-child(3) { animation-delay: .4s; }
+@keyframes sb-pulse { to { background: rgba(22, 22, 22, .5); } }
 #start #startMode { font-weight: 700; color: #161616; }
 /* the entrance: the event's screen-change band sweeps across once */
 #start .sb-wipe { position: absolute; inset: 0; z-index: 5; pointer-events: none; transform: translateX(-120%);
@@ -123,7 +129,7 @@ canvas.video { position: absolute; inset: 0; width: 100%; height: 100%; }
 @keyframes sb-in { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {
   #start .sb-wipe { display: none; }
-  #start .sb-main, #start .sb-foot, #start .sb-window, #start .sb-caption { animation: none; }
+  #start .sb-main, #start .sb-foot, #start .sb-window, #start .sb-caption, #start .sb-skel.loading i { animation: none; }
   #start #go { transition: none; }
 }
 .codein { font: 500 22px/1.2 var(--cn); padding: 8px 12px; border: 2px solid #161616; border-radius: 4px; background: #fffbe6; color: #161616; width: 260px; }
@@ -240,13 +246,10 @@ canvas.video { position: absolute; inset: 0; width: 100%; height: 100%; }
 <div id="err"></div>
 <script>/*PIXI*/</script>
 <script>/*PIXISPINE*/</script>
-<script>/*DATA*/</script>
-<script>/*FIGHTERS*/</script>
 <script>/*DUELCFG*/</script>
-<script>/*AUDIO*/</script>
-<script>/*FXTEX*/</script>
 <script>
-(() => {
+// the game; it reads the asset pack's globals (DUEL, FIGHTERS, AUDIO, FXTEX), so it starts once they are in
+function duelMain() {
 /*ENGINE*/
 /*PARTICLES*/
 /*SIM*/
@@ -254,7 +257,9 @@ canvas.video { position: absolute; inset: 0; width: 100%; height: 100%; }
 /*NET*/
 /*EMOTE*/
 /*FLOW*/
-})();
+}
 </script>
+<!-- the asset pack: inlined in the single-file page; fetched by the loader in the served one -->
+<script>/*PACK*/</script>
 </body>
 </html>

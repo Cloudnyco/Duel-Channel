@@ -2,9 +2,16 @@
 // table of 8 starts at once; after QUEUE_FILL_MS the waiting players start with NPC viewers in the empty seats) and
 // 群组 rooms (6-digit codes, the host's NPC-fill switch, the host starts) — and hands each new match to the least
 // loaded battle instance. GET /status shows the instances, the queue and the rooms.
-// env: PORT (default 8600), HOST (bind, default 127.0.0.1), INSTANCES (comma-separated instance ports), QUEUE_FILL_MS
+// The page: public/index.html (the code) and public/pack/duel-pack.<hash>.json (the assets) from `npm run build`, sent
+// precompressed (brotli / gzip, whichever the browser takes) with validators; the pack, named after its content, may be
+// cached for good. A build from before the split (public/duel-flow.html only) is served as it is.
+// env: PORT (default 8600), HOST (bind, default 127.0.0.1), INSTANCES (comma-separated instance ports), QUEUE_FILL_MS,
+//      DUEL_PUBLIC (the built page's folder, default ../public)
 import http from 'node:http';
-import { readFileSync, existsSync, statSync } from 'node:fs';
+import { readFileSync, existsSync, statSync, createReadStream } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { WebSocketServer } from 'ws';
 import { SIM } from './game.mjs';
 
@@ -12,7 +19,9 @@ const PORT = Number(process.env.PORT || 8600), HOST = process.env.HOST || '127.0
 const INSTANCES = (process.env.INSTANCES || '8611,8612,8613').split(',').map(Number);
 const QUEUE_FILL_MS = Number(process.env.QUEUE_FILL_MS || 10000);
 const MAX = (SIM.DCFG.modes.multiOperationMatch || {}).maxPlayer || 8, MIN_ROOM = SIM.DCFG.consts.minRoomNum || 2;
-const PAGE = new URL('../public/duel-flow.html', import.meta.url);
+const PUBLIC = process.env.DUEL_PUBLIC || fileURLToPath(new URL('../public', import.meta.url));
+const SHELL = join(PUBLIC, 'index.html'), SINGLE = join(PUBLIC, 'duel-flow.html');
+const hasPage = () => existsSync(SHELL) || existsSync(SINGLE);
 const log = (s) => console.log(`[gateway] ${s}`);
 
 // ---- instances: polled for load, the least loaded one gets the next match --------------------------------------------
@@ -129,18 +138,49 @@ function onMessage(s, m) {
   }
 }
 
+// ---- the page's files ----------------------------------------------------------------------------------------------------
+// a built file: its brotli / gzip copy when the browser accepts it and the copy is as new as the file; an ETag per
+// representation (from the content hash, kept while the file's mtime stays); 304 when the browser has it already
+const tags = new Map();
+function tagOf(path, st) {
+  const k = path + '|' + st.mtimeMs + '|' + st.size;
+  if (!tags.has(k)) tags.set(k, createHash('sha256').update(readFileSync(path)).digest('hex').slice(0, 20));
+  return tags.get(k);
+}
+function sendFile(req, res, path, type, cache) {
+  let st;
+  try { st = statSync(path); } catch (e) { res.writeHead(404); res.end('not found'); return; }
+  const accept = String(req.headers['accept-encoding'] || '').split(',').map((x) => x.trim().split(';')[0]);
+  let file = path, enc = null;
+  for (const [e, ext] of [['br', '.br'], ['gzip', '.gz']]) {
+    if (!accept.includes(e)) continue;
+    try { const c = statSync(path + ext); if (c.mtimeMs >= st.mtimeMs) { file = path + ext; enc = e; break; } } catch (err) { /* no copy */ }
+  }
+  const etag = `"${tagOf(path, st)}${enc ? '-' + enc : ''}"`;
+  const head = { 'Content-Type': type, 'Cache-Control': cache, ETag: etag, Vary: 'Accept-Encoding', 'X-Content-Type-Options': 'nosniff' };
+  if (String(req.headers['if-none-match'] || '').split(/\s*,\s*/).includes(etag)) { res.writeHead(304, head); res.end(); return; }
+  if (enc) head['Content-Encoding'] = enc;
+  head['Content-Length'] = statSync(file).size;
+  res.writeHead(200, head);
+  if (req.method === 'HEAD') { res.end(); return; }
+  createReadStream(file).on('error', () => res.destroy()).pipe(res);
+}
+
 // ---- HTTP + WebSocket ---------------------------------------------------------------------------------------------------
 const server = http.createServer((req, res) => {
   const u = new URL(req.url, 'http://x');
   if (u.pathname === '/' || u.pathname === '/index.html') {
-    if (!existsSync(PAGE)) { res.writeHead(503, { 'Content-Type': 'text/plain; charset=utf-8' }); res.end('public/duel-flow.html 尚未构建：先准备素材包（docs/ASSETS.md），再运行 npm run build'); return; }
-    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache', 'Content-Length': statSync(PAGE).size });
-    res.end(readFileSync(PAGE));
+    if (existsSync(SHELL)) { sendFile(req, res, SHELL, 'text/html; charset=utf-8', 'no-cache'); return; }
+    if (existsSync(SINGLE)) { sendFile(req, res, SINGLE, 'text/html; charset=utf-8', 'no-cache'); return; }
+    res.writeHead(503, { 'Content-Type': 'text/plain; charset=utf-8' }); res.end('页面尚未构建：先准备素材包（docs/ASSETS.md），再运行 npm run build（或用 start.cmd / start.sh 一键启动）');
     return;
   }
+  // the asset pack: only names the build writes; the hash in the name makes it immutable
+  const pk = /^\/pack\/(duel-pack\.[0-9a-f]{16}\.json)$/.exec(u.pathname);
+  if (pk) { sendFile(req, res, join(PUBLIC, 'pack', pk[1]), 'application/json; charset=utf-8', 'public, max-age=31536000, immutable'); return; }
   if (u.pathname === '/favicon.ico') { res.writeHead(204); res.end(); return; }
   // a liveness probe for containers and CI: the gateway answers, and how many instances it can reach
-  if (u.pathname === '/healthz') { res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ ok: true, instances: [...inst.values()].filter((i) => i.up).length, page: existsSync(PAGE) })); return; }
+  if (u.pathname === '/healthz') { res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ ok: true, instances: [...inst.values()].filter((i) => i.up).length, page: hasPage() })); return; }
   if (u.pathname === '/status') {
     res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
     res.end(JSON.stringify({ gateway: { port: PORT, sessions: sessions.size, queue: queue.map((s) => s.name) },
