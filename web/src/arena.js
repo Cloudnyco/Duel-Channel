@@ -633,18 +633,32 @@ function unitHud(u, dt, k, s) {
     }
   }
 }
+// Playback speeds up as a battle drags on (the event's behaviour as players describe it; no table or client constant
+// carries the curve): 1× for the first 15 s of battle time, rising linearly to 2× at 45 s and 3× at 90 s, 3× after
+// that. It changes how fast the fight is shown, never the fight: the sim steps are the same, so every client and the
+// server's prediction still agree. Fast-forward (arena.ff) multiplies on top.
+const PLAYBACK = [[0, 1], [15, 1], [45, 2], [90, 3]];
+function playbackRate(t) {
+  for (let i = 1; i < PLAYBACK.length; i++) {
+    const [t1, r1] = PLAYBACK[i];
+    if (t < t1) { const [t0, r0] = PLAYBACK[i - 1]; return r0 + (r1 - r0) * (t - t0) / (t1 - t0); }
+  }
+  return PLAYBACK[PLAYBACK.length - 1][1];
+}
 function arenaFrame(dt) {
   if (!arena) return;
   const W = arena.W;
+  const rate = W ? arena.ff * playbackRate(W.t) : 1;
+  arena.rate = rate;
   if (W && arena.running) {
-    arena.acc += dt * arena.ff;
+    arena.acc += dt * rate;
     let n = 0;
     while (arena.acc >= DT && !W.done && n++ < 600) {
       arena.acc -= DT;
       simStep(W);
     }
     // events → effects (when fast-forwarding, only the big ones)
-    const busy = arena.ff > 3;
+    const busy = rate > 3;
     for (const [kind, u, a] of W.events) {
       if (kind === 'hit') { if (!busy && u.view) fxHit(u, a); if (u.view) u.flash = 0.1; }
       else if (kind === 'die') fxDie(u);
@@ -660,7 +674,7 @@ function arenaFrame(dt) {
       if (arena.onEnd) { const f = arena.onEnd; arena.onEnd = null; f(W.result); }
     }
   }
-  const adt = dt * (arena.running ? arena.ff : 1);
+  const adt = dt * (arena.running ? rate : 1);
   if (W) {
     for (const u of W.units) if (u.view) renderUnit(u, adt);
     // projectiles: physical — a white-yellow streak; arts — a violet orb; both leave a short trail
@@ -678,7 +692,7 @@ function arenaFrame(dt) {
       if (vx || vy) s.g.children[1].rotation = Math.atan2(vy, vx) + Math.PI / 2;
       s.g.position.set(sx, y);
       s.trailT -= adt;
-      if (s.trailT <= 0 && arena.ff <= 3) { s.trailT = 0.03; FX.spawn(arts ? 'rhombus' : 'spark', sx, y, { life: 0.2, s0: arts ? 0.25 : 0.35, s1: 0.05, tint: arts ? COL.arts : COL.phys, vr: 3 }); }
+      if (s.trailT <= 0 && rate <= 3) { s.trailT = 0.03; FX.spawn(arts ? 'rhombus' : 'spark', sx, y, { life: 0.2, s0: arts ? 0.25 : 0.35, s1: 0.05, tint: arts ? COL.arts : COL.phys, vr: 3 }); }
       s.px = sx; s.py = y;
     }
   }
