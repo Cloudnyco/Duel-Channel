@@ -1,0 +1,6 @@
+# text files are stored with LF; Windows checkouts may convert, the sources and tests do not depend on it
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.ps1 text eol=crlf
+*.cmd text eol=crlf

@@ -1,0 +1,10 @@
+{
+  "_source": "The safe zone of 争锋频道, read from the client's environment prefab env_025_act1enemyduel (battle/prefabs/[uc]envsystems.ab) and the boundary-line effects it lists (common_V060_line_1…4 in battle/prefabs/effects/common.ab). These numbers are not in ArknightsGameData; they are game data (© Hypergryph), recorded here for the sim — see NOTICE.md.",
+  "firstSafeZoneInterval": 60,
+  "interval": 20,
+  "position": [7, 5],
+  "_zones": "half-extents in tiles around the centre tile, one entry per shrink: the boundary effects frame 9×7, 7×5, 5×3 and 3×1 tiles",
+  "zones": [[4, 3], [3, 2], [2, 1], [1, 0]],
+  "buffTiles": ["tile_end_dqq", "tile_start_dqq", "tile_infection_dqq"],
+  "_buffTiles": "outside the zone, tile_infection_dqq gives ATK ×(1+atk), ASPD +attack_speed and move speed ×move_speed (the level's env_system_new rune); the start and end tiles give the same without the move speed"
+}

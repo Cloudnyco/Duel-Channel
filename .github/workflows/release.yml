@@ -1,0 +1,59 @@
+# A tag vX.Y.Z publishes a GitHub Release: the tests run again, the source archive (code, docs, data — no game assets,
+# which are never in this repository) is attached, and the notes are the tag's section of CHANGELOG.md.
+name: Release
+
+on:
+  push:
+    tags: ['v*.*.*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'existing tag to (re)publish, e.g. v0.1.0'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install
+        run: npm ci --no-audit --no-fund
+
+      - name: Checks and tests
+        run: |
+          node tools/check.mjs
+          npm test
+
+      - name: Source archive and notes
+        id: pack
+        shell: bash
+        run: |
+          tag="${{ inputs.tag || github.ref_name }}"
+          ver="${tag#v}"
+          git archive --format=zip --prefix="duel-channel-${ver}/" -o "duel-channel-${ver}-source.zip" HEAD
+          # the "## [x.y.z]" section of CHANGELOG.md, up to the next "## "
+          awk -v v="$ver" '$0 ~ "^## \\[" v "\\]" {on=1; next} on && /^## / {exit} on {print}' CHANGELOG.md > notes.md
+          [ -s notes.md ] || echo "见 CHANGELOG.md" > notes.md
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "ver=$ver" >> "$GITHUB_OUTPUT"
+
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "${{ steps.pack.outputs.tag }}" >/dev/null 2>&1 \
+            && gh release upload "${{ steps.pack.outputs.tag }}" "duel-channel-${{ steps.pack.outputs.ver }}-source.zip" --clobber \
+            || gh release create "${{ steps.pack.outputs.tag }}" "duel-channel-${{ steps.pack.outputs.ver }}-source.zip" \
+                 --title "争锋频道 ${{ steps.pack.outputs.tag }}" --notes-file notes.md

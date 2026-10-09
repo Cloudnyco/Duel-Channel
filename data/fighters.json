@@ -1,0 +1,952 @@
+[
+ {
+  "key": "enemy_15012_dqbsli",
+  "orig": "enemy_1021_bslime",
+  "name": "易爆源石虫",
+  "desc": "不稳定，易爆——就像你的理财组合一样。",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 2460,
+  "atk": 260,
+  "def": 0,
+  "res": 0,
+  "bat": 1.7,
+  "aspd": 100,
+  "ms": 1,
+  "range": 0.8,
+  "mass": 0,
+  "score": 3,
+  "pool": {
+   "normal": 50,
+   "small": 100,
+   "boss": 0
+  },
+  "talents": {
+   "boom.atk_scale": 4
+  },
+  "skills": [],
+  "skillData": {},
+  "immune": {
+   "stun": false,
+   "frozen": false
+  },
+  "origName": "高能源石虫",
+  "abilities": [
+   {
+    "text": "死亡后对周围造成大量物理伤害",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 2.5,
+   "hit": 0.467
+  },
+  "power": 531
+ },
+ {
+  "key": "enemy_15013_dqsnsl",
+  "orig": "enemy_1067_snslime",
+  "name": "自爆冰虫",
+  "desc": "为什么大家看它的眼神总是冷冰冰？或许因为它自己就很冷冰冰。",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 3250,
+  "atk": 300,
+  "def": 0,
+  "res": 0,
+  "bat": 1.7,
+  "aspd": 100,
+  "ms": 1,
+  "range": 0.8,
+  "mass": 0,
+  "score": 4,
+  "pool": {
+   "normal": 50,
+   "small": 100,
+   "boss": 0
+  },
+  "talents": {
+   "boom.atk_scale": 2,
+   "boom.freeze": 10
+  },
+  "skills": [],
+  "skillData": {},
+  "immune": {
+   "stun": false,
+   "frozen": false
+  },
+  "origName": "冰爆源石虫",
+  "abilities": [
+   {
+    "text": "死亡时对周围我方单位造成物理伤害，并施加寒冷效果",
+    "title": false
+   }
+  ],
+  "scale": 0.8,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 2.5,
+   "hit": 0.467
+  },
+  "power": 656
+ },
+ {
+  "key": "enemy_5032_dqmon",
+  "orig": "enemy_1010_demon",
+  "name": "普通的萨卡兹",
+  "desc": "类似的萨卡兹佣兵有千千万万，人们从不愿费力去区分他们。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 7500,
+  "atk": 600,
+  "def": 230,
+  "res": 50,
+  "bat": 2,
+  "aspd": 100,
+  "ms": 0.85,
+  "range": 0.8,
+  "mass": 2,
+  "score": 7,
+  "pool": {
+   "normal": 50,
+   "small": 100,
+   "boss": 0
+  },
+  "talents": {},
+  "skills": [],
+  "skillData": {},
+  "immune": {
+   "stun": false,
+   "frozen": false
+  },
+  "origName": "萨卡兹大剑手",
+  "abilities": [],
+  "scale": 1.037,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.5,
+   "hit": 0.9
+  },
+  "power": 1708
+ },
+ {
+  "key": "enemy_5034_dqield",
+  "orig": "enemy_1006_shield",
+  "name": "迟钝的持盾者",
+  "desc": "或许因为装备太厚重，他平时的反应很慢，危急时刻的反应也很慢。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 6000,
+  "atk": 600,
+  "def": 800,
+  "res": 0,
+  "bat": 2.6,
+  "aspd": 100,
+  "ms": 0.75,
+  "range": 0.8,
+  "mass": 3,
+  "score": 7,
+  "pool": {
+   "normal": 50,
+   "small": 100,
+   "boss": 0
+  },
+  "talents": {},
+  "skills": [],
+  "skillData": {},
+  "immune": {
+   "stun": false,
+   "frozen": false
+  },
+  "origName": "重装防御者",
+  "abilities": [],
+  "scale": 1.037,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1,
+   "hit": 0.467
+  },
+  "power": 1557
+ },
+ {
+  "key": "enemy_15011_dqnhst",
+  "orig": "enemy_1270_nhstlk",
+  "name": "食腐野兽",
+  "desc": "以腐烂为食的腐烂造物，得阻止它们啃自己的尾巴，不然就没个完了！",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 12000,
+  "atk": 550,
+  "def": 150,
+  "res": 20,
+  "bat": 1.8,
+  "aspd": 100,
+  "ms": 1.4,
+  "range": 0.8,
+  "mass": 2,
+  "score": 11,
+  "pool": {
+   "normal": 50,
+   "small": 100,
+   "boss": 0
+  },
+  "talents": {
+   "Bleeding.attack@bleeding_damage": 100,
+   "Bleeding.attack@duration": 10
+  },
+  "skills": [],
+  "skillData": {},
+  "immune": {
+   "stun": false,
+   "frozen": false
+  },
+  "origName": "逐腐兽",
+  "abilities": [
+   {
+    "text": "攻击使目标在一段时间内持续受到法术伤害，目标接受治疗时解除此效果",
+    "title": false
+   }
+  ],
+  "scale": 0.8889,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.533,
+   "hit": 0.767
+  },
+  "power": 1945
+ },
+ {
+  "key": "enemy_15022_dqhvys",
+  "orig": "enemy_1160_hvyslr",
+  "name": "过气水手",
+  "desc": "即使早就因为酒驾被赶下了船，他依然打扮得像个水手。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 10000,
+  "atk": 800,
+  "def": 800,
+  "res": 20,
+  "bat": 3.5,
+  "aspd": 100,
+  "ms": 0.7,
+  "range": 0.8,
+  "mass": 4,
+  "score": 13,
+  "pool": {
+   "normal": 50,
+   "small": 100,
+   "boss": 0
+  },
+  "talents": {
+   "Drown.damage": 1000
+  },
+  "skills": [
+   "stuncombat"
+  ],
+  "skillData": {
+   "stuncombat": {
+    "sp": 3,
+    "cd": 1,
+    "init": 1,
+    "bb": {
+     "stun": 7
+    }
+   }
+  },
+  "immune": {
+   "stun": false,
+   "frozen": false
+  },
+  "origName": "码头水手",
+  "abilities": [
+   {
+    "text": "能在数次攻击后晕眩我方单位",
+    "title": false
+   },
+   {
+    "text": "“水蚀”状态下快速损失生命",
+    "title": false
+   }
+  ],
+  "scale": 0.8889,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.4,
+   "hit": 0.667
+  },
+  "power": 2098
+ },
+ {
+  "key": "enemy_15007_dqbear",
+  "orig": "enemy_2002_bearmi",
+  "name": "高普尼克",
+  "desc": "兢兢业业当了多年保镖的乌萨斯壮汉，皮糙肉厚，拳脚也相当了得。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 30000,
+  "atk": 2000,
+  "def": 200,
+  "res": 50,
+  "bat": 3.5,
+  "aspd": 100,
+  "ms": 0.5,
+  "range": 0.8,
+  "mass": 4,
+  "score": 20,
+  "pool": {
+   "normal": 50,
+   "small": 100,
+   "boss": 0
+  },
+  "talents": {},
+  "skills": [],
+  "skillData": {},
+  "immune": {
+   "stun": true,
+   "frozen": true
+  },
+  "origName": "高普尼克",
+  "abilities": [],
+  "scale": 0.8889,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 4.133,
+   "hit": 1.267
+  },
+  "power": 4629
+ },
+ {
+  "key": "enemy_5036_dqger_2",
+  "orig": "enemy_1062_rager_2",
+  "name": "苦难的具象",
+  "desc": "他已然成为源石的傀儡，他不被允许生存。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 30000,
+  "atk": 1750,
+  "def": 230,
+  "res": 30,
+  "bat": 1.3,
+  "aspd": 100,
+  "ms": 1.2,
+  "range": 0.8,
+  "mass": 2,
+  "score": 22,
+  "pool": {
+   "normal": 50,
+   "small": 100,
+   "boss": 0
+  },
+  "talents": {
+   "periodic_damage.damage": 300
+  },
+  "skills": [],
+  "skillData": {},
+  "immune": {
+   "stun": false,
+   "frozen": false
+  },
+  "origName": "狂暴宿主组长",
+  "abilities": [
+   {
+    "text": "会逐渐损失生命",
+    "title": false
+   }
+  ],
+  "scale": 1.037,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.333,
+   "hit": 0.667
+  },
+  "power": 6941
+ },
+ {
+  "key": "enemy_5039_dqgint",
+  "orig": "enemy_1092_mdgint",
+  "name": "砸人的石头",
+  "desc": "行走的巨石堆，挥拳慢不是因为真的慢，而是因为它在深思熟虑。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 100000,
+  "atk": 3000,
+  "def": 700,
+  "res": 30,
+  "bat": 7,
+  "aspd": 100,
+  "ms": 0.4,
+  "range": 0.8,
+  "mass": 5,
+  "score": 25,
+  "pool": {
+   "normal": 50,
+   "small": 100,
+   "boss": 0
+  },
+  "talents": {},
+  "skills": [],
+  "skillData": {},
+  "immune": {
+   "stun": false,
+   "frozen": false
+  },
+  "origName": "泥岩巨像",
+  "abilities": [],
+  "scale": 1.2963,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 5.167,
+   "hit": 2.767
+  },
+  "power": 8949
+ },
+ {
+  "key": "enemy_5053_dqllme",
+  "orig": "enemy_1050_lslime",
+  "name": "“庞贝”",
+  "desc": "巨大的源石虫，不论在它周围还是保持一定距离都不安全。",
+  "rank": "BOSS",
+  "levelType": "BOSS",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "arts",
+  "hp": 40000,
+  "atk": 230,
+  "def": 220,
+  "res": 70,
+  "bat": 3.5,
+  "aspd": 100,
+  "ms": 0.65,
+  "range": 4.5,
+  "mass": 4,
+  "score": 25,
+  "pool": {
+   "normal": 50,
+   "small": 0,
+   "boss": 0
+  },
+  "talents": {
+   "selfbuff.attack_speed": 40,
+   "selfbuff.hp_ratio": 0.5,
+   "dot.duration": 10,
+   "dot.damage": 20,
+   "dot.interval": 0.33,
+   "rangedamage.interval": 10,
+   "rangedamage.attack@damage": 1000
+  },
+  "skills": [],
+  "skillData": {},
+  "immune": {
+   "stun": false,
+   "frozen": false
+  },
+  "origName": "“庞贝”",
+  "abilities": [
+   {
+    "text": "最多同时攻击四个目标，击中目标时会造成灼烧，持续损失生命值",
+    "title": false
+   },
+   {
+    "text": "被阻挡时会进行自爆造成高额伤害",
+    "title": false
+   },
+   {
+    "text": "生命值降至一半时攻击速度大幅提升",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.4,
+   "hit": 1.067
+  },
+  "power": 1907
+ },
+ {
+  "key": "enemy_5055_dqkill",
+  "orig": "enemy_1516_jakill",
+  "name": "杰斯顿·威廉姆斯",
+  "desc": "维持体面形象时会使对手晕眩，露出真面目后就不会手下留情了。",
+  "rank": "BOSS",
+  "levelType": "BOSS",
+  "way": "ALL",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 25000,
+  "atk": 700,
+  "def": 400,
+  "res": 20,
+  "bat": 4,
+  "aspd": 100,
+  "ms": 0.6,
+  "range": 3,
+  "mass": 6,
+  "score": 35,
+  "pool": {
+   "normal": 50,
+   "small": 0,
+   "boss": 0
+  },
+  "talents": {
+   "reborn.sp": -1,
+   "reborn.duration": 4,
+   "enhance.magic_resistance": 50,
+   "enhance.atk": 700,
+   "enhance.def": 1000,
+   "enhance.base_attack_time": -1.5,
+   "enhance.move_speed": 0.3
+  },
+  "skills": [
+   "ironsandstorm",
+   "armorpiercing"
+  ],
+  "skillData": {
+   "ironsandstorm": {
+    "sp": 3,
+    "cd": 0,
+    "init": 0,
+    "bb": {
+     "stun": 3,
+     "max_target": 2
+    }
+   },
+   "armorpiercing": {
+    "sp": 3,
+    "cd": 0,
+    "init": 0,
+    "bb": {
+     "times": 2,
+     "def_penetrate": 0.6
+    }
+   }
+  },
+  "immune": {
+   "stun": false,
+   "frozen": false
+  },
+  "origName": "杰斯顿·威廉姆斯",
+  "abilities": [
+   {
+    "text": "狱警形态",
+    "title": true
+   },
+   {
+    "text": "法术抗性大幅提升",
+    "title": false
+   },
+   {
+    "text": "攻击造成远程法术伤害，不攻击禁锢装置",
+    "title": false
+   },
+   {
+    "text": "能使多名单位晕眩",
+    "title": false
+   },
+   {
+    "text": "生命值首次降至0时进入杀手形态",
+    "title": false
+   },
+   {
+    "text": "杀手形态",
+    "title": true
+   },
+   {
+    "text": "进入杀手形态时解放全场敌人",
+    "title": false
+   },
+   {
+    "text": "防御力大幅提升",
+    "title": false
+   },
+   {
+    "text": "攻击造成近战物理伤害，能无视目标一定的防御力",
+    "title": false
+   }
+  ],
+  "scale": 0.963,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "C1_Attack",
+   "dur": 1.5,
+   "hit": 0.933
+  },
+  "power": 2453
+ },
+ {
+  "key": "enemy_5054_dqxi",
+  "orig": "enemy_1517_xi",
+  "name": "“自在”",
+  "desc": "你总怀疑画里的都是假的，但它打得你很痛是真的。",
+  "rank": "BOSS",
+  "levelType": "BOSS",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "arts",
+  "hp": 40000,
+  "atk": 600,
+  "def": 800,
+  "res": 55,
+  "bat": 4,
+  "aspd": 100,
+  "ms": 0.5,
+  "range": 3.5,
+  "mass": 10,
+  "score": 300,
+  "pool": {
+   "normal": 0,
+   "small": 0,
+   "boss": 100
+  },
+  "talents": {
+   "yinyang.dynamic": -1,
+   "yinyang.buff_yinyang[same].atk_scale": 0.6,
+   "yinyang.buff_yinyang[diff].atk_scale": 1.4,
+   "reborn.invincible": 5,
+   "reborn.atk": 0.1,
+   "reborn.duration": 5
+  },
+  "skills": [
+   "CrossAttack",
+   "ShieldBurst",
+   "ShieldBurstReborn",
+   "CrossAttackMark",
+   "CrossAttackMarkReborn"
+  ],
+  "skillData": {
+   "CrossAttack": {
+    "sp": 0,
+    "cd": 5,
+    "init": 2,
+    "bb": {
+     "atk_scale": 2
+    }
+   },
+   "ShieldBurst": {
+    "sp": 0,
+    "cd": 20,
+    "init": 20,
+    "bb": {
+     "duration": 8,
+     "dynamic": 2500,
+     "atk_scale": 8,
+     "range_radius": 3
+    }
+   },
+   "ShieldBurstReborn": {
+    "sp": 0,
+    "cd": 40,
+    "init": 40,
+    "bb": {
+     "duration": 8,
+     "dynamic": 3000,
+     "atk_scale": 12,
+     "range_radius": 3
+    }
+   },
+   "CrossAttackMark": {
+    "sp": 0,
+    "cd": 9999,
+    "init": 0,
+    "bb": {}
+   },
+   "CrossAttackMarkReborn": {
+    "sp": 0,
+    "cd": 9999,
+    "init": 0,
+    "bb": {}
+   }
+  },
+  "immune": {
+   "stun": true,
+   "frozen": true
+  },
+  "origName": "“自在”",
+  "abilities": [
+   {
+    "text": "第一形态",
+    "title": true
+   },
+   {
+    "text": "【纬地经天】对最近目标释放十字型法术，效果范围内晦明属性变化",
+    "title": false
+   },
+   {
+    "text": "【破桎而出】屏障未被击破则造成巨额范围伤害",
+    "title": false
+   },
+   {
+    "text": "生命值首次降至0后进入第二形态",
+    "title": false
+   },
+   {
+    "text": "第二形态",
+    "title": true
+   },
+   {
+    "text": "改变自身晦明属性",
+    "title": false
+   },
+   {
+    "text": "攻击力提升，普通攻击进行两次",
+    "title": false
+   },
+   {
+    "text": "额外对最远目标释放【纬地经天】",
+    "title": false
+   }
+  ],
+  "scale": 0.963,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack_01",
+   "dur": 1,
+   "hit": 0.5
+  },
+  "power": 3659
+ },
+ {
+  "key": "enemy_15023_dqwlfm",
+  "orig": "enemy_1535_wlfmster",
+  "name": "依然“狼之主”",
+  "desc": "由于代打选手总是没法合他心意，这一次他决定自己上场。",
+  "rank": "BOSS",
+  "levelType": "BOSS",
+  "way": "ALL",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 50000,
+  "atk": 1000,
+  "def": 1300,
+  "res": 60,
+  "bat": 4,
+  "aspd": 100,
+  "ms": 0.6,
+  "range": 0.8,
+  "mass": 5,
+  "score": 300,
+  "pool": {
+   "normal": 0,
+   "small": 0,
+   "boss": 100
+  },
+  "talents": {
+   "Passive.sp": 1,
+   "Reborn.duration": 10,
+   "Passive2.atk": 0.5,
+   "Passive2.base_attack_time": -1.5,
+   "Passive.damage_resistance": 0.3,
+   "Passive2.invincible_time": 10
+  },
+  "skills": [
+   "WildCalling",
+   "FearCage"
+  ],
+  "skillData": {
+   "WildCalling": {
+    "sp": 0,
+    "cd": 40,
+    "init": 5,
+    "bb": {
+     "duration": 5.5,
+     "sp": 35
+    }
+   },
+   "FearCage": {
+    "sp": 55,
+    "cd": 0,
+    "init": 0,
+    "bb": {
+     "max_target": 3,
+     "attack_speed": -70,
+     "duration_s": 5,
+     "sp": 5,
+     "hp_ratio": 0.3,
+     "duration_bleed": 40,
+     "hp_ratio_offset": -0.2,
+     "duration_wait": 7
+    }
+   }
+  },
+  "immune": {
+   "stun": false,
+   "frozen": true
+  },
+  "origName": "扎罗，“狼之主”",
+  "abilities": [
+   {
+    "text": "使血债账款逐渐增加",
+    "title": false
+   },
+   {
+    "text": "第一形态",
+    "title": true
+   },
+   {
+    "text": "受到伤害降低，不可被晕眩",
+    "title": false
+   },
+   {
+    "text": "【溶血骇惧】使三名我方单位被恐惧吞噬，不可主动撤退，攻速大幅降低，并逐渐加速失去生命值；受影响单位在“狼之主”损失一定比例生命时，会恢复正常",
+    "title": false
+   },
+   {
+    "text": "第一形态生命值降为0后，获得【远古威慑】，周围我方单位降低攻击速度，并缓慢回复生命值",
+    "title": false
+   },
+   {
+    "text": "第二形态",
+    "title": true
+   },
+   {
+    "text": "不再拥有减伤，且不再释放【溶血骇惧】",
+    "title": false
+   },
+   {
+    "text": "攻击变为远程二连击，且攻击力提升",
+    "title": false
+   },
+   {
+    "text": "每隔一段时间释放，【狂暴怒嗥】，使血债账款快速上升",
+    "title": false
+   }
+  ],
+  "scale": 1.1111,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "A_Attack",
+   "dur": 1.433,
+   "hit": 0.467
+  },
+  "power": 6212
+ },
+ {
+  "key": "enemy_15024_dqreid",
+  "orig": "enemy_1539_reid",
+  "name": "“火与钢”",
+  "desc": "你知道他的刀刃燃起火焰意味着什么。",
+  "rank": "BOSS",
+  "levelType": "BOSS",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 57500,
+  "atk": 800,
+  "def": 650,
+  "res": 60,
+  "bat": 3,
+  "aspd": 200,
+  "ms": 0.65,
+  "range": 0.8,
+  "mass": 3,
+  "score": 300,
+  "pool": {
+   "normal": 0,
+   "small": 0,
+   "boss": 100
+  },
+  "talents": {
+   "AtkUp.atk": 2.8,
+   "atkup.hp_ratio": 0.5,
+   "AtkUp.damage_resistance": 0.6,
+   "Reborn.duration": 5,
+   "Reborn.hp_ratio": 0.5,
+   "Reborn.invincible": 10
+  },
+  "skills": [
+   "Rush"
+  ],
+  "skillData": {
+   "Rush": {
+    "sp": 0,
+    "cd": 99999,
+    "init": 0,
+    "bb": {
+     "duration": 4.5,
+     "move_speed": 2,
+     "range_radius": 1.5
+    }
+   }
+  },
+  "immune": {
+   "stun": false,
+   "frozen": false
+  },
+  "origName": "“复仇者”",
+  "abilities": [
+   {
+    "text": "生命值降至一半以下时攻击力大幅度提升",
+    "title": false
+   },
+   {
+    "text": "【冲锋】锁定前方路径范围内的一名目标，一定时间内移动速度大幅提升",
+    "title": false
+   },
+   {
+    "text": "首次被击倒后重生，恢复一半生命值",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.733,
+   "hit": 0.667
+  },
+  "power": 7893
+ }
+]

@@ -1,0 +1,36 @@
+// The multiplayer server end to end: a gateway and one battle instance on free ports, eight bot clients queue for
+// 礼物对决 and play a whole match (fast timings), the status page and the health probe answer.
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { spawn } from 'node:child_process';
+import { createServer } from 'node:net';
+import { fileURLToPath } from 'node:url';
+
+const free = () => new Promise((res) => { const s = createServer(); s.listen(0, '127.0.0.1', () => { const p = s.address().port; s.close(() => res(p)); }); });
+const node = (file, args, env) => spawn(process.execPath, [fileURLToPath(new URL(file, import.meta.url)), ...args], {
+  env: { ...process.env, ...env }, stdio: ['ignore', 'pipe', 'pipe'] });
+const until = async (fn, ms) => { const t0 = Date.now(); for (;;) { try { const v = await fn(); if (v) return v; } catch (e) { /* not yet */ } if (Date.now() - t0 > ms) throw new Error('timed out'); await new Promise((r) => setTimeout(r, 200)); } };
+
+test('a full match: 8 bots through the queue on one instance', { timeout: 240000 }, async () => {
+  const gw = await free(), ip = await free();
+  const fast = { DUEL_BET_MS: '1500', DUEL_RANK_MS: '300', DUEL_RESULT_MS: '300', DUEL_SHOW_MS: '300', QUEUE_FILL_MS: '1500' };
+  const procs = [node('../server/instance.mjs', [], { ...fast, PORT: String(ip), HOST: '127.0.0.1' }),
+    node('../server/gateway.mjs', [], { ...fast, PORT: String(gw), HOST: '127.0.0.1', INSTANCES: String(ip) })];
+  let log = '';
+  for (const p of procs) { p.stdout.on('data', (d) => { log += d; }); p.stderr.on('data', (d) => { log += d; }); }
+  try {
+    const h = await until(async () => { const r = await fetch(`http://127.0.0.1:${gw}/healthz`); const j = await r.json(); return j.instances === 1 && j; }, 20000);
+    assert.equal(h.ok, true);
+    const bots = node('../server/bots.mjs', ['--n', '8', '--lobby', `ws://127.0.0.1:${gw}/lobby`], { BOT_PACE: '0.1' });
+    let out = '';
+    bots.stdout.on('data', (d) => { out += d; });
+    const code = await new Promise((res) => bots.on('exit', res));
+    assert.equal(code, 0, out + log);
+    const finished = out.split('\n').filter((l) => /finished #\d+ with \d+/.test(l));
+    assert.equal(finished.length, 8, out);
+    const ranks = finished.map((l) => Number(l.match(/#(\d+)/)[1])).sort((a, b) => a - b);
+    assert.deepEqual(ranks, [1, 2, 3, 4, 5, 6, 7, 8]);
+    const st = await (await fetch(`http://127.0.0.1:${gw}/status`)).json();
+    assert.equal(st.instances.length, 1);
+  } finally { for (const p of procs) p.kill(); }
+});

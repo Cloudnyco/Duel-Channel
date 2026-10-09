@@ -1,0 +1,37 @@
+# 架构
+
+## 页面（`web/`）
+
+`tools/build-page.mjs` 把模板 `web/index.src.html`、各脚本、数据和素材包内联成一个 HTML 文件。脚本是**经典脚本**，按下面的顺序拼进同一个函数体，共享顶层名字：
+
+| 文件 | 职责 |
+|---|---|
+| `src/engine.js` | UGUI 重建：RectTransform 布局（锚点、轴心、布局组、ContentSizeFitter、LayoutElement）、Image / UIAtlasImage（九宫格画进一张画布图）、平铺与 UV 滚动、模板遮罩（`UIStencilComponent` / `UIStencilGraphic`，形状着色器 `ShapeCircle` / `ShapeRect`）、富文本与换行、旧版 AnimationClip（Hermite 插值）、UI Spine、`Screen` / `instantiate` |
+| `src/particles.js` | UIParticle：按导出的发射器参数在 DOM 上模拟粒子 |
+| `../shared/sim.js` | 对战模拟、阵容生成、NPC 选边、结算（页面和服务端共用） |
+| `src/arena.js` | PixiJS 场地：透视地面网格（官方地块图集）、出入口、LED 墙、追光灯、安全区边界线、单位（Spine）、血条、buff / 晕眩 / 冻结效果、命中特效 |
+| `src/net.js` | 联机：大厅与比赛的 WebSocket（`Link`）、延迟探测、服务端玩家、匹配与房间界面 |
+| `src/flow.js` | 流程状态机（入口 → 选择赛事 → 匹配 / 房间 → 即将开始 → 加载 → 10 轮 → 结算）、方块溶解转场、设置面板与头像、开始界面 |
+
+页面以 `file://` 打开时是单机模式；由网关以 http 提供时自动进入联机模式。
+
+## 模拟（`shared/sim.js`）
+
+- 固定步长 1/30 秒，`mulberry32` 随机数。只用 IEEE 精确的运算（`sqrt`、加减乘除），时间按整数步计数，所以 Node 和各浏览器逐位一致。
+- `makeWorld(lineups, seed)` → `simStep(W)` 直到 `W.done`；`predict` 是无渲染的快速版本，服务端用它预先算出结果。
+- 黄金对局（`test/fixtures/golden.json`，`tools/golden.mjs` 生成）锁定 40 场对战的阵容、胜负、结束步数和最终状态哈希。
+
+## 服务端（`server/`）
+
+| 文件 | 职责 |
+|---|---|
+| `launch.mjs` | 启动网关和 N 个实例（子进程，统一日志，Ctrl+C 全部停止） |
+| `gateway.mjs` | 提供页面；大厅（昵称、头像校验、匹配队列、群组房间）；`/status`、`/healthz`；把新比赛交给负载最低的实例 |
+| `instance.mjs` | 对战实例：`POST /create`（仅本机）、`/status`、比赛的 WebSocket |
+| `game.mjs` | 一场礼物对决：NPC 补位、轮次、押注校验（观望 / 全力支持的条件）、预先模拟、等待所有人看完战斗、结算与排名 |
+| `bots.mjs` | 机器人客户端（无渲染），测试与陪玩 |
+
+消息（JSON over WebSocket）：
+
+- 大厅：`hello` / `welcome`、`queue` / `cancel`、`room.*`、`avatar`、`matched`、`ping` / `pong`。
+- 比赛：`hello`、`phase`、`round`（阵容 + 种子 + 押注时长）、`bets`、`battle`、`result`、`finish`、`ready` / `watched` / `bet` / `leave`、`ping` / `pong`。

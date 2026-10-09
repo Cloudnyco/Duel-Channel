@@ -1,0 +1,100 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test (${{ matrix.os }}, node ${{ matrix.node }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node: [22, 24]
+    env:
+      NO_COLOR: '1'
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+
+      - name: Install
+        run: npm ci --no-audit --no-fund
+
+      # the template, the page sources parsed together, the data files, nothing from the asset pack tracked
+      - name: Static checks
+        run: node tools/check.mjs
+
+      # the sim (determinism, golden battles, official rules) and a whole match of 8 bots through the server
+      - name: Tests
+        run: npm test
+
+      # the gateway and its instances boot; /healthz and /status answer; without a built page the gateway says so (503)
+      - name: Server smoke test
+        shell: bash
+        run: |
+          node server/launch.mjs --instances 2 > server.log 2>&1 &
+          pid=$!
+          ok=
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8600/healthz -o health.json && grep -q '"instances":2' health.json; then ok=1; break; fi
+            sleep 1
+          done
+          cat health.json || true
+          echo
+          [ -n "$ok" ] || { cat server.log; kill $pid || true; exit 1; }
+          curl -fsS -o status.json http://127.0.0.1:8600/status
+          grep -q '"instances"' status.json
+          code=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8600/)
+          [ "$code" = "503" ] || { echo "expected 503 without a built page, got $code"; cat server.log; kill $pid || true; exit 1; }
+          kill $pid || true
+
+  # once, not per matrix entry
+  tooling:
+    name: tooling (lint)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci --no-audit --no-fund
+
+      - name: Lint
+        run: npm run lint
+
+  # the server image builds (no push here; see docker.yml)
+  docker:
+    name: docker (build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Build
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: false
+          tags: duel-channel:ci

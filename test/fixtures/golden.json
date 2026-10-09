@@ -1,0 +1,1318 @@
+[
+ {
+  "round": 1,
+  "seed": 97,
+  "lineups": [
+   [
+    [
+     "enemy_15011_dqnhst",
+     6
+    ]
+   ],
+   [
+    [
+     "enemy_15012_dqbsli",
+     11
+    ],
+    [
+     "enemy_5055_dqkill",
+     1
+    ]
+   ]
+  ],
+  "winner": 1,
+  "steps": 665,
+  "hash": "e7863fcb82366844"
+ },
+ {
+  "round": 2,
+  "seed": -1640531438,
+  "lineups": [
+   [
+    [
+     "enemy_5036_dqger_2",
+     3
+    ],
+    [
+     "enemy_15013_dqsnsl",
+     4
+    ]
+   ],
+   [
+    [
+     "enemy_5053_dqllme",
+     2
+    ],
+    [
+     "enemy_15007_dqbear",
+     2
+    ]
+   ]
+  ],
+  "winner": 1,
+  "steps": 807,
+  "hash": "9118987feda90bcf"
+ },
+ {
+  "round": 3,
+  "seed": 1013904323,
+  "lineups": [
+   [
+    [
+     "enemy_15022_dqhvys",
+     7
+    ],
+    [
+     "enemy_15013_dqsnsl",
+     3
+    ]
+   ],
+   [
+    [
+     "enemy_5039_dqgint",
+     4
+    ]
+   ]
+  ],
+  "winner": 1,
+  "steps": 2400,
+  "hash": "9179fe5754523652"
+ },
+ {
+  "round": 4,
+  "seed": -626627212,
+  "lineups": [
+   [
+    [
+     "enemy_5053_dqllme",
+     2
+    ],
+    [
+     "enemy_15007_dqbear",
+     2
+    ],
+    [
+     "enemy_5032_dqmon",
+     5
+    ]
+   ],
+   [
+    [
+     "enemy_5039_dqgint",
+     4
+    ],
+    [
+     "enemy_15011_dqnhst",
+     2
+    ]
+   ]
+  ],
+  "winner": 1,
+  "steps": 2541,
+  "hash": "63cc40f12584f507"
+ },
+ {
+  "round": 5,
+  "seed": 2027808549,
+  "lineups": [
+   [
+    [
+     "enemy_5036_dqger_2",
+     5
+    ],
+    [
+     "enemy_5032_dqmon",
+     5
+    ]
+   ],
+   [
+    [
+     "enemy_15012_dqbsli",
+     8
+    ],
+    [
+     "enemy_5036_dqger_2",
+     6
+    ]
+   ]
+  ],
+  "winner": 1,
+  "steps": 543,
+  "hash": "cb5d5b7c487ae7b5"
+ },
+ {
+  "round": 6,
+  "seed": 387277014,
+  "lineups": [
+   [
+    [
+     "enemy_5034_dqield",
+     6
+    ],
+    [
+     "enemy_5053_dqllme",
+     5
+    ]
+   ],
+   [
+    [
+     "enemy_5034_dqield",
+     7
+    ],
+    [
+     "enemy_5055_dqkill",
+     3
+    ]
+   ]
+  ],
+  "winner": 0,
+  "steps": 2460,
+  "hash": "ddb4c326ed0da6b6"
+ },
+ {
+  "round": 7,
+  "seed": -1253254521,
+  "lineups": [
+   [
+    [
+     "enemy_5034_dqield",
+     13
+    ],
+    [
+     "enemy_5032_dqmon",
+     12
+    ]
+   ],
+   [
+    [
+     "enemy_15012_dqbsli",
+     6
+    ],
+    [
+     "enemy_15022_dqhvys",
+     14
+    ]
+   ]
+  ],
+  "winner": 1,
+  "steps": 1297,
+  "hash": "b842f7896e910baf"
+ },
+ {
+  "round": 8,
+  "seed": 1401181240,
+  "lineups": [
+   [
+    [
+     "enemy_15012_dqbsli",
+     3
+    ],
+    [
+     "enemy_5039_dqgint",
+     6
+    ],
+    [
+     "enemy_15011_dqnhst",
+     3
+    ]
+   ],
+   [
+    [
+     "enemy_5034_dqield",
+     1
+    ],
+    [
+     "enemy_5036_dqger_2",
+     2
+    ],
+    [
+     "enemy_5055_dqkill",
+     5
+    ]
+   ]
+  ],
+  "winner": 0,
+  "steps": 3599,
+  "hash": "5d0d0d213e754cfe"
+ },
+ {
+  "round": 9,
+  "seed": -239350295,
+  "lineups": [
+   [
+    [
+     "enemy_5034_dqield",
+     5
+    ],
+    [
+     "enemy_5039_dqgint",
+     8
+    ],
+    [
+     "enemy_15012_dqbsli",
+     5
+    ]
+   ],
+   [
+    [
+     "enemy_5032_dqmon",
+     4
+    ],
+    [
+     "enemy_5036_dqger_2",
+     3
+    ],
+    [
+     "enemy_5055_dqkill",
+     2
+    ],
+    [
+     "enemy_15011_dqnhst",
+     7
+    ]
+   ]
+  ],
+  "winner": 0,
+  "steps": 2506,
+  "hash": "a5a55a112eb18ada"
+ },
+ {
+  "round": 10,
+  "seed": -1879881830,
+  "lineups": [
+   [
+    [
+     "enemy_15011_dqnhst",
+     4
+    ],
+    [
+     "enemy_5034_dqield",
+     3
+    ],
+    [
+     "enemy_15007_dqbear",
+     3
+    ],
+    [
+     "enemy_5039_dqgint",
+     4
+    ]
+   ],
+   [
+    [
+     "enemy_15022_dqhvys",
+     2
+    ],
+    [
+     "enemy_5036_dqger_2",
+     6
+    ],
+    [
+     "enemy_5053_dqllme",
+     3
+    ],
+    [
+     "enemy_5032_dqmon",
+     4
+    ]
+   ]
+  ],
+  "winner": 1,
+  "steps": 3415,
+  "hash": "0a551d142ea1b92b"
+ },
+ {
+  "round": 1,
+  "seed": 774553931,
+  "lineups": [
+   [
+    [
+     "enemy_5055_dqkill",
+     1
+    ],
+    [
+     "enemy_15022_dqhvys",
+     2
+    ]
+   ],
+   [
+    [
+     "enemy_15007_dqbear",
+     3
+    ]
+   ]
+  ],
+  "winner": 1,
+  "steps": 1534,
+  "hash": "273c419257145692"
+ },
+ {
+  "round": 2,
+  "seed": -865977604,
+  "lineups": [
+   [
+    [
+     "enemy_5055_dqkill",
+     1
+    ],
+    [
+     "enemy_5036_dqger_2",
+     2
+    ]
+   ],
+   [
+    [
+     "enemy_5055_dqkill",
+     2
+    ],
+    [
+     "enemy_15022_dqhvys",
+     1
+    ]
+   ]
+  ],
+  "winner": 1,
+  "steps": 1829,
+  "hash": "dc1c43f85ef13b25"
+ },
+ {
+  "round": 3,
+  "seed": 1788458157,
+  "lineups": [
+   [
+    [
+     "enemy_5032_dqmon",
+     14
+    ]
+   ],
+   [
+    [
+     "enemy_5034_dqield",
+     4
+    ],
+    [
+     "enemy_5039_dqgint",
+     3
+    ]
+   ]
+  ],
+  "winner": 1,
+  "steps": 1527,
+  "hash": "4badca706f35fa1b"
+ },
+ {
+  "round": 4,
+  "seed": 147926622,
+  "lineups": [
+   [
+    [
+     "enemy_15022_dqhvys",
+     5
+    ],
+    [
+     "enemy_15011_dqnhst",
+     5
+    ]
+   ],
+   [
+    [
+     "enemy_15022_dqhvys",
+     3
+    ],
+    [
+     "enemy_5053_dqllme",
+     2
+    ],
+    [
+     "enemy_5032_dqmon",
+     4
+    ]
+   ]
+  ],
+  "winner": 1,
+  "steps": 1016,
+  "hash": "82f665d2aa05554d"
+ },
+ {
+  "round": 5,
+  "seed": -1492604913,
+  "lineups": [
+   [
+    [
+     "enemy_5036_dqger_2",
+     7
+    ]
+   ],
+   [
+    [
+     "enemy_15011_dqnhst",
+     3
+    ],
+    [
+     "enemy_15022_dqhvys",
+     4
+    ],
+    [
+     "enemy_5036_dqger_2",
+     3
+    ]
+   ]
+  ],
+  "winner": 0,
+  "steps": 768,
+  "hash": "848e7b13dc3fa991"
+ },
+ {
+  "round": 6,
+  "seed": 1161830848,
+  "lineups": [
+   [
+    [
+     "enemy_15007_dqbear",
+     2
+    ],
+    [
+     "enemy_5055_dqkill",
+     4
+    ]
+   ],
+   [
+    [
+     "enemy_5036_dqger_2",
+     6
+    ],
+    [
+     "enemy_15012_dqbsli",
+     9
+    ]
+   ]
+  ],
+  "winner": 0,
+  "steps": 1253,
+  "hash": "ffe6effc743d29c6"
+ },
+ {
+  "round": 7,
+  "seed": -478700687,
+  "lineups": [
+   [
+    [
+     "enemy_15007_dqbear",
+     2
+    ],
+    [
+     "enemy_15012_dqbsli",
+     6
+    ],
+    [
+     "enemy_5036_dqger_2",
+     6
+    ]
+   ],
+   [
+    [
+     "enemy_15013_dqsnsl",
+     6
+    ],
+    [
+     "enemy_5053_dqllme",
+     7
+    ]
+   ]
+  ],
+  "winner": 1,
+  "steps": 1255,
+  "hash": "0e345fe5a94fe681"
+ },
+ {
+  "round": 8,
+  "seed": -2119232222,
+  "lineups": [
+   [
+    [
+     "enemy_5034_dqield",
+     3
+    ],
+    [
+     "enemy_5036_dqger_2",
+     4
+    ],
+    [
+     "enemy_15007_dqbear",
+     3
+    ],
+    [
+     "enemy_5032_dqmon",
+     3
+    ]
+   ],
+   [
+    [
+     "enemy_5034_dqield",
+     11
+    ],
+    [
+     "enemy_15022_dqhvys",
+     4
+    ],
+    [
+     "enemy_15012_dqbsli",
+     5
+    ],
+    [
+     "enemy_5032_dqmon",
+     5
+    ]
+   ]
+  ],
+  "winner": 0,
+  "steps": 1625,
+  "hash": "5c2595a8683e7f7b"
+ },
+ {
+  "round": 9,
+  "seed": 535203539,
+  "lineups": [
+   [
+    [
+     "enemy_5036_dqger_2",
+     4
+    ],
+    [
+     "enemy_15011_dqnhst",
+     2
+    ],
+    [
+     "enemy_5053_dqllme",
+     4
+    ]
+   ],
+   [
+    [
+     "enemy_15013_dqsnsl",
+     9
+    ],
+    [
+     "enemy_15022_dqhvys",
+     13
+    ]
+   ]
+  ],
+  "winner": 0,
+  "steps": 1496,
+  "hash": "b8b0ccc00831f109"
+ },
+ {
+  "round": 10,
+  "seed": -1105327996,
+  "lineups": [
+   [
+    [
+     "enemy_15011_dqnhst",
+     1
+    ],
+    [
+     "enemy_15012_dqbsli",
+     5
+    ],
+    [
+     "enemy_5036_dqger_2",
+     6
+    ],
+    [
+     "enemy_5039_dqgint",
+     4
+    ]
+   ],
+   [
+    [
+     "enemy_15022_dqhvys",
+     5
+    ],
+    [
+     "enemy_5032_dqmon",
+     5
+    ],
+    [
+     "enemy_5053_dqllme",
+     5
+    ]
+   ]
+  ],
+  "winner": 1,
+  "steps": 2408,
+  "hash": "2884814e5af5bffb"
+ },
+ {
+  "round": 1,
+  "seed": 1549107765,
+  "lineups": [
+   [
+    [
+     "enemy_15007_dqbear",
+     2
+    ],
+    [
+     "enemy_5034_dqield",
+     4
+    ]
+   ],
+   [
+    [
+     "enemy_5039_dqgint",
+     2
+    ]
+   ]
+  ],
+  "winner": 1,
+  "steps": 1742,
+  "hash": "715639bc23c55594"
+ },
+ {
+  "round": 2,
+  "seed": -91423770,
+  "lineups": [
+   [
+    [
+     "enemy_5053_dqllme",
+     2
+    ],
+    [
+     "enemy_5032_dqmon",
+     4
+    ]
+   ],
+   [
+    [
+     "enemy_5034_dqield",
+     11
+    ]
+   ]
+  ],
+  "winner": 0,
+  "steps": 1064,
+  "hash": "6947e667e300621b"
+ },
+ {
+  "round": 3,
+  "seed": -1731955305,
+  "lineups": [
+   [
+    [
+     "enemy_5034_dqield",
+     5
+    ],
+    [
+     "enemy_5055_dqkill",
+     2
+    ]
+   ],
+   [
+    [
+     "enemy_5034_dqield",
+     3
+    ],
+    [
+     "enemy_15022_dqhvys",
+     6
+    ]
+   ]
+  ],
+  "winner": 0,
+  "steps": 3596,
+  "hash": "0eb83a12a6d92671"
+ },
+ {
+  "round": 4,
+  "seed": 922480456,
+  "lineups": [
+   [
+    [
+     "enemy_15012_dqbsli",
+     3
+    ],
+    [
+     "enemy_15011_dqnhst",
+     3
+    ],
+    [
+     "enemy_15007_dqbear",
+     4
+    ]
+   ],
+   [
+    [
+     "enemy_15011_dqnhst",
+     7
+    ],
+    [
+     "enemy_5034_dqield",
+     7
+    ]
+   ]
+  ],
+  "winner": 0,
+  "steps": 1226,
+  "hash": "7e46af09626f1c05"
+ },
+ {
+  "round": 5,
+  "seed": -718051079,
+  "lineups": [
+   [
+    [
+     "enemy_5055_dqkill",
+     4
+    ]
+   ],
+   [
+    [
+     "enemy_15007_dqbear",
+     2
+    ],
+    [
+     "enemy_5036_dqger_2",
+     3
+    ],
+    [
+     "enemy_5055_dqkill",
+     1
+    ]
+   ]
+  ],
+  "winner": 0,
+  "steps": 2362,
+  "hash": "0d980cd2f761c26a"
+ },
+ {
+  "round": 6,
+  "seed": 1936384682,
+  "lineups": [
+   [
+    [
+     "enemy_5055_dqkill",
+     2
+    ],
+    [
+     "enemy_5034_dqield",
+     4
+    ],
+    [
+     "enemy_15022_dqhvys",
+     6
+    ]
+   ],
+   [
+    [
+     "enemy_15011_dqnhst",
+     3
+    ],
+    [
+     "enemy_15022_dqhvys",
+     7
+    ],
+    [
+     "enemy_5032_dqmon",
+     5
+    ]
+   ]
+  ],
+  "winner": 0,
+  "steps": 2228,
+  "hash": "e668970108cafbb3"
+ },
+ {
+  "round": 7,
+  "seed": 295853147,
+  "lineups": [
+   [
+    [
+     "enemy_15013_dqsnsl",
+     9
+    ],
+    [
+     "enemy_5032_dqmon",
+     5
+    ],
+    [
+     "enemy_15007_dqbear",
+     6
+    ]
+   ],
+   [
+    [
+     "enemy_15007_dqbear",
+     2
+    ],
+    [
+     "enemy_5039_dqgint",
+     3
+    ],
+    [
+     "enemy_5053_dqllme",
+     3
+    ]
+   ]
+  ],
+  "winner": 1,
+  "steps": 1619,
+  "hash": "e26a580adca0b844"
+ },
+ {
+  "round": 8,
+  "seed": -1344678388,
+  "lineups": [
+   [
+    [
+     "enemy_5036_dqger_2",
+     4
+    ],
+    [
+     "enemy_15022_dqhvys",
+     5
+    ],
+    [
+     "enemy_15007_dqbear",
+     2
+    ]
+   ],
+   [
+    [
+     "enemy_5036_dqger_2",
+     5
+    ],
+    [
+     "enemy_15007_dqbear",
+     2
+    ],
+    [
+     "enemy_15011_dqnhst",
+     2
+    ],
+    [
+     "enemy_15022_dqhvys",
+     4
+    ]
+   ]
+  ],
+  "winner": 1,
+  "steps": 1298,
+  "hash": "9ccfe2472ef09392"
+ },
+ {
+  "round": 9,
+  "seed": 1309757373,
+  "lineups": [
+   [
+    [
+     "enemy_5053_dqllme",
+     4
+    ],
+    [
+     "enemy_15013_dqsnsl",
+     2
+    ],
+    [
+     "enemy_5039_dqgint",
+     3
+    ],
+    [
+     "enemy_15022_dqhvys",
+     5
+    ]
+   ],
+   [
+    [
+     "enemy_15011_dqnhst",
+     4
+    ],
+    [
+     "enemy_5039_dqgint",
+     4
+    ],
+    [
+     "enemy_5034_dqield",
+     4
+    ],
+    [
+     "enemy_5053_dqllme",
+     3
+    ]
+   ]
+  ],
+  "winner": 1,
+  "steps": 3540,
+  "hash": "34c277a59f0bda37"
+ },
+ {
+  "round": 10,
+  "seed": -330774162,
+  "lineups": [
+   [
+    [
+     "enemy_5034_dqield",
+     3
+    ],
+    [
+     "enemy_15011_dqnhst",
+     3
+    ],
+    [
+     "enemy_5055_dqkill",
+     4
+    ],
+    [
+     "enemy_15022_dqhvys",
+     3
+    ]
+   ],
+   [
+    [
+     "enemy_15013_dqsnsl",
+     7
+    ],
+    [
+     "enemy_5053_dqllme",
+     5
+    ],
+    [
+     "enemy_5039_dqgint",
+     4
+    ],
+    [
+     "enemy_5032_dqmon",
+     2
+    ]
+   ]
+  ],
+  "winner": 1,
+  "steps": 2885,
+  "hash": "7df515b706a32725"
+ },
+ {
+  "round": 1,
+  "seed": -1971305697,
+  "lineups": [
+   [
+    [
+     "enemy_15022_dqhvys",
+     5
+    ]
+   ],
+   [
+    [
+     "enemy_15007_dqbear",
+     3
+    ]
+   ]
+  ],
+  "winner": 1,
+  "steps": 1118,
+  "hash": "5ca644915c597d1d"
+ },
+ {
+  "round": 2,
+  "seed": 683130064,
+  "lineups": [
+   [
+    [
+     "enemy_5055_dqkill",
+     2
+    ],
+    [
+     "enemy_15011_dqnhst",
+     1
+    ]
+   ],
+   [
+    [
+     "enemy_15013_dqsnsl",
+     4
+    ],
+    [
+     "enemy_5036_dqger_2",
+     3
+    ]
+   ]
+  ],
+  "winner": 1,
+  "steps": 1398,
+  "hash": "1ada2487723badc5"
+ },
+ {
+  "round": 3,
+  "seed": -957401471,
+  "lineups": [
+   [
+    [
+     "enemy_15022_dqhvys",
+     7
+    ],
+    [
+     "enemy_15012_dqbsli",
+     6
+    ]
+   ],
+   [
+    [
+     "enemy_5039_dqgint",
+     4
+    ]
+   ]
+  ],
+  "winner": 1,
+  "steps": 2622,
+  "hash": "2b76c6434b824ba1"
+ },
+ {
+  "round": 4,
+  "seed": 1697034290,
+  "lineups": [
+   [
+    [
+     "enemy_5036_dqger_2",
+     3
+    ],
+    [
+     "enemy_15022_dqhvys",
+     4
+    ]
+   ],
+   [
+    [
+     "enemy_15013_dqsnsl",
+     5
+    ],
+    [
+     "enemy_5039_dqgint",
+     3
+    ],
+    [
+     "enemy_5032_dqmon",
+     5
+    ]
+   ]
+  ],
+  "winner": 1,
+  "steps": 1894,
+  "hash": "82e2595718303cbc"
+ },
+ {
+  "round": 5,
+  "seed": 56502755,
+  "lineups": [
+   [
+    [
+     "enemy_15011_dqnhst",
+     9
+    ],
+    [
+     "enemy_5034_dqield",
+     5
+    ],
+    [
+     "enemy_15012_dqbsli",
+     4
+    ]
+   ],
+   [
+    [
+     "enemy_5036_dqger_2",
+     4
+    ],
+    [
+     "enemy_15011_dqnhst",
+     6
+    ]
+   ]
+  ],
+  "winner": 1,
+  "steps": 831,
+  "hash": "c606c37db52c046b"
+ },
+ {
+  "round": 6,
+  "seed": -1584028780,
+  "lineups": [
+   [
+    [
+     "enemy_5055_dqkill",
+     4
+    ],
+    [
+     "enemy_15013_dqsnsl",
+     4
+    ],
+    [
+     "enemy_5032_dqmon",
+     3
+    ]
+   ],
+   [
+    [
+     "enemy_5032_dqmon",
+     6
+    ],
+    [
+     "enemy_15022_dqhvys",
+     6
+    ],
+    [
+     "enemy_15011_dqnhst",
+     5
+    ]
+   ]
+  ],
+  "winner": 0,
+  "steps": 2526,
+  "hash": "4794050f7078365d"
+ },
+ {
+  "round": 7,
+  "seed": 1070406981,
+  "lineups": [
+   [
+    [
+     "enemy_5034_dqield",
+     11
+    ],
+    [
+     "enemy_15011_dqnhst",
+     11
+    ]
+   ],
+   [
+    [
+     "enemy_5053_dqllme",
+     6
+    ],
+    [
+     "enemy_15012_dqbsli",
+     8
+    ],
+    [
+     "enemy_5032_dqmon",
+     2
+    ]
+   ]
+  ],
+  "winner": 1,
+  "steps": 602,
+  "hash": "07ce5f28f52bcc5a"
+ },
+ {
+  "round": 8,
+  "seed": -570124554,
+  "lineups": [
+   [
+    [
+     "enemy_5036_dqger_2",
+     3
+    ],
+    [
+     "enemy_5039_dqgint",
+     5
+    ]
+   ],
+   [
+    [
+     "enemy_15011_dqnhst",
+     6
+    ],
+    [
+     "enemy_5053_dqllme",
+     3
+    ],
+    [
+     "enemy_5032_dqmon",
+     5
+    ]
+   ]
+  ],
+  "winner": 0,
+  "steps": 2139,
+  "hash": "7423e6cdf1f7d309"
+ },
+ {
+  "round": 9,
+  "seed": 2084311207,
+  "lineups": [
+   [
+    [
+     "enemy_15013_dqsnsl",
+     1
+    ],
+    [
+     "enemy_15007_dqbear",
+     1
+    ],
+    [
+     "enemy_5055_dqkill",
+     6
+    ]
+   ],
+   [
+    [
+     "enemy_15012_dqbsli",
+     5
+    ],
+    [
+     "enemy_15013_dqsnsl",
+     2
+    ],
+    [
+     "enemy_15011_dqnhst",
+     5
+    ],
+    [
+     "enemy_15007_dqbear",
+     6
+    ]
+   ]
+  ],
+  "winner": 1,
+  "steps": 2321,
+  "hash": "441e1167a79aa477"
+ },
+ {
+  "round": 10,
+  "seed": 443779672,
+  "lineups": [
+   [
+    [
+     "enemy_15007_dqbear",
+     8
+    ],
+    [
+     "enemy_5032_dqmon",
+     5
+    ],
+    [
+     "enemy_15011_dqnhst",
+     5
+    ],
+    [
+     "enemy_15022_dqhvys",
+     1
+    ]
+   ],
+   [
+    [
+     "enemy_5036_dqger_2",
+     2
+    ],
+    [
+     "enemy_15022_dqhvys",
+     5
+    ],
+    [
+     "enemy_5053_dqllme",
+     6
+    ]
+   ]
+  ],
+  "winner": 1,
+  "steps": 1816,
+  "hash": "723032c873b646c1"
+ }
+]

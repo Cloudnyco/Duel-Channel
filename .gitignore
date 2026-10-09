@@ -1,0 +1,36 @@
+# --- dependencies ---------------------------------------------------------------------------------
+node_modules/
+
+# --- game assets: (c) Hypergryph, exported locally from your own client, NEVER committed ------------
+# the asset pack (docs/ASSETS.md) and the page built from it (tools/build-page.mjs inlines the pack)
+assets/
+public/*
+!public/.gitkeep
+# any loose audio / model / font files
+*.ogg
+*.wav
+*.mp3
+*.skel
+*.atlas
+*.woff2
+*.otf
+*.ttf
+
+# --- caches, logs, reports --------------------------------------------------------------------------
+.cache/
+logs/
+*.log
+test/out/
+
+# --- per-machine config -----------------------------------------------------------------------------
+.env
+.env.*
+
+# --- OS / editor clutter ----------------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+.idea/
+.vscode/
+.claude/

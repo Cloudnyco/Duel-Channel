@@ -1,0 +1,142 @@
+# 争锋频道 · Duel Channel
+
+《明日方舟》限时玩法「争锋频道：青草城」中**礼物对决**的**非官方同人复刻**：在浏览器里观看敌人之间的对战，每轮押注你看好的一方，8 名观众比拼礼物点数。可以单机游玩，也可以在本机或局域网开服联机。
+
+![version](https://img.shields.io/badge/version-0.1.0-2ea44f)
+![license](https://img.shields.io/badge/code%20license-AGPL--3.0--or--later-blue)
+![node](https://img.shields.io/badge/node-22%20%7C%2024-339933)
+
+## 声明
+
+> [!IMPORTANT]
+> - 本项目是玩家自制的**非官方同人作品**，与上海鹰角网络科技有限公司（Hypergryph）及其关联方**没有任何关系**，未获其授权或认可。
+> - 《明日方舟》及「争锋频道」相关的名称、角色、美术、Spine 模型、界面、音乐、音效、文本与数据等素材，版权归原权利人所有。这些素材**不适用**本项目的 AGPL-3.0 许可证；AGPL 只覆盖本项目自己编写的代码。
+> - **仓库不包含任何游戏美术、音频、模型或字体。** 页面需要的素材包只能由你在本机从**自己的**游戏客户端准备（[docs/ASSETS.md](docs/ASSETS.md)），请勿再分发。仓库里只有由官方数据表生成的数据（`data/`）和几张截图，它们同样不适用 AGPL。
+> - 仅供学习交流与个人非商业使用。**严禁任何形式的盈利**：售卖、付费分发、收费开服、广告或打赏变现等。
+> - 权利人如认为本项目侵犯其权益，请通过 Issue 联系，我们会**立即删除**相关内容。
+> - 本项目按「现状」提供，**不提供任何担保**，使用风险自负。完整条款见 [NOTICE.md](NOTICE.md)。
+
+English summary: [below](#english).
+
+| 开始界面 | 浏览器 | 即将开始 |
+|---|---|---|
+| ![开始界面](docs/img/start.jpg) | ![浏览器](docs/img/browser.jpg) | ![即将开始](docs/img/starting-soon.jpg) |
+| **押注（敌人信息）** | **对战（安全区）** | **最终结算** |
+| ![押注](docs/img/bet.jpg) | ![对战](docs/img/battle.jpg) | ![结算](docs/img/settlement.jpg) |
+
+## 目录
+
+- [简介](#简介) · [功能一览](#功能一览) · [快速开始](#快速开始) · [联机](#联机)
+- [开发与测试](#开发与测试) · [项目结构](#项目结构) · [文档](#文档) · [许可证](#许可证) · [致谢与数据来源](#致谢与数据来源)
+
+## 简介
+
+礼物对决每局 10 轮。每轮场上的两队敌人互相对战，观众在 20 秒内选择支持一方（猜对赢得等同投入的礼物，「全力支持」两倍；也可以观望），礼物归零即被淘汰，最后按礼物点数排名。
+
+- **规则和数值对照官方数据**：活动配置（模式、轮次、NPC 观众及其选边策略、常量与文本）、关卡规则、敌人属性与技能都由官方数据表生成；安全区的时机与范围来自客户端的环境预制体；数据表里没有的规则对照 PRTS 核对。具体见 [docs/MECHANICS.md](docs/MECHANICS.md)，所有按推断实现的地方都在那里列出。
+- **确定性战斗**：同样的阵容和随机种子，在 Node 和各浏览器里算出逐位相同的结果。联机时服务端先算出结果，客户端用同一份代码重放。
+- **界面**：页面用 HTML 重建了活动的 UGUI 界面（锚点布局、九宫格、模板遮罩、形状着色器、旧版动画曲线、UI 粒子、UI Spine），由 PixiJS 绘制对战场地。
+
+## 功能一览
+
+- **完整流程**：开始界面 → 浏览器 → 选择赛事 → 匹配（人数不足时由官方 NPC 补位）或群组房间 → 即将开始 → 10 轮押注与对战 → 计分板 → 最终结算。
+- **押注界面**：倒计时、支持 / 全力支持 / 观望、其他观众的选择实时出现；放大镜查看敌人信息（本关实际数值、图鉴能力、描述）。
+- **对战**：14 种敌人（含 3 名领袖），技能按官方技能数据实现（晕眩、冻结、穿透、多目标、重生变身等）；60 秒后安全区每 20 秒缩小一圈，圈外获得「源石兴奋」并逐秒叠加内伤。
+- **联机**：网关 + 多个对战实例；礼物对决匹配队列（满 8 人开局，等待超时由 NPC 补位）；6 位邀请码的群组房间；实时延迟显示；自定义头像（敌人头像或自己的图片）。
+- **设置**：右下角齿轮里调整速度、音乐和音效、换曲、快进战斗、查看回合记录、更换头像。
+
+## 快速开始
+
+需要 Node.js 22 或 24，以及 Chrome / Edge 等 Chromium 浏览器。
+
+```bash
+git clone https://github.com/Cloudnyco/duel-channel.git
+cd duel-channel
+npm ci
+```
+
+1. **准备素材包**：按 [docs/ASSETS.md](docs/ASSETS.md) 在 `assets/` 下放好从你自己的客户端准备的素材，然后检查是否齐全：
+
+   ```bash
+   npm run assets:check
+   ```
+
+2. **构建页面**：
+
+   ```bash
+   npm run build        # → public/duel-flow.html（单文件，约 16 MB，含素材，只在本机使用）
+   ```
+
+3. **游玩**：
+   - 单机：直接用浏览器打开 `public/duel-flow.html`。
+   - 联机：`npm start`，然后打开 <http://127.0.0.1:8600/>。详见下一节。
+
+## 联机
+
+```bash
+npm start                                   # 网关 :8600 + 3 个对战实例 :8611-8613，只监听本机
+```
+
+浏览器打开 <http://127.0.0.1:8600/>，输入昵称后进入频道：
+
+- **加入赛事 → 礼物对决**：进入匹配队列。满 8 人立即开局；等待 10 秒后空位由官方 NPC 补齐。
+- **创建群组**：得到 6 位邀请码，其他人用「加入群组」输入邀请码进房；房主可以勾选 NPC 补位后开局。
+- **机器人**：`npm run bots`（7 个机器人进入队列）或 `node server/bots.mjs --n 3 --room <邀请码>`。
+
+局域网联机、Docker 部署、端口与参数、常见问题见 **[docs/DEPLOY.md](docs/DEPLOY.md)**。
+
+## 开发与测试
+
+```bash
+npm test             # 战斗模拟（确定性、40 场黄金对局、官方规则）+ 8 个机器人走完一整局的联机端到端测试
+npm run check        # 模板与页面脚本、数据文件、未误提交素材
+npm run lint         # ESLint
+node tools/golden.mjs   # 规则或数值有意改动后，重新生成黄金对局并审阅 diff
+```
+
+CI（GitHub Actions）在 Ubuntu / Windows × Node 22 / 24 上运行检查、测试和服务端冒烟测试，并单独跑 lint 和 Docker 镜像构建；推送 `v*.*.*` 标签时发布 Release（源码包）和服务端镜像（ghcr.io）。
+
+数据由官方数据表生成，需要 [ArknightsGameData](https://github.com/Kengxxiao/ArknightsGameData)：
+
+```bash
+node tools/build-data.mjs --gamedata ../ArknightsGameData/zh_CN/gamedata [--models ../Stronghold-Protocol]
+```
+
+## 项目结构
+
+```
+web/            页面：index.src.html（模板）、src/（界面引擎、粒子、场地与特效、联机、流程）、fx-map.json
+shared/sim.js   战斗模拟、阵容生成、NPC 选边、结算——页面和服务端共用
+server/         网关（页面、大厅、匹配、群组房间）、对战实例、比赛引擎、启动器、机器人
+data/           由官方数据表生成的活动配置与敌人数据（不适用 AGPL）
+tools/          构建页面、生成数据、黄金对局、静态检查
+test/           node --test 测试
+docs/           部署、素材、机制、架构
+```
+
+## 文档
+
+- [docs/DEPLOY.md](docs/DEPLOY.md)：部署与联机指南
+- [docs/ASSETS.md](docs/ASSETS.md)：素材包的内容与格式
+- [docs/MECHANICS.md](docs/MECHANICS.md)：规则与数值的官方来源、按推断实现的部分
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)：页面引擎、场地、模拟与服务端的结构
+- [CHANGELOG.md](CHANGELOG.md) · [CONTRIBUTING.md](CONTRIBUTING.md)
+
+## 许可证
+
+本项目自己编写的代码与文档以 **GNU Affero 通用公共许可证第 3 版或更新版本**（AGPL-3.0-or-later）发布，全文见 [LICENSE](LICENSE)。按 AGPL 第 13 条，如果你修改后通过网络向他人提供服务，需要向这些用户提供你修改后的源代码（开始界面页脚的「源代码」链接可改为你的仓库）。
+
+游戏素材与数据不在授权范围内，见 [NOTICE.md](NOTICE.md)；第三方库见 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)。
+
+## 致谢与数据来源
+
+- 活动配置、关卡、敌人数据与图鉴：[Kengxxiao/ArknightsGameData](https://github.com/Kengxxiao/ArknightsGameData)
+- 规则说明：[PRTS 维基 · 争锋频道](https://prts.wiki/w/%E4%BA%89%E9%94%8B%E9%A2%91%E9%81%93)
+- 敌人 Spine 模型与头像的获取流程：[Stronghold Protocol](https://github.com/sganggs/Stronghold-Protocol)
+- 渲染：[PixiJS](https://pixijs.com/)、[pixi-spine](https://github.com/pixijs/spine)
+
+## English
+
+**Duel Channel** is an unofficial fan re-creation of the *Gift Duel* mode of Arknights' limited event *Duel Channel*: watch enemies fight, bet on a side each round, outlast seven other viewers. It plays offline in one HTML file or online through a small Node.js server (gateway + battle instances, deterministic battles replayed by every client).
+
+It is not affiliated with or endorsed by Hypergryph. **This repository contains no game art, audio, models or fonts**; you prepare the asset pack locally from your own client (docs/ASSETS.md) and must not redistribute it. The code is AGPL-3.0-or-later; game assets and data are not covered (NOTICE.md). Non-commercial use only.

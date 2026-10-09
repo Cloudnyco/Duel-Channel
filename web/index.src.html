@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>争锋频道流程复现</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Arvo:wght@700&display=swap">
+<style>
+/* a local play-through of the 争锋频道 flow: the game's 1280 × 720 reference canvas scaled to the window (letterboxed),
+   the arena canvas under the UI, UI Spine canvas over it, a small control strip in the corner */
+@font-face { font-family: "Bender"; src: url(/*FONT_BENDER*/) format("woff2"); font-weight: 400 900; }
+@font-face { font-family: "Novecento"; src: url(/*FONT_NOVECENTO*/) format("woff2"); font-weight: 300 900; }
+:root {
+  --cn: "Noto Sans SC", "Source Han Sans SC", "Microsoft YaHei", "PingFang SC", sans-serif;
+  --nove: "Novecento", "Bahnschrift", "DIN Alternate", "Arial Narrow", var(--cn);
+  --arvo: "Arvo", "Rockwell", Georgia, serif; --bender: "Bender", var(--nove);
+  --ink: #e9efe9; --muted: #9aa8a2; --chip: rgba(14, 19, 18, .82); --line: rgba(255, 255, 255, .14); --accent: #f3d23a;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; background: #000; overflow: hidden; color: var(--ink); font: 13px/1.5 var(--cn); }
+#stage { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; overflow: hidden; background: #070a0a; }
+#arena, #uispine { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; }
+#uispine { display: none; pointer-events: none; }
+#ui { position: absolute; inset: 0; z-index: 10; pointer-events: none; }
+.screen { position: absolute; inset: 0; pointer-events: none; }
+.n { position: absolute; pointer-events: none; }
+.n.hot { pointer-events: auto; cursor: pointer; }
+.hov { filter: brightness(1.13); }
+.g, .t { position: absolute; inset: 0; pointer-events: none; }
+.g { background-repeat: no-repeat; background-size: 100% 100%; }
+.t { display: flex; white-space: pre; line-height: 1.12; text-rendering: geometricPrecision; }
+.pc { position: absolute; pointer-events: none; }
+.g.wipe { background: linear-gradient(100deg, #f6e033 0 78%, #161616 78% 86%, #f6e033 86%); }
+/* screen change: a block dissolve over the stage (drawn by wipe() in flow.js) */
+#wipe { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; z-index: 950; pointer-events: none; display: none; }
+.inj { position: absolute; inset: 0; background: center / cover no-repeat; pointer-events: none; }
+.inj.avatar { inset: 12px; border-radius: 50%; box-shadow: 0 0 0 3px rgba(255, 255, 255, .85), 0 6px 18px rgba(0, 0, 0, .5); background-color: #182120; }
+canvas.video { position: absolute; inset: 0; width: 100%; height: 100%; }
+/* the round's line-up over each team's info button (the game fills this row with enemy cards from another package) */
+.lineup { position: absolute; left: 0; right: 0; top: 14px; display: flex; justify-content: center; padding-left: 24px; }
+.lineup { pointer-events: auto; cursor: pointer; }
+.lineup .card { position: relative; width: 96px; height: 104px; margin-left: -24px; border-radius: 6px; background: #121a19 center 38% / 92% no-repeat;
+  border: 2px solid #e8473d; box-shadow: 0 4px 14px rgba(0, 0, 0, .55), inset 0 -26px 22px -10px rgba(0, 0, 0, .9); }
+.lineup.r .card { border-color: #2f86e8; }
+.lineup .card:nth-child(2) { z-index: 1; transform: translateY(4px); } .lineup .card:nth-child(3) { z-index: 2; transform: translateY(8px); }
+.lineup .card b { position: absolute; right: 4px; top: 2px; font: 700 19px/1 var(--nove); color: #fff; text-shadow: 0 1px 3px #000; }
+.lineup .card span { position: absolute; left: 0; right: 0; bottom: 3px; text-align: center; font: 500 11px/1.1 var(--cn); color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 3px; }
+#toast { position: absolute; left: 50%; top: 96px; transform: translate(-50%, -8px); z-index: 1000; padding: 8px 18px; border-radius: 4px;
+  background: rgba(10, 12, 12, .88); border: 1px solid var(--line); font: 500 16px/1.4 var(--cn); opacity: 0; transition: opacity .2s, transform .2s; pointer-events: none; }
+#toast.on { opacity: 1; transform: translate(-50%, 0); }
+/* the opening screen — not the game's: the channel's standby slate before the stream goes live, in the event's own
+   language (duel yellow and ink, the fake-browser chrome of the entry page, the LIVE badge, the angular black bracket
+   of the DUELROOM title, Novecento wide). One click unlocks the sound (browsers need a gesture) and enters. */
+#start { position: absolute; inset: 0; z-index: 1500; overflow: hidden; cursor: pointer; color: #161616;
+  font: 500 16px/1.5 var(--cn);
+  background: repeating-linear-gradient(115deg, rgba(0, 0, 0, 0) 0 26px, rgba(0, 0, 0, .035) 26px 52px), #f6e033; }
+#start[hidden] { display: none; }
+/* the browser chrome: a tab with the channel's name, the breadcrumb */
+#start .sb-bar { position: absolute; left: 0; right: 0; top: 0; height: 58px; display: flex; align-items: flex-end; gap: 22px; padding: 0 28px; background: #161616; }
+#start .sb-tab { height: 40px; display: flex; align-items: center; gap: 10px; padding: 0 22px 0 12px; border-radius: 9px 9px 0 0; background: #f6e033; font: 700 15px/1 var(--cn); }
+#start .sb-fav { width: 22px; height: 22px; flex: none; }
+#start .sb-crumb { width: 264px; height: 15px; margin-bottom: 13px; background: left center / contain no-repeat; }
+#start .sb-dots { margin-left: auto; margin-bottom: 15px; display: flex; gap: 8px; }
+#start .sb-dots i { width: 11px; height: 11px; border-radius: 50%; background: #3a3d3e; }
+/* the one bold element: a black bracket window cut into the field, the 礼物对决 key art inside */
+#start .sb-window { position: absolute; right: 0; top: 58px; bottom: 0; width: 568px; z-index: 2; pointer-events: none; background: #161616;
+  clip-path: polygon(104px 0, 100% 0, 100% 100%, 0 100%, 0 136px); }
+#start .sb-art { position: absolute; inset: 20px 0 20px 20px; background: #2b2e30 58% 46% / cover no-repeat; filter: saturate(1.12) contrast(1.04);
+  clip-path: polygon(92px 0, 100% 0, 100% 100%, 0 100%, 0 120px); }
+#start .sb-art::after { content: ""; position: absolute; inset: 0; mix-blend-mode: multiply;
+  background: radial-gradient(circle, rgba(22, 22, 22, .28) 1px, transparent 1.6px) 0 0 / 5px 5px, linear-gradient(180deg, rgba(22, 22, 22, 0) 70%, rgba(22, 22, 22, .5)); }
+#start .sb-caption { position: absolute; right: 28px; bottom: 34px; z-index: 3; pointer-events: none; text-align: right; color: #fff;
+  font: 700 13px/1.35 var(--nove); letter-spacing: .12em; text-shadow: 0 1px 6px rgba(0, 0, 0, .6); }
+#start .sb-caption b { display: block; font-size: 28px; letter-spacing: .04em; color: #f6e033; }
+/* the slate */
+#start .sb-main { position: absolute; left: 64px; top: 88px; width: 720px; z-index: 1; }
+#start .sb-live { display: flex; align-items: center; gap: 14px; margin: 0; font: 700 18px/1 var(--cn); }
+#start .sb-live i { width: 73px; height: 29px; background: center / contain no-repeat; }
+#start .sb-live time { font: 500 19px/1 var(--bender); font-variant-numeric: tabular-nums; letter-spacing: .06em; padding: 4px 9px; border-radius: 4px; background: #161616; color: #f6e033; }
+#start .sb-mark { margin: 22px 0 0; font: 700 112px/.84 var(--nove); letter-spacing: -.01em; text-transform: uppercase;
+  background: repeating-linear-gradient(115deg, #161616 0 11px, #2a2a2a 11px 22px); -webkit-background-clip: text; background-clip: text; color: transparent;
+  -webkit-text-stroke: 5px #161616; }
+#start .sb-mark span { display: block; }
+#start .sb-title { margin: 20px 0 0; font: 900 32px/1.2 var(--cn); letter-spacing: .02em; }
+#start .sb-tag { margin: 8px 0 0; max-width: 34em; font: 500 18px/1.5 var(--cn); color: #3b3a2a; }
+/* the viewer's name (online only) */
+#start #nickrow { display: flex; align-items: center; gap: 14px; margin-top: 22px; cursor: default; font: 700 17px/1 var(--cn); }
+#start #nickrow[hidden] { display: none; }
+#start #nickrow small { font: 500 14px/1.3 var(--cn); color: #4a4834; }
+#start #nick { width: 280px; padding: 9px 14px; border: 2px solid #161616; border-radius: 6px; background: #fff; color: #161616; font: 500 20px/1.2 var(--cn); }
+#start #nick::placeholder { color: #9a9a8c; }
+#start #nick:focus-visible { outline: 3px solid #161616; outline-offset: 3px; }
+/* enter: the bet button's chevron, in ink */
+#start .sb-go { display: flex; align-items: center; gap: 22px; margin-top: 22px; }
+#start .sb-btn { border-radius: 4px; }
+#start .sb-btn:focus-within { outline: 3px solid #161616; outline-offset: 5px; }
+#start #go { display: block; width: 252px; height: 66px; border: 0; padding: 0 18px 0 6px; cursor: pointer; background: #161616; color: #f6e033;
+  clip-path: polygon(0 0, 86% 0, 100% 50%, 86% 100%, 0 100%, 7% 50%); font: 900 26px/1 var(--cn); letter-spacing: .14em;
+  transition: transform .12s ease, background-color .12s ease; }
+#start #go:hover { background: #2c2c2c; transform: translateX(3px); }
+#start #go:active { transform: translateX(3px) scale(.98); }
+#start #go:focus-visible { outline: none; }
+#start #go[aria-busy="true"] { cursor: progress; background: #3a3a3a; color: #e9dc6a; }
+#start #startStatus { font: 500 15px/1.5 var(--cn); color: #3b3a2a; white-space: pre-line; }
+/* the footer: the browser's loading placeholders, the mode, what this is */
+#start .sb-foot { position: absolute; left: 64px; bottom: 28px; width: 640px; z-index: 1; display: grid; gap: 10px; font: 500 14px/1.4 var(--cn); color: #3b3a2a; }
+#start .sb-skel { display: flex; align-items: center; gap: 8px; }
+#start .sb-foot a { color: #161616; font-weight: 700; margin-left: .4em; text-underline-offset: 3px; }
+#start .sb-foot a:focus-visible { outline: 2px solid #161616; outline-offset: 2px; }
+#start .sb-skel i { width: 20px; height: 20px; border-radius: 50%; background: rgba(22, 22, 22, .14); }
+#start .sb-skel b { width: 74px; height: 14px; border-radius: 7px; background: rgba(22, 22, 22, .14); }
+#start #startMode { font-weight: 700; color: #161616; }
+/* the entrance: the event's screen-change band sweeps across once */
+#start .sb-wipe { position: absolute; inset: 0; z-index: 5; pointer-events: none; transform: translateX(-120%);
+  background: linear-gradient(110deg, transparent 0 8%, #161616 8% 13%, #f6e033 13% 87%, #161616 87% 92%, transparent 92%);
+  animation: sb-wipe .75s cubic-bezier(.6, 0, .2, 1) .1s both; }
+#start .sb-main, #start .sb-foot, #start .sb-window, #start .sb-caption { animation: sb-in .18s linear .42s both; }
+@keyframes sb-wipe { from { transform: translateX(-120%); } to { transform: translateX(120%); } }
+@keyframes sb-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  #start .sb-wipe { display: none; }
+  #start .sb-main, #start .sb-foot, #start .sb-window, #start .sb-caption { animation: none; }
+  #start #go { transition: none; }
+}
+.codein { font: 500 22px/1.2 var(--cn); padding: 8px 12px; border: 2px solid #161616; border-radius: 4px; background: #fffbe6; color: #161616; width: 260px; }
+.codein { position: absolute; left: 14px; right: 14px; top: 9px; bottom: 9px; width: auto; border: 0; background: transparent; font-size: 28px; letter-spacing: .3em; pointer-events: auto; outline: none; }
+/* the control strip: a bar under the letterboxed stage, never over the game's own UI */
+/* the settings gear in the window's corner and the panel it opens: the demo's controls and the viewer's avatar.
+   Ink and duel yellow, the event's chamfered corner, the panel unfolds out of the gear */
+#gear { position: fixed; right: 14px; bottom: 14px; z-index: 2001; width: 46px; height: 46px; padding: 0; border: 0; border-radius: 50%; cursor: pointer;
+  color: #f6e033; background: #161616; box-shadow: 0 0 0 2px rgba(246, 224, 51, .38), 0 8px 22px rgba(0, 0, 0, .5);
+  transition: background-color .2s ease, color .2s ease, box-shadow .2s ease; }
+#gear svg { display: block; width: 26px; height: 26px; margin: auto; transition: transform .5s cubic-bezier(.3, .7, .2, 1); }
+#gear .hole { fill: #161616; transition: fill .2s ease; }
+#gear:hover svg { transform: rotate(40deg); }
+#gear[aria-expanded="true"] { color: #161616; background: #f6e033; box-shadow: 0 0 0 2px #161616, 0 8px 22px rgba(0, 0, 0, .5); }
+#gear[aria-expanded="true"] .hole { fill: #f6e033; }
+#gear[aria-expanded="true"] svg { transform: rotate(180deg); }
+#gear:focus-visible { outline: 3px solid #f6e033; outline-offset: 3px; }
+#settings { position: fixed; right: 14px; bottom: 72px; z-index: 2000; width: 344px; max-width: calc(100vw - 28px); max-height: calc(100vh - 92px); overflow: auto;
+  display: grid; gap: 16px; padding: 18px 18px 18px; color: #efeee6; background: #1b1c1c; font: 500 13px/1.5 var(--cn);
+  clip-path: polygon(22px 0, 100% 0, 100% 100%, 0 100%, 0 22px); box-shadow: inset 0 3px 0 #f6e033;
+  transform-origin: calc(100% - 23px) calc(100% + 35px);
+  visibility: hidden; opacity: 0; transform: translateY(14px) scale(.92);
+  transition: opacity .15s ease, transform .2s cubic-bezier(.3, .7, .2, 1), visibility 0s linear .2s; }
+#settings.open { visibility: visible; opacity: 1; transform: none;
+  transition: opacity .16s ease, transform .34s cubic-bezier(.2, .9, .25, 1.12), visibility 0s; }
+#settings .st-sec { display: grid; gap: 8px; opacity: 0; transform: translateY(6px); transition: opacity .12s ease, transform .12s ease; }
+#settings.open .st-sec { opacity: 1; transform: none; transition: opacity .24s ease, transform .3s cubic-bezier(.2, .8, .2, 1); transition-delay: calc(70ms + var(--i) * 45ms); }
+#settings .st-head { display: grid; gap: 2px; padding-left: 10px; }
+#settings .st-head b { font: 900 20px/1.2 var(--cn); letter-spacing: .04em; }
+#phase { min-width: 0; color: #9fa39f; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#settings .st-label { color: #9fa39f; font-size: 12px; }
+#settings .st-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+#settings .st-note { color: #9fa39f; font-size: 12px; }
+#settings .st-btn, #settings .st-seg button { font: 500 13px/1 var(--cn); color: #efeee6; background: #282a2a; border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 4px; padding: 8px 12px; cursor: pointer; white-space: nowrap; transition: background-color .12s ease; }
+#settings .st-btn:hover, #settings .st-seg button:hover { background: #333636; }
+#settings .st-btn[aria-pressed="true"], #settings .st-seg button[aria-pressed="true"] { color: #161616; background: #f6e033; border-color: #f6e033; }
+#settings .st-btn[aria-pressed="true"]:hover, #settings .st-seg button[aria-pressed="true"]:hover { background: #ffe94a; }
+#settings button:focus-visible { outline: 2px solid #f6e033; outline-offset: 2px; }
+#settings .st-seg { display: inline-flex; justify-self: start; gap: 3px; padding: 3px; border-radius: 6px; background: #121313; }
+#settings .st-seg button { min-width: 52px; font-family: var(--nove); border-color: transparent; background: transparent; }
+#settings .st-me { display: flex; align-items: center; gap: 12px; }
+#settings .st-me div { display: grid; gap: 2px; min-width: 0; }
+#settings .st-me b { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#settings .st-me small { color: #9fa39f; font-size: 12px; line-height: 1.4; }
+#avNow { flex: none; width: 60px; height: 60px; border-radius: 50%; background: #2a2c2c center / cover no-repeat; box-shadow: 0 0 0 3px #f6e033, 0 0 0 5px #161616; }
+#avGrid { display: grid; grid-template-columns: repeat(7, 38px); gap: 6px; }
+#avGrid button { width: 38px; height: 38px; padding: 0; border: 0; border-radius: 50%; cursor: pointer; background: #2a2c2c center / cover no-repeat;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, .08); transition: box-shadow .12s ease, transform .12s ease; }
+#avGrid button:hover { transform: scale(1.08); }
+#avGrid button[aria-checked="true"] { box-shadow: 0 0 0 2px #1b1c1c, 0 0 0 4px #f6e033; }
+#avGrid button:focus-visible { outline: 2px solid #f6e033; outline-offset: 3px; }
+#logbox { position: fixed; right: 372px; bottom: 72px; z-index: 2000; width: min(520px, calc(100vw - 392px)); max-height: 60vh; overflow: auto; padding: 12px 14px;
+  border-radius: 4px; background: #1b1c1c; box-shadow: inset 0 3px 0 #f6e033, 0 12px 32px rgba(0, 0, 0, .5); font-size: 12px; color: #efeee6; }
+#logbox b { display: block; margin: 6px 0 2px; color: var(--accent); }
+#logbox .l { color: #ff8c84; } #logbox .r { color: #7db7ff; }
+#err { position: fixed; left: 10px; top: 10px; z-index: 3000; color: #ff8a7a; white-space: pre-wrap; font-size: 12px; max-width: 80vw; }
+@media (prefers-reduced-motion: reduce) { #toast, #gear, #gear svg, #settings, #settings .st-sec { transition: none; animation: none; } }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="arena" width="1280" height="720"></canvas>
+  <div id="ui"></div>
+  <canvas id="uispine" width="1280" height="720"></canvas>
+  <canvas id="wipe" width="1280" height="720"></canvas>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <div id="start" hidden>
+    <div class="sb-bar" aria-hidden="true">
+      <span class="sb-tab"><svg class="sb-fav" viewBox="0 0 22 22"><circle cx="11" cy="11" r="11" fill="#161616"/><path d="M4.6 6.6 9 11l-4.4 4.4M17.4 6.6 13 11l4.4 4.4" fill="none" stroke="#f6e033" stroke-width="2.2"/><path d="M11 4.6v12.8" stroke="#f6e033" stroke-width="2"/></svg>青草城对战中心</span>
+      <i class="sb-crumb"></i>
+      <span class="sb-dots"><i></i><i></i><i></i></span>
+    </div>
+    <div class="sb-window" aria-hidden="true"><div class="sb-art"></div></div>
+    <p class="sb-caption" aria-hidden="true"><b>ULTIMATE GIFT CRASH</b>今日直播：礼物对决</p>
+    <div class="sb-main">
+      <p class="sb-live"><i class="sb-livebadge" role="img" aria-label="直播"></i><span>频道待机中</span><time id="sbClock">00:00:00</time></p>
+      <h1 class="sb-mark"><span>Duel</span><span>Channel</span></h1>
+      <p class="sb-title">争锋频道：青草城</p>
+      <p class="sb-tag">礼物对决：每轮押注你看好的一方，赢得更多礼物，争取更优排名。</p>
+      <label id="nickrow" hidden><span>观众昵称</span><input id="nick" maxlength="16" placeholder="博士" autocomplete="nickname"><small>同桌的观众会看到这个名字</small></label>
+      <div class="sb-go"><span class="sb-btn"><button id="go" type="button">进入频道</button></span><span id="startStatus" role="status">点击画面任意处也能进入
+进入后开始播放声音</span></div>
+    </div>
+    <div class="sb-foot">
+      <span class="sb-skel" aria-hidden="true"><i></i><i></i><i></i><b></b><b></b><b></b><b></b></span>
+      <span id="startMode">单机模式</span>
+      <span>非官方同人复刻，与鹰角网络无关；界面与素材来自本机的游戏客户端。<a id="srcLink" href="https://github.com/Cloudnyco/duel-channel" target="_blank" rel="noopener">源代码（AGPL-3.0）</a></span>
+    </div>
+    <div class="sb-wipe" aria-hidden="true"></div>
+  </div>
+</div>
+<button id="gear" type="button" aria-label="设置" aria-expanded="false" aria-controls="settings" title="设置">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><g fill="currentColor"><rect x="10.4" y="1.2" width="3.2" height="5" rx=".8"/><rect x="10.4" y="1.2" width="3.2" height="5" rx=".8" transform="rotate(45 12 12)"/><rect x="10.4" y="1.2" width="3.2" height="5" rx=".8" transform="rotate(90 12 12)"/><rect x="10.4" y="1.2" width="3.2" height="5" rx=".8" transform="rotate(135 12 12)"/><rect x="10.4" y="1.2" width="3.2" height="5" rx=".8" transform="rotate(180 12 12)"/><rect x="10.4" y="1.2" width="3.2" height="5" rx=".8" transform="rotate(225 12 12)"/><rect x="10.4" y="1.2" width="3.2" height="5" rx=".8" transform="rotate(270 12 12)"/><rect x="10.4" y="1.2" width="3.2" height="5" rx=".8" transform="rotate(315 12 12)"/><circle cx="12" cy="12" r="7.2"/></g><circle cx="12" cy="12" r="3" class="hole"/></svg>
+</button>
+<section id="settings" aria-label="设置">
+  <header class="st-head"><b>设置</b><span id="phase" role="status"></span></header>
+  <div class="st-sec" style="--i:0">
+    <div class="st-me"><i id="avNow" role="img" aria-label="当前头像"></i><div><b id="avName"></b><small>同桌观众会在名单和结算里看到这个头像</small></div></div>
+    <div id="avGrid" role="radiogroup" aria-label="选择头像"></div>
+    <div class="st-row"><button id="avUpload" type="button" class="st-btn" aria-pressed="false">使用自己的图片…</button><input type="file" id="avFile" accept="image/png,image/jpeg,image/webp" hidden></div>
+  </div>
+  <div class="st-sec" style="--i:1"><span class="st-label">整体速度</span><div class="st-seg" id="speed" role="group" aria-label="整体速度"></div></div>
+  <div class="st-sec" style="--i:2"><span class="st-label">声音</span>
+    <div class="st-row"><button id="mus" type="button" class="st-btn" aria-pressed="true">音乐</button><button id="snd" type="button" class="st-btn" aria-pressed="true">音效</button><button id="pick" type="button" class="st-btn">换曲…</button></div>
+    <small id="trackName" class="st-note"></small><input type="file" id="file" accept="audio/*" hidden>
+  </div>
+  <div class="st-sec" style="--i:3"><span class="st-label">比赛</span>
+    <div class="st-row"><button id="ff" type="button" class="st-btn">快进本场战斗</button><button id="log" type="button" class="st-btn">回合记录</button></div>
+  </div>
+</section>
+<div id="logbox" hidden></div>
+<div id="err"></div>
+<script>/*PIXI*/</script>
+<script>/*PIXISPINE*/</script>
+<script>/*DATA*/</script>
+<script>/*FIGHTERS*/</script>
+<script>/*DUELCFG*/</script>
+<script>/*AUDIO*/</script>
+<script>/*FXTEX*/</script>
+<script>
+(() => {
+/*ENGINE*/
+/*PARTICLES*/
+/*SIM*/
+/*ARENA*/
+/*NET*/
+/*FLOW*/
+})();
+</script>
+</body>
+</html>

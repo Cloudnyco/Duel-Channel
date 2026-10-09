@@ -1,0 +1,31 @@
+{
+  "name": "duel-channel",
+  "version": "0.1.0",
+  "private": true,
+  "description": "争锋频道：非官方同人复刻 — 浏览器里的礼物对决（单机 / 本机联机）",
+  "license": "AGPL-3.0-or-later",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node server/launch.mjs --instances 3",
+    "bots": "node server/bots.mjs --n 7",
+    "build": "node tools/build-page.mjs",
+    "assets:check": "node tools/build-page.mjs --check",
+    "data": "node tools/build-data.mjs",
+    "test": "node --test \"test/**/*.test.mjs\"",
+    "lint": "eslint .",
+    "check": "node tools/check.mjs"
+  },
+  "dependencies": {
+    "ws": "^8.22.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.12.0",
+    "globals": "^17.13.0",
+    "pixi-spine": "^4.0.6",
+    "pixi.js": "^7.4.2"
+  }
+}
