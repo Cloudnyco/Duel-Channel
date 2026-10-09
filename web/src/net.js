@@ -4,22 +4,66 @@
 // before the bets — the page replays the same fight from the line-ups and the seed (sim.js is shared). Opened as a
 // file, the page stays the offline demo. 自娱自乐 is always local.
 const NET = { on: /^https?:$/.test(location.protocol), lobby: null, match: null, me: null };
+// A server connection with a message queue the flow reads in order (next / drain / take). With `retry` (seconds) a
+// connection that drops unexpectedly is reopened in the background with growing pauses until that time runs out:
+// waiting reads simply wait on, what the flow sends meanwhile that matters (bets, ready, watched, leave) goes out once
+// it is back, and `reopen` (the url to reconnect to, and what to send first) lets the match ask for what it missed
+// (since=<last seq>) and the lobby take its session back. The server's own closes (match over, seat taken, refused)
+// are final. onstate('reconnecting' | 'online' | 'lost') drives the waiting overlay.
+const KEEP = ['bet', 'watched', 'ready', 'leave'];
 class Link {
-  constructor(url) {
-    this.q = []; this.waiters = []; this.closed = false;
-    this.ws = new WebSocket(url);
-    this.ready = new Promise((res, rej) => { this.ws.onopen = res; this.ws.onerror = () => rej(new Error('无法连接 ' + url)); });
-    this.ws.onmessage = (e) => {
-      let m; try { m = JSON.parse(e.data); } catch (err) { return; }
-      m._at = performance.now();
-      if (m.t === 'pong') { if (Number.isFinite(m.c)) PING.got(m._at - m.c); return; }
-      if (m.t === 'emoji') { EMO.receive(m); return; }
-      const i = this.waiters.findIndex((w) => w.types.includes(m.t));
-      if (i >= 0) this.waiters.splice(i, 1)[0].res(m); else this.q.push(m);
-    };
-    this.ws.onclose = () => { this.closed = true; for (const w of this.waiters.splice(0)) w.res({ t: 'closed' }); };
+  constructor(url, { retry = 0, reopen = null, onstate = () => {}, intercept = () => false } = {}) {
+    this.url = url; this.q = []; this.waiters = []; this.closed = false; this.seq = 0; this.outbox = [];
+    this.retry = retry; this.reopen = reopen; this.onstate = onstate; this.intercept = intercept;
+    this.reconnecting = false; this.closing = false;
+    this.ready = this.open(url);
   }
-  send(o) { if (this.ws.readyState === 1) this.ws.send(JSON.stringify(o)); }
+  open(url) {
+    const ws = new WebSocket(url);
+    this.ws = ws;
+    ws.onmessage = (e) => this.receive(e);
+    ws.onclose = (e) => this.dropped(ws, e);
+    return new Promise((res, rej) => { ws.onopen = () => { this.opened = true; res(); }; ws.onerror = () => rej(new Error('无法连接 ' + url)); });
+  }
+  receive(e) {
+    let m; try { m = JSON.parse(e.data); } catch (err) { return; }
+    // numbered broadcasts: a reopened match connection replays what it missed (nothing twice); a replayed message is
+    // `age` ms old, so the flow's clocks (bet countdowns, the battle's start) count from when it was really sent
+    if (m.seq) { if (m.seq <= this.seq) return; this.seq = m.seq; }
+    m._at = performance.now() - (m.age || 0);
+    if (m.t === 'pong') { if (Number.isFinite(m.c)) PING.got(m._at - m.c); return; }
+    if (m.t === 'emoji') { EMO.receive(m); return; }
+    if (this.intercept(m)) return;
+    const i = this.waiters.findIndex((w) => w.types.includes(m.t));
+    if (i >= 0) this.waiters.splice(i, 1)[0].res(m); else this.q.push(m);
+  }
+  dropped(ws, e) {
+    if (ws !== this.ws) return;
+    // reopened only once it has been open (a first connection that fails is the caller's error)
+    if (this.closing || !this.retry || !this.opened || [1000, 4001, 4002].includes(e.code)) { this.end(); return; }
+    if (this.reconnecting) return;
+    this.reconnecting = true; this.onstate('reconnecting');
+    const until = performance.now() + this.retry * 1000;
+    let pause = 400;
+    const attempt = async () => {
+      if (this.closing) return;
+      const r = this.reopen ? this.reopen(this) : { url: this.url };
+      try {
+        await this.open(r.url);
+        for (const o of [].concat(r.first || [], this.outbox.splice(0))) this.ws.send(JSON.stringify(o));
+        this.reconnecting = false; this.onstate('online');
+      } catch (err) {
+        if (performance.now() + pause > until) { this.reconnecting = false; this.end(); this.onstate('lost'); return; }
+        setTimeout(attempt, pause); pause = Math.min(3000, pause * 2);
+      }
+    };
+    setTimeout(attempt, pause);
+  }
+  end() { this.closed = true; this.outbox.length = 0; for (const w of this.waiters.splice(0)) w.res({ t: 'closed' }); }
+  send(o) {
+    if (this.ws.readyState === 1) this.ws.send(JSON.stringify(o));
+    else if (this.reconnecting && KEEP.includes(o.t)) this.outbox.push(o);
+  }
   // the next message of one of the types (queued first); { t: 'timeout' } after `ms`, { t: 'closed' } when the link drops
   next(types, ms) {
     types = [].concat(types, 'closed');
@@ -35,8 +79,35 @@ class Link {
   // queued messages of a type, without waiting; take: the first one (or null)
   drain(type) { const out = this.q.filter((m) => m.t === type); this.q = this.q.filter((m) => m.t !== type); return out; }
   take(type) { const i = this.q.findIndex((m) => m.t === type); return i >= 0 ? this.q.splice(i, 1)[0] : null; }
-  close() { try { this.ws.close(); } catch (e) { /* gone */ } }
+  close() { this.closing = true; this.reconnecting = false; try { this.ws.close(); } catch (e) { /* gone */ } this.end(); }
 }
+
+// the waiting overlay while a connection is being reopened: the battle page's own pnl_connect (等待自己重新联网...)
+const RECONNECT = {
+  scr: null, n: 0,
+  state(s) {
+    if (s === 'reconnecting') {
+      if (this.n++ === 0) {
+        phase('连接中断，正在重新连接……');
+        if (!D.screens.__connect) {
+          const find = (n) => (n.name === 'pnl_connect' ? n : (n.children || []).reduce((a, c) => a || find(c), null));
+          D.screens.__connect = find(D.screens.enemy_duel_battle_page);
+        }
+        if (D.screens.__connect) {
+          this.scr = new Screen('__connect', { z: 70 });
+          // the prefab's soft dark spot, over a light dim of the whole stage; clicks still go through (a bet placed now
+          // is sent once the connection is back)
+          Object.assign(this.scr.wrap.style, { background: 'rgba(12, 12, 12, .42)', pointerEvents: 'none' });
+          playLoops(this.scr);
+        }
+      }
+      return;
+    }
+    if (this.n > 0 && --this.n === 0 && this.scr) { this.scr.close(); this.scr = null; }
+    if (s === 'online') toast('已重新连接');
+    else if (s === 'lost') toast('无法重新连接到服务器', 3);
+  },
+};
 
 // the latency probe: one ping a second to the server in use (the match's instance, else the lobby); the shown value is
 // the last round trip, eased a little so it does not flicker
@@ -72,14 +143,33 @@ function watchPing(scr, suffix, under, wrap = (t) => t, offline = '单机') {
   tick();
 }
 
-// the lobby connection (after the start click: the viewer's name)
+// the lobby connection (after the start click: the viewer's name). Dropped, it is reopened for up to
+// consts.maxRetryTimeInTeamRoom seconds and takes its session back (room seat, queue place, a match started meanwhile);
+// if the gateway no longer knows the session (restarted, or too late) the page logs in afresh and the current room or
+// queue screen ends as if the lobby had closed
 async function connectLobby(name) {
-  NET.lobby = new Link(`ws://${location.host}/lobby`);
+  let live = false;
+  const hello = () => ({ t: 'hello', name, avatar: myAvatar.value() || undefined });
+  NET.lobby = new Link(`ws://${location.host}/lobby`, {
+    retry: C.maxRetryTimeInTeamRoom || 45, onstate: (st) => RECONNECT.state(st),
+    reopen: (link) => ({ url: link.url, first: { t: 'resume', key: NET.me.key } }),
+    intercept: (m) => {
+      if (!live) return false;
+      if (m.t === 'welcome') { NET.me = m; return true; }
+      if (m.t === 'resume.fail') {
+        NET.lobby.send(hello());
+        toast('大厅会话已失效，已重新登录', 3);
+        for (const w of NET.lobby.waiters.splice(0)) w.res({ t: 'closed' });
+        return true;
+      }
+      return false;
+    },
+  });
   await NET.lobby.ready;
-  NET.lobby.send({ t: 'hello', name, avatar: myAvatar.value() || undefined });
+  NET.lobby.send(hello());
   const w = await NET.lobby.next('welcome', 8000);
   if (w.t !== 'welcome') throw new Error('大厅没有响应');
-  NET.me = w;
+  NET.me = w; live = true;
   ME_NAME = w.name; ME_TAG = w.tag;
   PING.start();
   return w;
@@ -97,9 +187,19 @@ function applyServerPlayers(list) {
   }
 }
 // a seat in a match: connect to its instance, take the seating
+// a seat in a match: connect to its instance, take the seating. Dropped, the connection is reopened for up to
+// consts.maxRetryTimeInBattle seconds and the instance replays what was missed (since=<last seq>), so the rounds go on
+// where they were. The seat is also kept in sessionStorage: a reloaded page comes back to the match (rejoinMatch).
+const SEAT_KEY = 'duel.seat';
 async function joinMatch(m) {
   if (NET.match) NET.match.close();
-  NET.match = new Link(`ws://${location.hostname}:${m.port}/match?m=${encodeURIComponent(m.matchId)}&k=${encodeURIComponent(m.token)}`);
+  const url = `ws://${location.hostname}:${m.port}/match?m=${encodeURIComponent(m.matchId)}&k=${encodeURIComponent(m.token)}`;
+  NET.match = new Link(url, {
+    retry: C.maxRetryTimeInBattle || 30, onstate: (st) => RECONNECT.state(st),
+    reopen: (link) => ({ url: `${url}&since=${link.seq}` }),
+    // the instance greets a reopened connection again: the flow already has the seating
+    intercept: (msg) => msg.t === 'hello' && msg.resumed,
+  });
   await NET.match.ready;
   const h = await NET.match.next('hello', 8000);
   if (h.t !== 'hello') throw new Error('对战实例没有响应');
@@ -108,6 +208,25 @@ async function joinMatch(m) {
   G.online = true;
   G.mode = MODES.find((x) => x.id === h.mode) || G.mode;
   G.matchId = m.matchId;
+  try { sessionStorage.setItem(SEAT_KEY, JSON.stringify({ port: m.port, matchId: m.matchId, token: m.token })); } catch (e) { /* no storage */ }
+  return h;
+}
+const forgetSeat = () => { try { sessionStorage.removeItem(SEAT_KEY); } catch (e) { /* no storage */ } };
+// after a reload: the seat this tab had, if its match still runs. Returns the state to go to ('show' while the match
+// is still starting, 'game' for its rounds or its final standings), or null
+async function rejoinMatch() {
+  let seat = null;
+  try { seat = JSON.parse(sessionStorage.getItem(SEAT_KEY) || 'null'); } catch (e) { /* no storage */ }
+  if (!seat) return null;
+  try {
+    const h = await joinMatch(seat);
+    toast('已回到比赛');
+    return ['wait', 'show', 'loading'].includes(h.phase) ? 'show' : 'game';
+  } catch (e) {
+    forgetSeat();
+    if (NET.match) { NET.match.close(); NET.match = null; }
+    return null;
+  }
 }
 
 // ---- matching: the server's queue (a full table starts at once, else NPCs fill after a wait) ---------------------------
@@ -175,7 +294,7 @@ async function stRoomOnline(ctx) {
       const c = instantiate(scr, content, 'room_player_card');
       scr.show('root_empty', false, c); scr.show('root_wait', false, c); scr.show('root_main', true, c);
       scr.show('text_toggle/text_wait', false, c); scr.show('text_toggle/text_name', true, c);
-      scr.text('text_toggle/text_name', p.id === NET.me.id ? `${p.name}（我）` : p.name, c);
+      scr.text('text_toggle/text_name', (p.id === NET.me.id ? `${p.name}（我）` : p.name) + (p.away ? '（断线中）' : ''), c);
       scr.image('avatar_container/avatar_img', avatarUri(p.avatar), c);
       scr.show('state_host', p.id === r.host, c); scr.show('state_bg_player', p.id === NET.me.id, c);
       scr.one('group_options', c).active = false;
@@ -239,27 +358,27 @@ async function searchDialog() {
 // ---- the rounds, as the instance runs them -----------------------------------------------------------------------------
 async function stGameOnline() {
   let left = false;
-  G.log = [];
+  G.log = []; G.matchOver = false;
   EMO.begin();
   for (;;) {
     const m = await NET.match.next(['round', 'finish']);
-    if (m.t !== 'round') { if (m.t === 'finish') applyServerPlayers(m.players); else toast('与对战实例的连接已断开', 3); break; }
+    if (m.t !== 'round') { if (m.t === 'finish') { applyServerPlayers(m.players); G.matchOver = true; forgetSeat(); } else toast('与对战实例的连接已断开', 3); break; }
     const rd = DCFG.rounds[m.roundId], r = m.r;
     G.round = r;
     const lineups = m.lineups.map((s) => s.map(([k, n]) => ({ f: byKey(k), n })));
     G.log.push({ r, lineups: lineups.map((x) => x.map((g) => `${g.f.name}×${g.n}`).join(' + ')), cost: lineups.map(sideScore), len: 0 });
     setupRound(lineups, m.seed);
-    G.serverResult = null;
+    G.serverResult = null; G.battleAt = 0;
     await betPhase(r, rd, lineups, null, { betMs: m.betMs, at: m._at });
     const w = await battlePhase(r, true);
     const res = G.serverResult;
-    if (!res || res.t !== 'result') { if (res && res.t === 'finish') applyServerPlayers(res.players); break; }
+    if (!res || res.t !== 'result') { if (res && res.t === 'finish') { applyServerPlayers(res.players); G.matchOver = true; forgetSeat(); } break; }
     if (w !== res.w) console.warn('the replay differs from the server', r, w, res.w);
     applyServerPlayers(res.players);
     Object.assign(G.log[G.log.length - 1], { w: res.w, len: arena.W ? arena.W.t : 0 });
     await roundEnd(r, res.w);
     left = await scoreboard(r);
-    if (left) { NET.match.send({ t: 'leave' }); break; }
+    if (left) { NET.match.send({ t: 'leave' }); forgetSeat(); break; }
   }
   EMO.end();
   G.left = left;

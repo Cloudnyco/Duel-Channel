@@ -74,3 +74,44 @@ test('the served page: encodings, validators, the immutable pack, only the build
   const gw3 = await gateway(dir);
   try { assert.equal((await get(gw3.port, '/')).status, 503); } finally { gw3.stop(); rmSync(dir, { recursive: true, force: true }); }
 });
+
+test('the lobby: a dropped viewer keeps their room seat and takes the session back with its key', { timeout: 30000 }, async () => {
+  const { default: WebSocket } = await import('ws');
+  const dir = mkdtempSync(join(tmpdir(), 'duel-pub-'));
+  const gw = await gateway(dir);
+  const open = () => new Promise((res, rej) => {
+    const ws = new WebSocket(`ws://127.0.0.1:${gw.port}/lobby`), q = [], waits = [];
+    ws.on('message', (d) => { const m = JSON.parse(d); const i = waits.findIndex((w) => w.t === m.t); if (i >= 0) waits.splice(i, 1)[0].res(m); else q.push(m); });
+    const next = (t) => { const i = q.findIndex((m) => m.t === t); if (i >= 0) return Promise.resolve(q.splice(i, 1)[0]); return new Promise((r) => waits.push({ t, res: r })); };
+    ws.on('open', () => res({ ws, next, say: (o) => ws.send(JSON.stringify(o)) })); ws.on('error', rej);
+  });
+  try {
+    const a = await open();
+    a.say({ t: 'hello', name: '房主' });
+    const wa = await a.next('welcome');
+    assert.match(wa.key, /^[0-9a-f]{24}$/);
+    a.say({ t: 'room.create', mode: 'multiOperationRoom' });
+    const room = await a.next('room');
+    const b = await open();
+    b.say({ t: 'hello', name: '房客' }); await b.next('welcome');
+    b.say({ t: 'room.join', code: room.code });
+    await b.next('room');
+    // the host's connection drops: the guest sees them away, still in the room
+    a.ws.terminate();
+    const seen = await b.next('room');
+    assert.equal(seen.members.find((m) => m.id === wa.id).away, true);
+    // back on a new connection with the key: the same session, the same room
+    const a2 = await open();
+    a2.say({ t: 'resume', key: wa.key });
+    const back = await a2.next('welcome');
+    assert.equal(back.id, wa.id); assert.equal(back.resumed, true);
+    const room2 = await a2.next('room');
+    assert.equal(room2.code, room.code); assert.equal(room2.host, wa.id);
+    assert.equal(room2.members.find((m) => m.id === wa.id).away, false);
+    // a key the gateway does not know
+    const c = await open();
+    c.say({ t: 'resume', key: '0'.repeat(24) });
+    assert.equal((await c.next('resume.fail')).t, 'resume.fail');
+    for (const x of [a2, b, c]) x.ws.close();
+  } finally { gw.stop(); rmSync(dir, { recursive: true, force: true }); }
+});

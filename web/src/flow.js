@@ -691,7 +691,7 @@ async function betPhase(r, rd, lineups, winner, net = null) {
       for (const m of NET.match.drain('bets')) for (const [id, ch] of Object.entries(m.choices)) { const p = players.find((x) => x.id === id); if (p && !p.me) { p.choice = ch; upd = true; } }
       for (const m of NET.match.drain('error')) toast(m.msg);
       const fin = NET.match.take('battle');
-      if (fin) { for (const p of players) p.choice = fin.choices[p.id] || null; net.final = true; upd = true; }
+      if (fin) { for (const p of players) p.choice = fin.choices[p.id] || null; net.final = true; upd = true; G.battleAt = fin._at; }
       if (NET.match.closed || t > BET_TIME + 15) net.final = true;
       if (upd) refresh();
     } else t += 0.1;
@@ -735,6 +735,8 @@ async function battlePhase(r, online = false) {
   if (online) {
     // the instance waits for every viewer; if its result comes first (a slower viewer timed out), catch up
     const done = startBattle();
+    // a battle that began well before this replay (the connection came back, or the page was reloaded) catches up
+    if (G.battleAt && performance.now() - G.battleAt > 6000) arena.ff = 8;
     const res = NET.match.next(['result', 'finish']).then((m) => { G.serverResult = m; if (arena.running) arena.ff = 40; return m; });
     result = await done;
     NET.match.send({ t: 'watched' });
@@ -942,7 +944,8 @@ async function stFinish() {
   phase(`最终结算 · 第 ${myRank} 名 · ${fmt(me.pts)} 礼物点数（继续匹配 / 返回主页）`);
   const r = await whenTapped(scr, { 'btn_next/hotspot': 'match', 'btn_backhome/hotspot': 'entry' });
   await fadeOut(scr, 0.3);
-  if (G.online && NET.match) { NET.match.close(); NET.match = null; }
+  // the seat is forgotten once the match is over or left; a match lost to the network keeps it (a reload rejoins)
+  if (G.online && NET.match) { NET.match.close(); NET.match = null; if (G.matchOver || G.left) forgetSeat(); }
   if (r !== 'match') return 'entry';
   const wasOnline = G.online;
   G.online = false;
@@ -1130,8 +1133,10 @@ async function boot() {
       try { await connectLobby(name); newPlayers(); toast(`已连接 · ${NET.me.name}${NET.me.tag}`); }
       catch (e) { toast('连接服务器失败，以单机模式继续：' + e.message, 4); NET.on = false; }
     }
+    // a reloaded page whose tab was in a match: straight back into it
+    const back = NET.on ? await rejoinMatch() : null;
     $('start').hidden = true;
-    let st = 'entry';
+    let st = back || 'entry';
     for (;;) st = await STATES[st](FLOW.ctx);
   } catch (e) { $('err').textContent = String(e.stack || e); console.error(e); }
 }

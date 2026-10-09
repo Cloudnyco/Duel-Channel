@@ -34,6 +34,7 @@ const avatarKeys = () => SIM.POOL.map((f) => f.key);
 export class Match {
   constructor({ id, mode, humans, npcFill, log = () => {} }) {
     this.id = id; this.mode = mode; this.log = log; this.done = false; this.round = null; this.phase = 'wait'; this.later = new Set();
+    this.hist = []; this.seq = 0; this.roundFrom = 0;
     this.rounds = Object.values(SIM.DCFG.rounds).filter((r) => r.modeId === mode).sort((a, b) => a.round - b.round);
     const max = (SIM.DCFG.modes[mode] || {}).maxPlayer || 8;
     const used = new Set(humans.map((h) => h.avatar));
@@ -55,17 +56,31 @@ export class Match {
       outRound: p.outRound, streak: p.streak, stats: p.stats, played: p.played, change: p.change, right: p.right, lastForced: p.lastForced, left: p.left, connected: !!p.connected }));
   }
   send(p, msg) { if (p.ws && p.ws.readyState === 1) p.ws.send(JSON.stringify(msg)); }
-  bcast(msg) { const s = JSON.stringify(msg); for (const p of this.players) if (p.ws && p.ws.readyState === 1) p.ws.send(s); }
+  // every broadcast is numbered (seq) and, emojis aside, kept with its time: a seat that comes back gets what it missed
+  bcast(msg) {
+    const m = { ...msg, seq: ++this.seq };
+    if (msg.t !== 'emoji') { this.hist.push({ m, at: Date.now() }); if (msg.t === 'round') this.roundFrom = this.hist.length - 1; }
+    const s = JSON.stringify(m);
+    for (const p of this.players) if (p.ws && p.ws.readyState === 1) p.ws.send(s);
+  }
 
-  // a client's socket for its seat
-  attach(ws, tok) {
+  // a client's socket for its seat. `since` (the last seq it got) marks a dropped connection coming back: it is sent
+  // every broadcast after that. Without it (joining, or a reloaded page) it is sent the current round from its start
+  // (before the first round: everything). Each replayed message carries its age (ms), so the client's countdowns and
+  // battle replay line up with the instance's clock. A finished match still answers for a while (the final standings).
+  attach(ws, tok, since = null) {
     const p = this.players.find((x) => x.human && x.token === tok);
     if (!p || p.left) { ws.close(4001, 'bad token'); return; }
     if (p.ws && p.ws !== ws) try { p.ws.close(4002, 'replaced'); } catch (e) { /* gone */ }
     p.ws = ws; p.connected = true;
-    this.send(p, { t: 'hello', you: p.id, mode: this.mode, rounds: this.rounds.length, players: this.snapshot(), phase: this.phase });
+    const resume = Number.isInteger(since) && since >= 0;
+    if (resume) this.log(`${p.name} reconnected (after #${since})`);
+    this.send(p, { t: 'hello', you: p.id, mode: this.mode, rounds: this.rounds.length, players: this.snapshot(), phase: this.phase, resumed: resume });
+    const from = resume ? this.hist.findIndex((h) => h.m.seq > since) : this.roundFrom;
+    if (from >= 0) for (const h of this.hist.slice(from)) this.send(p, { ...h.m, age: Date.now() - h.at });
     ws.on('message', (data) => { let m; try { m = JSON.parse(data); } catch (e) { return; } this.onMessage(p, m); });
     ws.on('close', () => { if (p.ws === ws) { p.ws = null; p.connected = false; this.log(`${p.name} disconnected`); } });
+    if (this.done) setTimeout(() => { try { ws.close(1000, 'match over'); } catch (e) { /* gone */ } }, 3000);
   }
   onMessage(p, m) {
     if (m.t === 'ready') p.ready = true;

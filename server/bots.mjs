@@ -3,12 +3,16 @@
 // after a few seconds. Its finish line counts the emojis it saw (others', its own echoes of a quick double send — the
 // server lets one through per consts.chatCd — and any picture outside the theme, which the server must drop).
 // usage: node server/bots.mjs [--n 7] [--lobby ws://127.0.0.1:8600/lobby] [--room <code>] [--loop] [--prefix Bot]
+//                             [--drop-resume 1,3] [--drop-rejoin 2]   (tests: lose the match connection once, come back)
 // exits with code 0 once every bot has finished its match (unless --loop)
 import WebSocket from 'ws';
 
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
 const N = Number(arg('--n', 7)), LOBBY = arg('--lobby', 'ws://127.0.0.1:8600/lobby'), ROOM = arg('--room', null);
 const LOOP = process.argv.includes('--loop'), PREFIX = arg('--prefix', 'Bot');
+// tests: bots (1-based) that drop their match connection once and come back resuming / rejoining
+const DROP_RESUME = String(arg('--drop-resume', '')).split(',').filter(Boolean).map(Number);
+const DROP_REJOIN = String(arg('--drop-rejoin', '')).split(',').filter(Boolean).map(Number);
 const host = new URL(LOBBY).hostname;
 // BOT_PACE scales the bots' think / watch delays (tests run them at 0.1)
 const PACE = Number(process.env.BOT_PACE || 1);
@@ -28,45 +32,62 @@ function bot(i) {
     else if (m.t === 'error') console.log(`[${name}] lobby error: ${m.msg}`);
   });
   function play(mt) {
-    const ws = new WebSocket(`ws://${host}:${mt.port}/match?m=${mt.matchId}&k=${mt.token}`);
-    let me = null, pts = 10000, tried = [], burst = false;
-    const seen = { others: 0, burst: 0, bad: 0 };
-    ws.on('message', async (d) => {
-      const m = JSON.parse(d);
-      if (m.t === 'hello') me = m.you;
-      else if (m.t === 'emoji') {
-        if (!/^pic_[a-z]+$/.test(m.pic) || m.pic === 'pic_nonexistent') seen.bad++;
-        else if (m.id !== me) seen.others++;
-        else if (m.pic === 'pic_pray') seen.burst++;
-      }
-      else if (m.t === 'phase' && m.name === 'loading') { await sleep(rnd(500, 2500)); say(ws, { t: 'ready' }); }
-      else if (m.t === 'round') {
-        await sleep(rnd(1000, m.betMs - 2500));
-        // a 支持 (sometimes 观望 / 全力支持); the server refuses what the round does not allow, the bot then goes all in
-        const side = Math.random() < 0.5 ? 0 : 1, roll = Math.random();
-        const first = roll < 0.15 ? 'skip' : roll > 0.85 ? 'all' : 'normal';
-        tried = [first];
-        say(ws, first === 'skip' ? { t: 'bet', skip: true } : { t: 'bet', side, kind: first });
-      } else if (m.t === 'error') {
-        // refused: try the other choices once each this round
-        const next = ['normal', 'all', 'skip'].find((k) => !tried.includes(k));
-        if (next) { tried.push(next); say(ws, next === 'skip' ? { t: 'bet', skip: true } : { t: 'bet', side: Math.random() < 0.5 ? 0 : 1, kind: next }); }
-      }
-      else if (m.t === 'battle') {
-        // the first battle: two of the same at once (one gets through) and a picture the theme does not have
-        if (!burst) { burst = true; say(ws, { t: 'emoji', pic: 'pic_pray' }); say(ws, { t: 'emoji', pic: 'pic_pray' }); say(ws, { t: 'emoji', pic: 'pic_nonexistent' }); }
-        await sleep(rnd(1200, 2000));
-        say(ws, { t: 'emoji', pic: ['pic_hello', 'pic_happy', 'pic_shock', 'pic_think'][Math.floor(Math.random() * 4)] });
-        await sleep(rnd(800, 4000)); say(ws, { t: 'watched' });
-      }
-      else if (m.t === 'result') { const p = m.players.find((x) => x.id === me); if (p) pts = p.pts; }
-      else if (m.t === 'finish') {
-        const order = m.players.slice().sort((a, b) => b.pts - a.pts);
-        console.log(`[${name}] finished #${order.findIndex((x) => x.id === me) + 1} with ${pts} (emoji: others ${seen.others}, burst ${seen.burst}, bad ${seen.bad})`);
-        ws.close();
-        if (LOOP) { await sleep(rnd(1000, 3000)); say(lobby, { t: 'queue', mode: 'multiOperationMatch' }); } else { lobby.close(); if (++done === N) process.exit(0); }
-      }
-    });
+    let me = null, pts = 10000, tried = [], burst = false, lastSeq = 0, cur = null, drops = 0;
+    const seen = { others: 0, burst: 0, bad: 0 }, rounds = new Set(), results = new Set();
+    const base = `ws://${host}:${mt.port}/match?m=${mt.matchId}&k=${mt.token}`;
+    // a test bot may lose its connection once, on round 3's bet: 'resume' comes back with the last seq it got (as the
+    // page does after a drop), 'rejoin' comes back without (as a reloaded page does)
+    const dropMode = DROP_RESUME.includes(i + 1) ? 'resume' : DROP_REJOIN.includes(i + 1) ? 'rejoin' : null;
+    const connect = (since) => {
+      const ws = new WebSocket(since == null ? base : `${base}&since=${since}`);
+      cur = ws;
+      ws.on('message', async (d) => {
+        const m = JSON.parse(d);
+        if (m.seq) { if (m.seq <= lastSeq) return; lastSeq = m.seq; }
+        if (m.t === 'hello') me = m.you;
+        else if (m.t === 'emoji') {
+          if (!/^pic_[a-z]+$/.test(m.pic) || m.pic === 'pic_nonexistent') seen.bad++;
+          else if (m.id !== me) seen.others++;
+          else if (m.pic === 'pic_pray') seen.burst++;
+        }
+        else if (m.t === 'phase' && m.name === 'loading') { await sleep(rnd(500, 2500)); say(cur, { t: 'ready' }); }
+        else if (m.t === 'round') {
+          rounds.add(m.r);
+          if (dropMode && !drops && m.r === 3) {
+            drops++;
+            ws.terminate();
+            // back after the bet window has closed: the instance must replay the bets, the battle, maybe the result
+            setTimeout(() => { if (dropMode === 'rejoin') lastSeq = 0; connect(dropMode === 'resume' ? lastSeq : null); }, 2500);
+            return;
+          }
+          await sleep(rnd(1000, m.betMs - 2500));
+          // a 支持 (sometimes 观望 / 全力支持); the server refuses what the round does not allow, the bot then goes all in
+          const side = Math.random() < 0.5 ? 0 : 1, roll = Math.random();
+          const first = roll < 0.15 ? 'skip' : roll > 0.85 ? 'all' : 'normal';
+          tried = [first];
+          say(cur, first === 'skip' ? { t: 'bet', skip: true } : { t: 'bet', side, kind: first });
+        } else if (m.t === 'error') {
+          // refused: try the other choices once each this round
+          const next = ['normal', 'all', 'skip'].find((k) => !tried.includes(k));
+          if (next) { tried.push(next); say(cur, next === 'skip' ? { t: 'bet', skip: true } : { t: 'bet', side: Math.random() < 0.5 ? 0 : 1, kind: next }); }
+        }
+        else if (m.t === 'battle') {
+          // the first battle: two of the same at once (one gets through) and a picture the theme does not have
+          if (!burst) { burst = true; say(cur, { t: 'emoji', pic: 'pic_pray' }); say(cur, { t: 'emoji', pic: 'pic_pray' }); say(cur, { t: 'emoji', pic: 'pic_nonexistent' }); }
+          await sleep(rnd(1200, 2000));
+          say(cur, { t: 'emoji', pic: ['pic_hello', 'pic_happy', 'pic_shock', 'pic_think'][Math.floor(Math.random() * 4)] });
+          await sleep(rnd(800, 4000)); say(cur, { t: 'watched' });
+        }
+        else if (m.t === 'result') { results.add(m.r); const p = m.players.find((x) => x.id === me); if (p) pts = p.pts; }
+        else if (m.t === 'finish') {
+          const order = m.players.slice().sort((a, b) => b.pts - a.pts);
+          console.log(`[${name}] finished #${order.findIndex((x) => x.id === me) + 1} with ${pts} (emoji: others ${seen.others}, burst ${seen.burst}, bad ${seen.bad}; rounds ${rounds.size}, results ${results.size}, drops ${drops}${dropMode ? ' ' + dropMode : ''})`);
+          ws.close();
+          if (LOOP) { await sleep(rnd(1000, 3000)); say(lobby, { t: 'queue', mode: 'multiOperationMatch' }); } else { lobby.close(); if (++done === N) process.exit(0); }
+        }
+      });
+    };
+    connect(null);
   }
 }
 for (let i = 0; i < N; i++) setTimeout(() => bot(i), i * 150);

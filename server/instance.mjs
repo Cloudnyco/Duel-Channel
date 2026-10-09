@@ -1,5 +1,6 @@
 // A battle instance: hosts any number of matches. The gateway creates matches here (POST /create, local only); players
-// connect to ws://<host>:<port>/match?m=<match>&k=<seat token>. GET /status reports the load.
+// connect to ws://<host>:<port>/match?m=<match>&k=<seat token>[&since=<last seq>] (since: a dropped connection
+// coming back, game.mjs attach). GET /status reports the load.
 // env: PORT (required), HOST (bind address, default 127.0.0.1), NAME
 import http from 'node:http';
 import { WebSocketServer } from 'ws';
@@ -29,7 +30,8 @@ const server = http.createServer(async (req, res) => {
       const id = `${PORT}-${++seq}`;
       const m = new Match({ id, mode: o.mode, humans: o.humans || [], npcFill: !!o.npcFill, log });
       matches.set(id, m);
-      m.run().then(() => setTimeout(() => matches.delete(id), 5000));
+      // kept two minutes after the end: a seat whose connection dropped near the end can still fetch the standings
+      m.run().then(() => setTimeout(() => matches.delete(id), 120000));
       return json(res, 200, { matchId: id, port: PORT, seats: m.tokens() });
     }
     if (req.url === '/status') {
@@ -45,7 +47,8 @@ const wss = new WebSocketServer({ noServer: true, maxPayload: 4096 });
 server.on('upgrade', (req, socket, head) => {
   const u = new URL(req.url, 'http://x');
   const m = u.pathname === '/match' && matches.get(u.searchParams.get('m'));
-  if (!m || m.done) { socket.destroy(); return; }
-  wss.handleUpgrade(req, socket, head, (ws) => m.attach(ws, u.searchParams.get('k')));
+  if (!m) { socket.destroy(); return; }
+  const since = u.searchParams.has('since') ? Number(u.searchParams.get('since')) : null;
+  wss.handleUpgrade(req, socket, head, (ws) => m.attach(ws, u.searchParams.get('k'), since));
 });
 server.listen(PORT, HOST, () => log(`listening on ${HOST}:${PORT}`));

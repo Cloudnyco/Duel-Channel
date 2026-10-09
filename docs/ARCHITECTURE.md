@@ -40,5 +40,6 @@
 
 消息（JSON over WebSocket）：
 
-- 大厅：`hello` / `welcome`、`queue` / `cancel`、`room.*`、`avatar`、`matched`、`ping` / `pong`。
+- 大厅：`hello` / `welcome`（带会话 `key`）、`resume`（断线后用 `key` 取回会话，失败时回 `resume.fail`）、`queue` / `cancel`、`room.*`、`avatar`、`matched`、`ping` / `pong`。
 - 比赛：`hello`、`phase`、`round`（阵容 + 种子 + 押注时长）、`bets`、`battle`、`result`、`finish`、`ready` / `watched` / `bet` / `leave`、`emoji`（客户端发 `{ pic }`，服务端转发 `{ id, pic }`）、`ping` / `pong`。
+- 断线重连：实例的每条广播都带递增的 `seq`，并保留在比赛的历史里（表情除外）。重连时带上 `since=<最后收到的 seq>`，实例补发之后的全部消息；不带 `since`（刷新页面后重新加入）时，从当前一轮的开头补发。补发的消息带 `age`（毫秒），客户端据此校准倒计时，对战落后太多时会快进追上。

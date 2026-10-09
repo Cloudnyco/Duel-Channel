@@ -9,7 +9,7 @@
 //      DUEL_PUBLIC (the built page's folder, default ../public)
 import http from 'node:http';
 import { readFileSync, existsSync, statSync, createReadStream } from 'node:fs';
-import { createHash } from 'node:crypto';
+import { createHash, randomBytes } from 'node:crypto';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { WebSocketServer } from 'ws';
@@ -47,9 +47,40 @@ async function createMatch(mode, members, npcFill) {
 }
 
 // ---- sessions --------------------------------------------------------------------------------------------------------
+// A session outlives its connection for consts.maxRetryTimeInTeamRoom (45 s): a viewer whose connection dropped keeps
+// their room seat or queue place, a match that starts meanwhile is held for them, and the page takes it all back with
+// { t: 'resume', key } on a new connection (the key comes with 'welcome').
 const sessions = new Set();
 let sid = 0;
-const send = (s, m) => { if (s.ws.readyState === 1) s.ws.send(JSON.stringify(m)); };
+const GRACE = (SIM.DCFG.consts.maxRetryTimeInTeamRoom || 45) * 1000;
+const send = (s, m) => {
+  if (s.ws && s.ws.readyState === 1) s.ws.send(JSON.stringify(m));
+  else if (m.t === 'matched') s.held = m;
+};
+function newSession(ws) {
+  const s = { id: 'u' + (++sid), key: randomBytes(12).toString('hex'), ws, name: '', tag: '#' + (1000 + Math.floor(Math.random() * 9000)),
+    avatar: nextAvatar(), state: 'idle', room: null, held: null, awayTimer: 0 };
+  sessions.add(s);
+  return s;
+}
+function away(s) {
+  s.ws = null;
+  const r = s.room && rooms.get(s.room);
+  if (r) pushRoom(r);
+  s.awayTimer = setTimeout(() => { leaveQueue(s); leaveRoom(s); sessions.delete(s); }, GRACE);
+}
+function resume(cx, ws, key) {
+  const s = [...sessions].find((x) => x.key === key && x !== cx.s);
+  if (!s) { send(cx.s, { t: 'resume.fail' }); return; }
+  sessions.delete(cx.s);
+  clearTimeout(s.awayTimer);
+  if (s.ws && s.ws !== ws) try { s.ws.close(4002, 'replaced'); } catch (e) { /* gone */ }
+  s.ws = ws; cx.s = s;
+  send(s, { t: 'welcome', id: s.id, name: s.name, tag: s.tag, avatar: s.avatar, key: s.key, resumed: true });
+  const r = s.room && rooms.get(s.room);
+  if (r) pushRoom(r);
+  if (s.held) { const m = s.held; s.held = null; send(s, m); }
+}
 // portraits dealt in turn from a shuffled deck, so players who arrive together look different
 const avatars = SIM.POOL.map((f) => f.key).sort(() => Math.random() - 0.5);
 let avatarNext = 0;
@@ -66,12 +97,15 @@ const cleanAvatar = (v) => (typeof v === 'string' && (AVATAR_KEYS.has(v) || (v.l
 let queue = [];
 function leaveQueue(s) { queue = queue.filter((x) => x !== s); if (s.state === 'queue') s.state = 'idle'; }
 setInterval(async () => {
-  queue = queue.filter((s) => s.ws.readyState === 1 && s.state === 'queue');
-  if (!queue.length) return;
-  const waited = Date.now() - queue[0].queuedAt;
-  for (const s of queue) send(s, { t: 'queue', n: queue.length, max: MAX, waited: (Date.now() - s.queuedAt) / 1000, filling: waited > QUEUE_FILL_MS * 0.6 });
-  if (queue.length >= MAX || waited >= QUEUE_FILL_MS) {
-    const group = queue.splice(0, MAX);
+  queue = queue.filter((s) => s.state === 'queue' && sessions.has(s));
+  // a place whose connection dropped is kept, but only the viewers who are here are matched
+  const here = queue.filter((s) => s.ws);
+  if (!here.length) return;
+  const waited = Date.now() - here[0].queuedAt;
+  for (const s of here) send(s, { t: 'queue', n: here.length, max: MAX, waited: (Date.now() - s.queuedAt) / 1000, filling: waited > QUEUE_FILL_MS * 0.6 });
+  if (here.length >= MAX || waited >= QUEUE_FILL_MS) {
+    const group = here.slice(0, MAX);
+    queue = queue.filter((s) => !group.includes(s));
     try { await createMatch('multiOperationMatch', group, group.length < MAX); }
     catch (e) { for (const s of group) { s.state = 'idle'; send(s, { t: 'error', msg: '匹配失败：' + e.message }); } }
   }
@@ -80,7 +114,7 @@ setInterval(async () => {
 // ---- rooms -----------------------------------------------------------------------------------------------------------
 const rooms = new Map();
 function roomState(r) {
-  return { t: 'room', code: r.code, mode: r.mode, npc: r.npc, max: MAX, host: r.host.id, members: r.members.map((m) => ({ id: m.id, name: m.name, tag: m.tag, avatar: m.avatar })) };
+  return { t: 'room', code: r.code, mode: r.mode, npc: r.npc, max: MAX, host: r.host.id, members: r.members.map((m) => ({ id: m.id, name: m.name, tag: m.tag, avatar: m.avatar, away: !m.ws })) };
 }
 function pushRoom(r) { const st = roomState(r); for (const m of r.members) send(m, st); }
 function leaveRoom(s) {
@@ -98,7 +132,7 @@ function onMessage(s, m) {
     case 'hello':
       s.name = cleanName(m.name);
       s.avatar = cleanAvatar(m.avatar) || s.avatar;
-      send(s, { t: 'welcome', id: s.id, name: s.name, tag: s.tag, avatar: s.avatar });
+      send(s, { t: 'welcome', id: s.id, name: s.name, tag: s.tag, avatar: s.avatar, key: s.key });
       break;
     case 'queue':
       leaveRoom(s); leaveQueue(s);
@@ -194,10 +228,9 @@ const wss = new WebSocketServer({ noServer: true, maxPayload: 32768 });
 server.on('upgrade', (req, socket, head) => {
   if (new URL(req.url, 'http://x').pathname !== '/lobby') { socket.destroy(); return; }
   wss.handleUpgrade(req, socket, head, (ws) => {
-    const s = { id: 'u' + (++sid), ws, name: '', tag: '#' + (1000 + Math.floor(Math.random() * 9000)), avatar: nextAvatar(), state: 'idle', room: null };
-    sessions.add(s);
-    ws.on('message', (d) => { let m; try { m = JSON.parse(d); } catch (e) { return; } onMessage(s, m); });
-    ws.on('close', () => { leaveQueue(s); leaveRoom(s); sessions.delete(s); });
+    const cx = { s: newSession(ws) };
+    ws.on('message', (d) => { let m; try { m = JSON.parse(d); } catch (e) { return; } if (m.t === 'resume') resume(cx, ws, String(m.key || '')); else onMessage(cx.s, m); });
+    ws.on('close', () => { if (cx.s.ws === ws) away(cx.s); });
   });
 });
 server.listen(PORT, HOST, () => log(`page + lobby on http://${HOST}:${PORT}/  (instances ${INSTANCES.join(', ')})`));
