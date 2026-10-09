@@ -5,6 +5,12 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    ignore:
+      # the page is built for PixiJS 7 + pixi-spine 4 (Spine 3.8 skeletons); PixiJS 8 needs a different Spine runtime
+      - dependency-name: pixi.js
+        update-types: ['version-update:semver-major']
+      - dependency-name: pixi-spine
+        update-types: ['version-update:semver-major']
   - package-ecosystem: github-actions
     directory: /
     schedule:
@@ -13,3 +19,7 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    ignore:
+      # Node LTS lines only (even majors); the image follows the LTS the CI tests
+      - dependency-name: node
+        update-types: ['version-update:semver-major']
