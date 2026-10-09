@@ -129,6 +129,7 @@ docs/           部署、素材、机制、架构
 - 报告 Bug、指出与官方不一致的规则、提出功能建议：开 [Issue](../../issues/new/choose)，按模板填写。
 - 使用、部署求助和想法讨论：[Discussions](../../discussions)。
 - 提交代码：先读 [CONTRIBUTING.md](CONTRIBUTING.md)，PR 按模板填写，CI 全部通过后合并。
+- 请遵守 [行为准则](CODE_OF_CONDUCT.md)。
 
 ## 许可证
 
