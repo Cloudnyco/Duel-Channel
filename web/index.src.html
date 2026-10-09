@@ -72,7 +72,8 @@ canvas.video { position: absolute; inset: 0; width: 100%; height: 100%; }
   clip-path: polygon(92px 0, 100% 0, 100% 100%, 0 100%, 0 120px); }
 #start .sb-art::after { content: ""; position: absolute; inset: 0; mix-blend-mode: multiply;
   background: radial-gradient(circle, rgba(22, 22, 22, .28) 1px, transparent 1.6px) 0 0 / 5px 5px, linear-gradient(180deg, rgba(22, 22, 22, 0) 70%, rgba(22, 22, 22, .5)); }
-#start .sb-caption { position: absolute; right: 28px; bottom: 34px; z-index: 3; pointer-events: none; text-align: right; color: #fff;
+/* a lower third at the window's left edge: the settings gear owns the bottom-right corner */
+#start .sb-caption { position: absolute; left: 744px; bottom: 34px; z-index: 3; pointer-events: none; color: #fff;
   font: 700 13px/1.35 var(--nove); letter-spacing: .12em; text-shadow: 0 1px 6px rgba(0, 0, 0, .6); }
 #start .sb-caption b { display: block; font-size: 28px; letter-spacing: .04em; color: #f6e033; }
 /* the slate */
@@ -127,23 +128,24 @@ canvas.video { position: absolute; inset: 0; width: 100%; height: 100%; }
 }
 .codein { font: 500 22px/1.2 var(--cn); padding: 8px 12px; border: 2px solid #161616; border-radius: 4px; background: #fffbe6; color: #161616; width: 260px; }
 .codein { position: absolute; left: 14px; right: 14px; top: 9px; bottom: 9px; width: auto; border: 0; background: transparent; font-size: 28px; letter-spacing: .3em; pointer-events: auto; outline: none; }
-/* the control strip: a bar under the letterboxed stage, never over the game's own UI */
 /* the settings gear in the window's corner and the panel it opens: the demo's controls and the viewer's avatar.
-   Ink and duel yellow, the event's chamfered corner, the panel unfolds out of the gear */
-#gear { position: fixed; right: 14px; bottom: 14px; z-index: 2001; width: 46px; height: 46px; padding: 0; border: 0; border-radius: 50%; cursor: pointer;
+   Ink and duel yellow, the event's chamfered corner, the panel unfolds out of the gear. fit() sizes it with the stage
+   (--gear, --gear-in) so it stays clear of the official buttons that end near the corner (开始匹配, 取消匹配, 继续匹配) */
+:root { --gear: 38px; --gear-in: 7px; }
+#gear { position: fixed; right: var(--gear-in); bottom: var(--gear-in); z-index: 2001; width: var(--gear); height: var(--gear); padding: 0; border: 0; border-radius: 50%; cursor: pointer;
   color: #f6e033; background: #161616; box-shadow: 0 0 0 2px rgba(246, 224, 51, .38), 0 8px 22px rgba(0, 0, 0, .5);
   transition: background-color .2s ease, color .2s ease, box-shadow .2s ease; }
-#gear svg { display: block; width: 26px; height: 26px; margin: auto; transition: transform .5s cubic-bezier(.3, .7, .2, 1); }
+#gear svg { display: block; width: 58%; height: 58%; margin: auto; transition: transform .5s cubic-bezier(.3, .7, .2, 1); }
 #gear .hole { fill: #161616; transition: fill .2s ease; }
 #gear:hover svg { transform: rotate(40deg); }
 #gear[aria-expanded="true"] { color: #161616; background: #f6e033; box-shadow: 0 0 0 2px #161616, 0 8px 22px rgba(0, 0, 0, .5); }
 #gear[aria-expanded="true"] .hole { fill: #f6e033; }
 #gear[aria-expanded="true"] svg { transform: rotate(180deg); }
 #gear:focus-visible { outline: 3px solid #f6e033; outline-offset: 3px; }
-#settings { position: fixed; right: 14px; bottom: 72px; z-index: 2000; width: 344px; max-width: calc(100vw - 28px); max-height: calc(100vh - 92px); overflow: auto;
+#settings { position: fixed; right: max(14px, var(--gear-in)); bottom: calc(var(--gear-in) + var(--gear) + 12px); z-index: 2000; width: 344px; max-width: calc(100vw - 28px); max-height: calc(100vh - 92px); overflow: auto;
   display: grid; gap: 16px; padding: 18px 18px 18px; color: #efeee6; background: #1b1c1c; font: 500 13px/1.5 var(--cn);
   clip-path: polygon(22px 0, 100% 0, 100% 100%, 0 100%, 0 22px); box-shadow: inset 0 3px 0 #f6e033;
-  transform-origin: calc(100% - 23px) calc(100% + 35px);
+  transform-origin: calc(100% - var(--gear) / 2) calc(100% + var(--gear) / 2 + 12px);
   visibility: hidden; opacity: 0; transform: translateY(14px) scale(.92);
   transition: opacity .15s ease, transform .2s cubic-bezier(.3, .7, .2, 1), visibility 0s linear .2s; }
 #settings.open { visibility: visible; opacity: 1; transform: none;
@@ -175,7 +177,7 @@ canvas.video { position: absolute; inset: 0; width: 100%; height: 100%; }
 #avGrid button:hover { transform: scale(1.08); }
 #avGrid button[aria-checked="true"] { box-shadow: 0 0 0 2px #1b1c1c, 0 0 0 4px #f6e033; }
 #avGrid button:focus-visible { outline: 2px solid #f6e033; outline-offset: 3px; }
-#logbox { position: fixed; right: 372px; bottom: 72px; z-index: 2000; width: min(520px, calc(100vw - 392px)); max-height: 60vh; overflow: auto; padding: 12px 14px;
+#logbox { position: fixed; right: 372px; bottom: calc(var(--gear-in) + var(--gear) + 12px); z-index: 2000; width: min(520px, calc(100vw - 392px)); max-height: 60vh; overflow: auto; padding: 12px 14px;
   border-radius: 4px; background: #1b1c1c; box-shadow: inset 0 3px 0 #f6e033, 0 12px 32px rgba(0, 0, 0, .5); font-size: 12px; color: #efeee6; }
 #logbox b { display: block; margin: 6px 0 2px; color: var(--accent); }
 #logbox .l { color: #ff8c84; } #logbox .r { color: #7db7ff; }

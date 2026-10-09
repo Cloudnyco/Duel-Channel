@@ -268,7 +268,10 @@ function paintGraphic(s, w, h) {
     sty(s, g, 'background', rgba([s.color[0] * k[0], s.color[1] * k[1], s.color[2] * k[2], s.color[3] * k[3]]));
   } else if (c.grad) {
     const pts = c.grad.points.map(([col, p]) => `${rgba([col[0] * s.color[0], col[1] * s.color[1], col[2] * s.color[2], col[3] * s.color[3]])} ${p * 100}%`);
-    const dir = c.grad.dir === 1 ? 'to top' : c.grad.dir === 2 ? 'to left' : c.grad.dir === 3 ? 'to bottom' : 'to right';
+    // UIGradientGraphic._tapeDirection (an axis: 0 horizontal tape, 1 vertical tape): a vertical tape is a row of
+    // vertical colour bands, so its colour points run left → right; a horizontal one's run bottom → top. (The round's
+    // end panel proves it: its winner / loser washes come in left / right mirror pairs, each 80 px short of the far edge.)
+    const dir = c.grad.dir === 1 ? 'to right' : 'to top';
     sty(s, g, 'background', pts.length ? `linear-gradient(${dir}, ${pts.join(', ')})` : rgba(s.color));
   }
 }

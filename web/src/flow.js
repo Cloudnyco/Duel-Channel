@@ -917,6 +917,13 @@ async function stFinish() {
   scr.show('group_down/group_1_btn', false); scr.show('group_down/group_2_btn', true);
   scr.show('btn_next/panel_continue', true); scr.show('btn_next/panel_room', false);
   scr.text('panel_achieve/text_num', '×' + finishReward(myRank));
+  // the bottom bar's daily-activity meter (每日活跃) and 青草计划 level are account systems this demo does not have (the
+  // browser leaves out the same column): the bar keeps the reward and the buttons
+  scr.show('panel_layout/container_daily', false); scr.show('panel_layout/container_level', false);
+  // the prefab leaves this title's font size at 0 (Unity then falls back to the font's own size): use its twin's 18
+  // (竞猜轮次, shown in the same place for the stand mode)
+  const assetsTitle = scr.one('title_operation/text_assets_title');
+  if (assetsTitle && assetsTitle.t) assetsTitle.t.style.fontSize = '18px';
   playLoops(scr);
   sfx('g_ui_dqwinsettlement');
   scr.play('panel', 'panel_enemyduel_settlement_in');
@@ -941,6 +948,10 @@ function fit() {
   const st = $('stage');
   st.style.transform = `scale(${k})`;
   st.style.left = ((W - 1280 * k) / 2) + 'px'; st.style.top = ((H - 720 * k) / 2) + 'px';
+  // the gear keeps the stage's proportions (38 px and 7 px in from the corner at 1280×720), so it stays clear of the
+  // official buttons that run close to the corner; it stops shrinking at 30 px to remain easy to hit
+  const rs = document.documentElement.style;
+  rs.setProperty('--gear', Math.round(clamp(38 * k, 30, 56)) + 'px'); rs.setProperty('--gear-in', Math.max(4, Math.round(7 * k)) + 'px');
   const res = Math.min(2, k * (window.devicePixelRatio || 1));
   for (const app of [arenaApp]) if (app) { app.renderer.resolution = res; app.renderer.resize(1280, 720); app.view.style.width = '1280px'; app.view.style.height = '720px'; }
 }
