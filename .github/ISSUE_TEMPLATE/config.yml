@@ -1,11 +1,11 @@
 blank_issues_enabled: false
 contact_links:
   - name: 使用与部署求助
-    url: https://github.com/Cloudnyco/duel-channel/discussions/categories/q-a
+    url: https://github.com/Cloudnyco/Duel-Channel/discussions/categories/q-a
     about: 怎样准备素材包、构建页面、开服联机等问题，请在 Discussions 的 Q&A 里提问。
   - name: 想法与讨论
-    url: https://github.com/Cloudnyco/duel-channel/discussions/categories/ideas
+    url: https://github.com/Cloudnyco/Duel-Channel/discussions/categories/ideas
     about: 还不成熟的想法，先在 Discussions 的 Ideas 里聊聊。
   - name: 安全问题
-    url: https://github.com/Cloudnyco/duel-channel/security/advisories/new
+    url: https://github.com/Cloudnyco/Duel-Channel/security/advisories/new
     about: 服务器的安全漏洞请私下报告，不要公开发 issue（见 SECURITY.md）。

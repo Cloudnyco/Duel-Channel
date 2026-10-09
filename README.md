@@ -5,6 +5,7 @@
 ![version](https://img.shields.io/badge/version-0.1.0-2ea44f)
 ![license](https://img.shields.io/badge/code%20license-AGPL--3.0--or--later-blue)
 ![node](https://img.shields.io/badge/node-22%20%7C%2024-339933)
+[![CI](https://github.com/Cloudnyco/Duel-Channel/actions/workflows/ci.yml/badge.svg)](https://github.com/Cloudnyco/Duel-Channel/actions/workflows/ci.yml)
 
 ## 声明
 
@@ -50,7 +51,7 @@ English summary: [below](#english).
 需要 Node.js 22 或 24，以及 Chrome / Edge 等 Chromium 浏览器。
 
 ```bash
-git clone https://github.com/Cloudnyco/duel-channel.git
+git clone https://github.com/Cloudnyco/Duel-Channel.git
 cd duel-channel
 npm ci
 ```
