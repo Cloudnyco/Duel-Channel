@@ -1,0 +1,84 @@
+name: Bug 反馈
+description: 页面、对战或联机服务器出现了错误。
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈。请在上方起一个能说明问题的标题，例如「联机房间里房客看不到房主的头像」。
+
+        > [!important]
+        > - 一个 issue 只报告**一个**问题。
+        > - 使用方法、部署求助请发到 [Discussions 的 Q&A](../discussions/categories/q-a)。
+        > - 规则或数值与官方不一致，请用「规则与官方不一致」模板。
+        > - **不要上传任何游戏素材文件**（素材包、构建出的 duel-flow.html、模型、音频）。截图和录屏可以。
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: 检查清单
+      options:
+        - label: 我已更新到 main 分支的最新提交并重新构建页面（`git pull`、`npm ci`、`npm run build`），问题仍然存在。
+          required: true
+        - label: 我已在 [Issues](../issues?q=is%3Aissue) 中搜索过，没有找到相同的问题。
+          required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: 出现在哪里
+      options:
+        - 单机（直接打开 duel-flow.html）
+        - 联机：匹配 / 群组房间
+        - 联机：对局中
+        - 服务器（启动、日志、Docker）
+        - 构建（build-page / build-data）
+        - 其他
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: 实际结果
+      description: 发生了什么。
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望的行为
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 重现步骤
+      description: 怎样操作能再次触发。涉及某一轮对战时，请附上该轮的阵容（设置 → 回合记录）。
+      placeholder: |
+        1. 打开 …
+        2. 点击 …
+        3. …
+    validations:
+      required: true
+  - type: textarea
+    id: env
+    attributes:
+      label: 环境
+      description: 版本（提交号，`git rev-parse --short HEAD`）、系统、浏览器及版本、Node 版本（服务器问题）。
+      placeholder: |
+        提交：9c0885d
+        系统：Windows 11
+        浏览器：Chrome 154
+        Node：24.18
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: 控制台 / 服务器日志（可选）
+      description: 浏览器开发者工具的控制台错误（F12 → Console），或服务器的输出。会自动按代码格式显示。
+      render: shell
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: 截图 / 录屏（可选，建议）
+      description: 直接粘贴或拖动到这里上传。

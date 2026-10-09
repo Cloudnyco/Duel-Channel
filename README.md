@@ -27,7 +27,7 @@ English summary: [below](#english).
 ## 目录
 
 - [简介](#简介) · [功能一览](#功能一览) · [快速开始](#快速开始) · [联机](#联机)
-- [开发与测试](#开发与测试) · [项目结构](#项目结构) · [文档](#文档) · [许可证](#许可证) · [致谢与数据来源](#致谢与数据来源)
+- [开发与测试](#开发与测试) · [项目结构](#项目结构) · [文档](#文档) · [参与贡献](#参与贡献) · [许可证](#许可证) · [致谢与数据来源](#致谢与数据来源)
 
 ## 简介
 
@@ -120,7 +120,14 @@ docs/           部署、素材、机制、架构
 - [docs/ASSETS.md](docs/ASSETS.md)：素材包的内容与格式
 - [docs/MECHANICS.md](docs/MECHANICS.md)：规则与数值的官方来源、按推断实现的部分
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)：页面引擎、场地、模拟与服务端的结构
-- [CHANGELOG.md](CHANGELOG.md) · [CONTRIBUTING.md](CONTRIBUTING.md)
+- [CHANGELOG.md](CHANGELOG.md) · [CONTRIBUTING.md](CONTRIBUTING.md)（Issue 与 Pull Request 标准）· [SECURITY.md](SECURITY.md)
+- 提问与讨论：[Discussions](../../discussions)
+
+## 参与贡献
+
+- 报告 Bug、指出与官方不一致的规则、提出功能建议：开 [Issue](../../issues/new/choose)，按模板填写。
+- 使用、部署求助和想法讨论：[Discussions](../../discussions)。
+- 提交代码：先读 [CONTRIBUTING.md](CONTRIBUTING.md)，PR 按模板填写，CI 全部通过后合并。
 
 ## 许可证
 

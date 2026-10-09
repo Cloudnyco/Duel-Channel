@@ -1,0 +1,37 @@
+name: 功能建议
+description: 新功能，或对现有功能的改进。
+title: "[功能]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢你的想法。还没想清楚、想先聊聊的点子，可以先发到 [Discussions 的 Ideas](../discussions/categories/ideas)。
+
+        > [!important]
+        > 一个 issue 只提**一项**建议。本项目不接受任何以盈利为目的的功能（付费、广告、打赏等，见 NOTICE.md）。
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: 检查清单
+      options:
+        - label: 我已在 [Issues](../issues?q=is%3Aissue) 中搜索过，没有找到相同的建议。
+          required: true
+  - type: textarea
+    id: feature
+    attributes:
+      label: 想要的功能
+      description: 具体描述想要实现或改进什么，和哪些现有功能有关。
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: 为什么需要
+      description: 它解决什么问题、在什么场景下用到。官方游戏里有对应功能的话，请说明官方是怎样做的。
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 考虑过的其他做法（可选）

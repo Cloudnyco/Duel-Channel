@@ -1,0 +1,27 @@
+name: 权利人通知
+description: 你是相关权利人，认为本项目的某些内容不妥，要求删除或修改。
+title: "[权利人通知]: "
+labels: ["legal"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        本项目是非官方同人作品（见 [NOTICE.md](../blob/main/NOTICE.md)）。收到权利人通知后，我们会尽快删除相关内容，必要时删除整个仓库。
+  - type: textarea
+    id: content
+    attributes:
+      label: 涉及的内容
+      description: 文件路径、提交或页面位置。
+    validations:
+      required: true
+  - type: textarea
+    id: request
+    attributes:
+      label: 你的要求
+    validations:
+      required: true
+  - type: input
+    id: contact
+    attributes:
+      label: 联系方式（可选）
+      description: 如需私下沟通。

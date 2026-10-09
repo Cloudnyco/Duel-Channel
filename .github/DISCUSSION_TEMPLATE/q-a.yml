@@ -1,0 +1,30 @@
+title: "[求助] "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        先看看 [README](../blob/main/README.md)、[部署与联机指南](../blob/main/docs/DEPLOY.md) 和 [素材包说明](../blob/main/docs/ASSETS.md) 有没有答案。请不要上传游戏素材文件。
+  - type: dropdown
+    id: topic
+    attributes:
+      label: 关于
+      options:
+        - 准备素材包 / 构建页面
+        - 开服 / 局域网联机 / Docker
+        - 玩法与规则
+        - 其他
+    validations:
+      required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: 问题
+      description: 你想做什么、做了哪些步骤、遇到了什么（报错原文、截图）。
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: 环境（可选）
+      placeholder: 提交号、系统、浏览器、Node 版本

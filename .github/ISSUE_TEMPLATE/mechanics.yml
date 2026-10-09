@@ -1,0 +1,37 @@
+name: 规则与官方不一致
+description: 某条规则、数值、技能或 NPC 行为和官方实际表现不同。
+title: "[规则]: "
+labels: ["mechanics"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        本项目的规则尽量对照官方数据，来源和按推断实现的部分都列在 [docs/MECHANICS.md](../blob/main/docs/MECHANICS.md)。请先看一下那里有没有已知说明。
+
+        > [!important]
+        > 请给出**可以核对的官方依据**：数据表字段（ArknightsGameData 的文件与键）、PRTS 页面、实机录像链接或截图。不要上传游戏素材文件。
+  - type: input
+    id: rule
+    attributes:
+      label: 哪条规则
+      placeholder: 例如：安全区外的内伤伤害 / 过气水手的晕眩时长 / NPC「跟随少数」的选边时机
+    validations:
+      required: true
+  - type: textarea
+    id: official
+    attributes:
+      label: 官方表现与依据
+      description: 官方是怎样的，依据是什么（链接、数据表路径与字段、录像时间点）。
+    validations:
+      required: true
+  - type: textarea
+    id: ours
+    attributes:
+      label: 本项目的表现
+      description: 本项目里是怎样的。涉及对战时，请附上阵容（设置 → 回合记录）。
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: 补充（可选）

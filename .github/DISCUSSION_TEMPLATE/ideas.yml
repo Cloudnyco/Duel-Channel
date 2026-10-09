@@ -1,0 +1,17 @@
+title: "[想法] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        还不成熟的想法也欢迎。想清楚、准备实现时，可以再开 issue 或直接提 PR。
+  - type: textarea
+    id: idea
+    attributes:
+      label: 想法
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: 动机（可选）
+      description: 想解决的问题，或者官方游戏里对应的样子。
