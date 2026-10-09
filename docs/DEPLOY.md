@@ -1,6 +1,6 @@
 # 部署与联机指南
 
-本页说明怎样架设联机服务器、怎样和朋友一起玩。页面本身（`public/duel-flow.html`）需要你先在本机准备素材包并构建，见 [ASSETS.md](ASSETS.md) 和 README 的「快速开始」。
+本页说明怎样架设联机服务器、怎样和朋友一起玩。只有**开服的人**需要准备素材包（[ASSETS.md](ASSETS.md)）；其他玩家只要用浏览器打开开服者给的地址。
 
 ## 1. 架构
 
@@ -15,7 +15,76 @@
 - 战斗是确定性模拟：实例下发阵容和随机种子并预先算出结果，各客户端用同一份 `shared/sim.js` 重放，结果逐位一致。服务器不需要显卡，CPU 占用很低。
 - 单机模式（直接打开文件）和「自娱自乐」不经过服务器。
 
-## 2. 本机开服
+## 2. 一键开服（推荐）
+
+| 系统 | 怎么启动 |
+|---|---|
+| Windows | 双击仓库根目录的 `start.cmd`（或在命令行运行 `start.cmd`） |
+| Linux / macOS | 在仓库根目录运行 `./start.sh` |
+| 任意系统 | `npm run host` 或 `node tools/host.mjs` |
+
+脚本（`tools/host.mjs`）会依次：
+
+1. 检查 Node.js（22 或更新）；
+2. 缺依赖时运行 `npm ci`；
+3. 检查素材包；页面还没构建，或者代码、数据、素材有更新时，重新构建；
+4. 询问是否让局域网（或虚拟局域网）里的朋友加入：选 `y` 监听所有网卡，否则只监听本机；
+5. 检查端口没被占用，启动网关和 3 个对战实例；
+6. 打印本机地址、朋友可以用的地址（会标出 Tailscale、ZeroTier 等虚拟网卡）和防火墙需要放行的端口，在桌面环境里打开浏览器。
+
+按 Ctrl+C 停止。
+
+| 参数 | 作用 |
+|---|---|
+| `--lan` / `--local` | 不再询问：监听所有网卡 / 只监听本机（非交互运行时默认只监听本机） |
+| `--port 8700` | 网关端口，对战实例随之用 8711 起的端口（默认 8600 / 8611 起） |
+| `--instances 5` | 对战实例数（默认 3） |
+| `--rebuild` | 强制重新构建页面 |
+| `--no-open` | 不打开浏览器 |
+
+### Linux 服务器（无桌面）
+
+```bash
+./start.sh --lan --no-open
+```
+
+常驻运行可以用 systemd。下面假设仓库在 `/opt/duel-channel`，并且已经用 `./start.sh` 构建过一次页面：
+
+```ini
+# /etc/systemd/system/duel-channel.service
+[Unit]
+Description=Duel Channel server
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/duel-channel
+ExecStart=/usr/bin/node server/launch.mjs --instances 3 --host 0.0.0.0
+Restart=on-failure
+User=duel
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+sudo systemctl enable --now duel-channel
+journalctl -u duel-channel -f        # 查看日志
+```
+
+只在你信任的网络里这样做：页面内嵌游戏素材，不要把服务器暴露到公网。
+
+### 页面怎样加载
+
+网关提供的页面分成两部分：
+
+- **代码**（`public/index.html`）：压缩后约 0.3 MB。每次打开都会向服务器确认有没有更新，没有更新时不重新下载。
+- **素材包**（`public/pack/duel-pack.<哈希>.json`）：压缩后约 9 MB。文件名随内容变化，浏览器可以一直缓存。
+
+玩家第一次打开时，开始页会显示素材包的下载进度；之后再打开基本是秒开。更新代码后重新构建，素材没变的话素材包文件名不变，玩家也不用重新下载。
+
+压缩副本（`.br`、`.gz`）在构建时生成，网关按浏览器支持的格式发送。
+
+## 3. 手动开服
 
 ```bash
 npm ci
@@ -30,7 +99,7 @@ npm start              # 网关 :8600 + 3 个实例 :8611-8613，只监听 127.0
 ```bash
 node server/launch.mjs --instances 5        # 5 个对战实例
 node server/launch.mjs --port 8700          # 网关 8700，实例从 8711 起
-node server/launch.mjs --host 0.0.0.0       # 监听所有网卡（局域网联机，见第 3 节）
+node server/launch.mjs --host 0.0.0.0       # 监听所有网卡（局域网联机，见第 4 节）
 ```
 
 | 环境变量 | 默认 | 作用 |
@@ -46,16 +115,18 @@ node server/launch.mjs --host 0.0.0.0       # 监听所有网卡（局域网联�
 - <http://127.0.0.1:8600/status>：实例负载、进行中的比赛、匹配队列、房间。
 - <http://127.0.0.1:8600/healthz>：`{"ok":true,"instances":N,"page":true}`，供容器与监控使用。页面尚未构建时首页返回 503 并给出提示。
 
-## 3. 和朋友一起玩（局域网）
+## 4. 和朋友一起玩（局域网）
 
-1. 开服的电脑：`node server/launch.mjs --host 0.0.0.0`。
-2. 防火墙放行 TCP **8600** 和 **8611-8613**（Windows 首次启动时会询问是否允许 Node.js 访问网络，勾选「专用网络」）。
-3. 其他人用浏览器打开 `http://<开服电脑的局域网 IP>:8600/`。
+1. 开服的电脑：运行一键开服脚本并选 `y`（或 `./start.sh --lan`、`start.cmd --lan`；手动方式是 `node server/launch.mjs --host 0.0.0.0`）。
+2. 防火墙放行 TCP **8600** 和 **8611-8613**：
+   - Windows：首次启动时会询问是否允许 Node.js 访问网络，勾选「专用网络」。
+   - Linux：`sudo ufw allow 8600,8611:8613/tcp`，或 `sudo firewall-cmd --add-port=8600/tcp --add-port=8611-8613/tcp`。
+3. 其他人用浏览器打开脚本打印的地址 `http://<开服电脑的 IP>:8600/`。
 4. 一人「创建群组」得到邀请码，其他人「加入群组」输入邀请码；或者都点「加入赛事」进入匹配队列。
 
-不在同一个局域网时，可以用虚拟局域网工具（例如 Tailscale、ZeroTier）把设备组到同一个网络里，再按上面的步骤连接虚拟网卡的 IP。**不要**把服务器直接暴露到公网：页面内嵌游戏素材，公开提供属于再分发（见 [NOTICE.md](../NOTICE.md)）。
+不在同一个局域网时，可以用虚拟局域网工具（例如 Tailscale、ZeroTier、Radmin VPN）把设备组到同一个网络里，再连接虚拟网卡的 IP（脚本会列出来）。**不要**把服务器直接暴露到公网：页面内嵌游戏素材，公开提供属于再分发（见 [NOTICE.md](../NOTICE.md)）。
 
-## 4. Docker
+## 5. Docker
 
 镜像只包含服务器、模拟和数据，**不包含页面和任何游戏素材**。在本机构建好页面后挂载进去：
 
@@ -70,7 +141,7 @@ docker run --rm \
 - 容器内监听 `0.0.0.0`，端口映射决定谁能访问；上面的写法只对本机开放。局域网联机时把 `127.0.0.1:` 去掉。
 - 推送 `v*.*.*` 标签时，CI 会把镜像发布到 `ghcr.io/<owner>/duel-channel`（私有仓库的镜像同样是私有的）。
 
-## 5. 机器人
+## 6. 机器人
 
 ```bash
 node server/bots.mjs --n 7                     # 7 个机器人进入匹配队列（你再进去就满 8 人）
@@ -79,9 +150,11 @@ node server/bots.mjs --n 6 --loop              # 打完一局继续匹配
 node server/bots.mjs --lobby ws://192.168.1.20:8600/lobby --n 4
 ```
 
-## 6. 常见问题
+## 7. 常见问题
 
-- **首页显示「尚未构建」**：先准备素材包并运行 `npm run build`。
+- **首页显示「尚未构建」**：先准备素材包，再运行一键开服脚本或 `npm run build`。
+- **脚本提示端口已被占用**：多半是已经开着一个服务器，直接打开它的地址；或加 `--port 8700` 换一组端口。
+- **开始页提示素材包载入失败**：服务器刚重新构建过，或网络中断，刷新页面即可。
 - **匹配成功后卡在加载**：浏览器连不上实例端口。检查防火墙是否放行 8611-8613，`--host` 是否为 `0.0.0.0`。
 - **标签页切到后台**：页面动画会暂停，服务器照常推进；回到页面后会追上进度（错过的押注按观望处理，对战自动快进）。
 - **断线**：无法回到原来的比赛，后续回合按观望处理。

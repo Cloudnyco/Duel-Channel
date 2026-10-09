@@ -63,6 +63,18 @@ jobs:
           [ "$code" = "503" ] || { echo "expected 503 without a built page, got $code"; cat server.log; kill $pid || true; exit 1; }
           kill $pid || true
 
+      # the one-step hosting script (start.sh on Linux, tools/host.mjs behind start.cmd on Windows) runs; without an
+      # asset pack it stops before starting anything and says what to do
+      - name: Hosting script (no asset pack)
+        shell: bash
+        run: |
+          code=0
+          if [ "$RUNNER_OS" = "Windows" ]; then out=$(node tools/host.mjs --local --no-open 2>&1) || code=$?
+          else out=$(./start.sh --local --no-open 2>&1) || code=$?; fi
+          echo "$out"
+          [ "$code" = "1" ] || { echo "expected exit 1, got $code"; exit 1; }
+          echo "$out" | grep -q 'docs/ASSETS.md'
+
   # once, not per matrix entry
   tooling:
     name: tooling (lint)

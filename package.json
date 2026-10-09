@@ -10,6 +10,7 @@
   },
   "scripts": {
     "start": "node server/launch.mjs --instances 3",
+    "host": "node tools/host.mjs",
     "bots": "node server/bots.mjs --n 7",
     "build": "node tools/build-page.mjs",
     "assets:check": "node tools/build-page.mjs --check",

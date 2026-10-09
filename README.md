@@ -49,12 +49,13 @@ English summary: [below](#english).
 
 ## 快速开始
 
-需要 Node.js 22 或 24，以及 Chrome / Edge 等 Chromium 浏览器。
+**只是想加入朋友开的服务器？** 不需要下载任何东西，用浏览器打开对方给你的地址即可（第一次约下载 9 MB，之后走浏览器缓存）。
+
+开服的人需要 Node.js 22 或 24，以及 Chrome / Edge 等 Chromium 浏览器。
 
 ```bash
 git clone https://github.com/Cloudnyco/Duel-Channel.git
 cd duel-channel
-npm ci
 ```
 
 1. **准备素材包**：按 [docs/ASSETS.md](docs/ASSETS.md) 在 `assets/` 下放好从你自己的客户端准备的素材，然后检查是否齐全：
@@ -63,15 +64,11 @@ npm ci
    npm run assets:check
    ```
 
-2. **构建页面**：
+2. **一键开服**：Windows 双击 `start.cmd`；Linux / macOS 运行 `./start.sh`。脚本会安装依赖、按需构建页面、询问是否让局域网里的朋友加入，然后启动服务器、打印要分享的地址并打开浏览器（参数见 [docs/DEPLOY.md](docs/DEPLOY.md)）。
 
-   ```bash
-   npm run build        # → public/duel-flow.html（单文件，约 16 MB，含素材，只在本机使用）
-   ```
+3. **单机**：构建后直接用浏览器打开 `public/duel-flow.html`（单文件，约 16 MB，含素材，只在本机使用）。
 
-3. **游玩**：
-   - 单机：直接用浏览器打开 `public/duel-flow.html`。
-   - 联机：`npm start`，然后打开 <http://127.0.0.1:8600/>。详见下一节。
+手动的方式：`npm ci`、`npm run build`、`npm start`。
 
 ## 联机
 
@@ -107,11 +104,12 @@ node tools/build-data.mjs --gamedata ../ArknightsGameData/zh_CN/gamedata [--mode
 ## 项目结构
 
 ```
-web/            页面：index.src.html（模板）、src/（界面引擎、粒子、场地与特效、联机、流程）、fx-map.json
+web/            页面：index.src.html（模板）、src/（界面引擎、粒子、场地与特效、联机、表情、流程、素材包加载）、fx-map.json
 shared/sim.js   战斗模拟、阵容生成、NPC 选边、结算——页面和服务端共用
 server/         网关（页面、大厅、匹配、群组房间）、对战实例、比赛引擎、启动器、机器人
 data/           由官方数据表生成的活动配置与敌人数据（不适用 AGPL）
-tools/          构建页面、生成数据、黄金对局、静态检查
+tools/          一键开服、构建页面、生成数据、黄金对局、静态检查
+start.cmd / start.sh   一键开服（Windows / Linux、macOS），见 docs/DEPLOY.md
 test/           node --test 测试
 docs/           部署、素材、机制、架构
 ```
