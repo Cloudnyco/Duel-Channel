@@ -12,7 +12,7 @@ Libraries installed through npm keep their own licenses. Two of them are inlined
 Fonts:
 
 - **Noto Sans SC** and **Arvo** are loaded at run time from Google Fonts (SIL Open Font License 1.1); they are not in this repository.
-- **Bender** and **Novecento wide** are part of the local asset pack (docs/ASSETS.md), not of this repository; they remain under their authors' licenses.
+- **Bender** (Jovanny Lemonad; Oleg Zhuravlev, Ivan Gladkikh) and **Novecento wide** (Jan Tonellato / Synthview) are free fonts under their authors' terms. They are not in this repository: the build fetches them from [TimWangZi/The-font-of-Arknights](https://github.com/TimWangZi/The-font-of-Arknights) into `assets/fonts/` (git-ignored) and inlines them into the built page.
 
 Data:
 

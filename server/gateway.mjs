@@ -172,7 +172,7 @@ const server = http.createServer((req, res) => {
   if (u.pathname === '/' || u.pathname === '/index.html') {
     if (existsSync(SHELL)) { sendFile(req, res, SHELL, 'text/html; charset=utf-8', 'no-cache'); return; }
     if (existsSync(SINGLE)) { sendFile(req, res, SINGLE, 'text/html; charset=utf-8', 'no-cache'); return; }
-    res.writeHead(503, { 'Content-Type': 'text/plain; charset=utf-8' }); res.end('页面尚未构建：先准备素材包（docs/ASSETS.md），再运行 npm run build（或用 start.cmd / start.sh 一键启动）');
+    res.writeHead(503, { 'Content-Type': 'text/plain; charset=utf-8' }); res.end('页面尚未构建：运行 npm run build，或用 start.cmd / start.sh 一键启动');
     return;
   }
   // the asset pack: only names the build writes; the hash in the name makes it immutable

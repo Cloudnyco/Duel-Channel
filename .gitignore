@@ -1,20 +1,21 @@
 # --- dependencies ---------------------------------------------------------------------------------
 node_modules/
 
-# --- game assets: (c) Hypergryph, exported locally from your own client, NEVER committed ------------
-# the asset pack (docs/ASSETS.md) and the page built from it (tools/build-page.mjs inlines the pack)
-assets/
+# --- the pages built from the asset pack (npm run build) ------------------------------------------
 public/*
 !public/.gitkeep
-# any loose audio / model / font files
+# --- the display fonts: their authors' free-font terms; fetched at build time (tools/build-page.mjs) --
+assets/fonts/
+*.woff2
+*.otf
+*.ttf
+# --- loose audio / model files: only the asset pack's own (assets/) belong in the repository ----------
 *.ogg
+!assets/audio/*.ogg
 *.wav
 *.mp3
 *.skel
 *.atlas
-*.woff2
-*.otf
-*.ttf
 
 # --- caches, logs, reports --------------------------------------------------------------------------
 .cache/

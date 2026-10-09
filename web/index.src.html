@@ -10,8 +10,8 @@
 <style>
 /* a local play-through of the 争锋频道 flow: the game's 1280 × 720 reference canvas scaled to the window (letterboxed),
    the arena canvas under the UI, UI Spine canvas over it, a small control strip in the corner */
-@font-face { font-family: "Bender"; src: url(/*FONT_BENDER*/) format("woff2"); font-weight: 400 900; }
-@font-face { font-family: "Novecento"; src: url(/*FONT_NOVECENTO*/) format("woff2"); font-weight: 300 900; }
+@font-face { font-family: "Bender"; src: /*FONT_BENDER*/; font-weight: 400 900; }
+@font-face { font-family: "Novecento"; src: /*FONT_NOVECENTO*/; font-weight: 300 900; }
 :root {
   --cn: "Noto Sans SC", "Source Han Sans SC", "Microsoft YaHei", "PingFang SC", sans-serif;
   --nove: "Novecento", "Bahnschrift", "DIN Alternate", "Arial Narrow", var(--cn);
@@ -218,7 +218,7 @@ canvas.video { position: absolute; inset: 0; width: 100%; height: 100%; }
     <div class="sb-foot">
       <span class="sb-skel" aria-hidden="true"><i></i><i></i><i></i><b></b><b></b><b></b><b></b></span>
       <span id="startMode">单机模式</span>
-      <span>非官方同人复刻，与鹰角网络无关；界面与素材来自本机的游戏客户端。<a id="srcLink" href="https://github.com/Cloudnyco/Duel-Channel" target="_blank" rel="noopener">源代码（AGPL-3.0）</a></span>
+      <span>非官方同人复刻，与鹰角网络无关；界面与素材来自游戏客户端，仅供非商业使用。<a id="srcLink" href="https://github.com/Cloudnyco/Duel-Channel" target="_blank" rel="noopener">源代码（AGPL-3.0）</a></span>
     </div>
     <div class="sb-wipe" aria-hidden="true"></div>
   </div>

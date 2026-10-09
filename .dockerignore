@@ -1,11 +1,10 @@
 node_modules
-assets
+assets/fonts
 public
 .git
 .github
 docs
 test
-tools
 *.log
 .env
 .env.*

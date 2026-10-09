@@ -1,5 +1,5 @@
-# A tag vX.Y.Z publishes a GitHub Release: the tests run again, the source archive (code, docs, data — no game assets,
-# which are never in this repository) is attached, and the notes are the tag's section of CHANGELOG.md.
+# A tag vX.Y.Z publishes a GitHub Release: the tests run again, the source archive (code, docs, data and the asset
+# pack — unpack, run start.cmd / start.sh) is attached, and the notes are the tag's section of CHANGELOG.md.
 name: Release
 
 on:

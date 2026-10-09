@@ -1,5 +1,5 @@
-# The server image on GitHub Container Registry (ghcr.io/<owner>/duel-channel) for each release tag. The image holds
-# the server, the sim and the data only — never the page or any game asset (mount your own build, docs/DEPLOY.md).
+# The server image on GitHub Container Registry (ghcr.io/<owner>/duel-channel) for each release tag: the server, the
+# sim, the data and the page built from the repository's asset pack — ready to play (docs/DEPLOY.md).
 name: Docker
 
 on:

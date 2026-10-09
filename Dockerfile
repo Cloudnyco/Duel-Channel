@@ -1,10 +1,24 @@
-# The multiplayer server: the gateway (page + lobby) and three battle instances in one container.
-# The page is NOT in the image (it inlines the game's assets, which this project does not distribute): build it on
-# your machine (`npm run build`, docs/ASSETS.md) and mount it — see docs/DEPLOY.md.
+# The multiplayer server, ready to play: the gateway (page + lobby) and three battle instances in one container, with
+# the page built from the repository's asset pack (the build stage fetches the two display fonts, docs/ASSETS.md).
 #
 #   docker build -t duel-channel .
-#   docker run --rm -p 127.0.0.1:8600:8600 -p 127.0.0.1:8611-8613:8611-8613 \
-#     -v "$PWD/public:/app/public:ro" duel-channel
+#   docker run --rm -p 127.0.0.1:8600:8600 -p 127.0.0.1:8611-8613:8611-8613 duel-channel
+#
+# A page built elsewhere can still be mounted over it: -v "$PWD/public:/app/public:ro"
+
+# ---- the page -------------------------------------------------------------------------------------------------------
+FROM node:24-alpine AS page
+WORKDIR /src
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY web ./web
+COPY shared ./shared
+COPY data ./data
+COPY tools ./tools
+COPY assets ./assets
+RUN node tools/build-page.mjs
+
+# ---- the server -----------------------------------------------------------------------------------------------------
 FROM node:24-alpine
 WORKDIR /app
 ENV NODE_ENV=production
@@ -13,7 +27,7 @@ RUN npm ci --omit=dev --no-audit --no-fund
 COPY server ./server
 COPY shared ./shared
 COPY data ./data
-RUN mkdir -p public
+COPY --from=page /src/public ./public
 # browsers connect to the gateway (8600) and, during a match, straight to its instance (8611-8613)
 EXPOSE 8600 8611 8612 8613
 USER node

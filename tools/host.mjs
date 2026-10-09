@@ -2,7 +2,7 @@
 // missing, checks the asset pack, builds the page when it is missing or older than anything it is built from, asks
 // whether players on the local network may join, starts the gateway and its battle instances, prints the addresses to
 // share (and the ports a firewall must let through), and opens the page in the browser.
-// usage: node tools/host.mjs [--lan | --local] [--port 8600] [--instances 3] [--rebuild] [--no-open]
+// usage: node tools/host.mjs [--lan | --local] [--port 8600] [--instances 3] [--rebuild] [--no-open] [--dry-run]
 //   --lan / --local   listen on every network interface / on this machine only (default: ask; non-interactive: local)
 import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, readdirSync, statSync } from 'node:fs';
@@ -46,7 +46,7 @@ const assetsOk = node(['tools/build-page.mjs', '--check'], { stdio: 'pipe' }).st
 if (!assetsOk) {
   if (!built) {
     node(['tools/build-page.mjs', '--check']);
-    fail('还没有素材包，无法构建页面：按 docs/ASSETS.md 准备 assets/ 目录。\n  只是想加入朋友开的服务器？不需要素材包，用浏览器打开对方给你的地址即可。');
+    fail('素材包不完整（见上方缺少的文件），无法构建页面：素材包在仓库的 assets/ 里，用 git checkout -- assets 恢复，或重新 clone（docs/ASSETS.md）。\n  只是想加入朋友开的服务器？不需要素材包，用浏览器打开对方给你的地址即可。');
   }
   say('⚠ 素材包不完整，使用已构建的页面（无法重新构建）。');
 } else if (has('--rebuild') || !built || inputs.some((p) => newest(join(ROOT, p)) > built)) {
@@ -74,6 +74,8 @@ const free = (port) => new Promise((res) => {
 for (const p of [PORT, ...ports]) {
   if (!(await free(p))) fail(`端口 ${p} 已被占用（可能已经开着一个服务器：试试打开 http://127.0.0.1:${PORT}/）。\n  换一组端口：加 --port ${PORT + 100}（对战实例随之用 ${PORT + 111} 起的端口）`);
 }
+// --dry-run (CI): everything up to here — dependencies, the page, the ports — without starting the server
+if (has('--dry-run')) { say(`就绪：页面已构建，端口 ${PORT}、${ports.join('、')} 可用（--dry-run，未启动服务器）`); process.exit(0); }
 const child = spawn(process.execPath, ['server/launch.mjs', '--instances', String(N), '--port', String(PORT), ...(lan ? ['--host', '0.0.0.0'] : [])], { cwd: ROOT, stdio: 'inherit' });
 for (const sig of ['SIGINT', 'SIGTERM']) process.on(sig, () => child.kill(sig));
 child.on('exit', (code) => process.exit(code ?? 0));

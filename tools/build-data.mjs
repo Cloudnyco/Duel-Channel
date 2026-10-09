@@ -7,7 +7,7 @@
 //   data/fighters.json   the roster: every duel enemy with a model (see below) — stats, duel score (numOfExtraDrops),
 //                        pool weights, talents, skills from enemy_database; the original enemy's handbook abilities;
 //                        model scale / animation roles / damage type from the model source
-//   assets/models.json   per roster key: { spine: { skel, atlas, pages, pma, anims }, icon } (base64; never committed)
+//   assets/models.json   per roster key: { spine: { skel, atlas, pages, pma, anims }, icon } (base64; part of the pack)
 //
 // Sources
 //   --gamedata <dir>   zh_CN/gamedata of an ArknightsGameData checkout (github.com/Kengxxiao/ArknightsGameData):

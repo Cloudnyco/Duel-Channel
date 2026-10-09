@@ -1,8 +1,10 @@
 # 素材包
 
-页面需要的美术、动画、模型、音效和字体都是游戏素材（© Hypergryph），**不在仓库中，也不会被提交**（`assets/` 和 `public/` 已被 `.gitignore` 排除，`npm run check` 会拒绝任何被跟踪的素材文件）。你需要在本机从**自己的**游戏客户端准备它们，构建出的页面也只供自己在本机或局域网使用，请勿再分发（[NOTICE.md](../NOTICE.md)）。
+页面需要的界面、动画、模型、音效和特效贴图是游戏素材（© Hypergryph），从游戏客户端导出，**收录在仓库的 `assets/` 中**，clone 下来就能构建。它们不适用本项目的 AGPL，只能用于非商业用途（[NOTICE.md](../NOTICE.md)）。
 
-本项目不提供、也不说明任何绕过客户端保护的方法。
+- 两款显示字体（Bender、Novecento wide）不是游戏素材，不在仓库中：构建时从 [TimWangZi/The-font-of-Arknights](https://github.com/TimWangZi/The-font-of-Arknights) 下载到 `assets/fonts/`（不提交），之后复用；下载失败时页面使用系统字体。
+- 构建出的页面（`public/`）不提交。
+- 素材包由维护者在游戏更新后统一更新，贡献者请不要改动 `assets/`。本项目不提供、也不说明任何绕过客户端保护的方法。
 
 ## 目录结构
 
@@ -12,11 +14,10 @@ assets/
   models.json       敌人模型与头像：{ <敌人 key>: { spine: { skel, atlas, pages, pma, anims }, icon } }
   audio/*.ogg       界面音效（b_ui_dq*、g_ui_dq*、g_ui_tabswitch / matchsucceed / matchcancel）；可选 m_nobetnolife.ogg 作为默认 BGM
   fx/*              web/fx-map.json 列出的特效、地块与 buff 贴图
-  fonts/bender-regular.woff2
-  fonts/novecento-wide-normal.woff2
+  fonts/            构建时下载的字体（不提交）
 ```
 
-`npm run assets:check` 会列出缺少的文件；齐全后 `npm run build`（或一键开服脚本）构建页面：
+`npm run assets:check` 会列出缺少的文件（`npm run check` 也会检查仓库里的素材包是否完整）；齐全后 `npm run build`（或一键开服脚本）构建页面：
 
 - `public/duel-flow.html`：单文件，素材内联，直接打开即可单机游玩；
 - `public/index.html` + `public/pack/duel-pack.<哈希>.json`：网关提供的版本，代码和素材包分开，素材包按内容命名，浏览器可以长期缓存；两者都附带 `.br` / `.gz` 压缩副本。
@@ -54,7 +55,7 @@ assets/
 node tools/build-data.mjs --gamedata <ArknightsGameData>/zh_CN/gamedata --models <Stronghold-Protocol 目录>
 ```
 
-会同时写出 `data/fighters.json`（只含数值，提交到仓库）和 `assets/models.json`（模型，不提交）。
+会同时写出 `data/fighters.json`（数值）和 `assets/models.json`（模型），两者都提交到仓库。
 
 ### audio、fx、fonts
 
@@ -66,8 +67,9 @@ node tools/build-data.mjs --gamedata <ArknightsGameData>/zh_CN/gamedata --models
   - `map_ground.png` / `map_forbid.png` / `map_hlight.png` 是公共地图图集里地面、禁区地块和高台灯的裁切；
   - `img_dissolve_01.png` 是转场的方块噪声；
   - `pic_*.png` 是对战表情主题（`ui/emoticon/theme/[uc]emticon_duel_basic.ab`）的 12 个表情。
-- `fonts/`：Bender 与 Novecento wide（各自作者的许可）。
+- `audio/m_nobetnolife.ogg`：默认 BGM（塞壬唱片），没有时页面不播放音乐，可以在设置里换曲。
+- `fonts/`：见本页开头。
 
-## 没有素材时
+## 测试与 CI
 
-CI 和 `npm test` 不需要素材包：测试只用 `data/` 和代码。服务器没有页面也能启动，首页返回 503 说明需要先构建。
+`npm test` 只用 `data/` 和代码，不需要素材包。CI 还会用仓库里的素材包构建页面（一键开服脚本的 `--dry-run`），并检查网关提供的页面与素材包；没有页面时服务器也能启动，首页返回 503 说明需要先构建。

@@ -63,17 +63,40 @@ jobs:
           [ "$code" = "503" ] || { echo "expected 503 without a built page, got $code"; cat server.log; kill $pid || true; exit 1; }
           kill $pid || true
 
-      # the one-step hosting script (start.sh on Linux, tools/host.mjs behind start.cmd on Windows) runs; without an
-      # asset pack it stops before starting anything and says what to do
-      - name: Hosting script (no asset pack)
+      # the one-step hosting script (start.sh on Linux, tools/host.mjs behind start.cmd on Windows): with the committed
+      # asset pack it installs, builds the page (fetching the display fonts) and checks the ports, stopping before the
+      # server (--dry-run); without a pack it stops at once and says what to do
+      - name: Hosting script
         shell: bash
         run: |
           code=0
-          if [ "$RUNNER_OS" = "Windows" ]; then out=$(node tools/host.mjs --local --no-open 2>&1) || code=$?
-          else out=$(./start.sh --local --no-open 2>&1) || code=$?; fi
+          if [ "$RUNNER_OS" = "Windows" ]; then out=$(node tools/host.mjs --local --no-open --dry-run 2>&1) || code=$?
+          else out=$(./start.sh --local --no-open --dry-run 2>&1) || code=$?; fi
           echo "$out"
-          [ "$code" = "1" ] || { echo "expected exit 1, got $code"; exit 1; }
-          echo "$out" | grep -q 'docs/ASSETS.md'
+          if [ -f assets/ui.json ]; then
+            [ "$code" = "0" ] || { echo "expected exit 0, got $code"; exit 1; }
+            ls -l public/index.html public/pack/
+          else
+            [ "$code" = "1" ] || { echo "expected exit 1, got $code"; exit 1; }
+            echo "$out" | grep -q 'docs/ASSETS.md'
+          fi
+
+      # the built page the way browsers get it: the code (brotli), then the asset pack it names (cacheable for good)
+      - name: Page served
+        if: hashFiles('assets/ui.json') != ''
+        shell: bash
+        run: |
+          node server/launch.mjs --instances 1 > page.log 2>&1 &
+          pid=$!
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8600/healthz > /dev/null 2>&1 && break; sleep 1; done
+          curl -fsS -H 'Accept-Encoding: br' -D page.h -o /dev/null http://127.0.0.1:8600/
+          grep -qi '^content-encoding: br' page.h || { cat page.h; kill $pid; exit 1; }
+          pack=$(curl -fsS http://127.0.0.1:8600/ | grep -o 'pack/duel-pack\.[0-9a-f]\{16\}\.json' | head -1)
+          [ -n "$pack" ] || { echo "the page names no asset pack"; kill $pid; exit 1; }
+          curl -fsS -H 'Accept-Encoding: br' -D pack.h -o /dev/null "http://127.0.0.1:8600/$pack"
+          cat pack.h
+          grep -qi '^cache-control: public, max-age=31536000, immutable' pack.h || { kill $pid; exit 1; }
+          kill $pid || true
 
   # once, not per matrix entry
   tooling:

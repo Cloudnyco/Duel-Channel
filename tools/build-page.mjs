@@ -8,12 +8,14 @@
 //   web/src/*.js, shared/sim.js        this repository's code
 //   data/duelcfg.json, data/fighters.json   the duel's configuration and roster (generated from the game's data tables)
 //   node_modules/pixi.js, pixi-spine    the renderers (npm install)
-//   <assets>/                           the asset pack, never committed — see docs/ASSETS.md:
+//   <assets>/                           the asset pack, in the repository — see docs/ASSETS.md:
 //     ui.json            the event's exported screens, templates, sprites, clips and UI Spine
 //     models.json        per roster key: { spine: { skel, atlas, pages, pma, anims }, icon }
 //     audio/*.ogg        the event's UI sounds (+ the default BGM, m_nobetnolife.ogg, if present)
 //     fx/*               the textures listed in web/fx-map.json
-//     fonts/bender-regular.woff2, fonts/novecento-wide-normal.woff2
+//     fonts/             Bender and Novecento wide: not the game's and not in the repository (their authors' free-font
+//                        terms); a local copy (.woff2 / .otf) is used, else they are fetched once (FONTS below) and kept
+//                        here; without them the page falls back to system fonts
 //
 // usage: node tools/build-page.mjs [--assets assets] [--out public] [--check]
 //   --check: only verify that every input exists and report what is missing (no output; exit 1 when incomplete)
@@ -34,7 +36,6 @@ delete FX._comment;
 const need = [
   join(ROOT, 'node_modules', 'pixi.js', 'dist', 'pixi.min.js'), join(ROOT, 'node_modules', 'pixi-spine', 'dist', 'pixi-spine.js'),
   join(A, 'ui.json'), join(A, 'models.json'), join(A, 'audio'),
-  join(A, 'fonts', 'bender-regular.woff2'), join(A, 'fonts', 'novecento-wide-normal.woff2'),
   ...Object.values(FX).map((f) => join(A, 'fx', f)),
 ];
 const missing = need.filter((p) => !existsSync(p));
@@ -44,6 +45,32 @@ if (missing.length) {
   process.exit(1);
 }
 if (CHECK) { console.log('asset pack complete:', A); process.exit(0); }
+
+// the display fonts, from the community font collection Stronghold Protocol also uses (raw GitHub, then jsDelivr)
+const FONTS = [
+  { key: '/*FONT_BENDER*/', name: 'bender-regular', remote: 'Bender/BENDER.OTF' },
+  { key: '/*FONT_NOVECENTO*/', name: 'novecento-wide-normal', remote: 'Novecento-Wide-Normal-2.otf' },
+];
+const FONT_SOURCES = ['https://raw.githubusercontent.com/TimWangZi/The-font-of-Arknights/master/font/',
+  'https://cdn.jsdelivr.net/gh/TimWangZi/The-font-of-Arknights@master/font/'];
+async function fontSrc(f) {
+  const css = (buf, ext) => `url(data:font/${ext};base64,${buf.toString('base64')}) format("${ext === 'otf' ? 'opentype' : ext}")`;
+  for (const ext of ['woff2', 'otf']) { const p = join(A, 'fonts', `${f.name}.${ext}`); if (existsSync(p)) return css(readFileSync(p), ext); }
+  for (const base of FONT_SOURCES) {
+    try {
+      const r = await fetch(base + f.remote, { signal: AbortSignal.timeout(20000) });
+      const buf = r.ok ? Buffer.from(await r.arrayBuffer()) : null;
+      // an OpenType file: 'OTTO' (CFF) or 0x00010000 (TrueType outlines)
+      if (!buf || !(buf.readUInt32BE(0) === 0x4f54544f || buf.readUInt32BE(0) === 0x00010000)) continue;
+      mkdirSync(join(A, 'fonts'), { recursive: true });
+      writeFileSync(join(A, 'fonts', `${f.name}.otf`), buf);
+      console.log(`font ${f.name}: fetched from ${new URL(base).host}`);
+      return css(buf, 'otf');
+    } catch (e) { /* the next source */ }
+  }
+  console.warn(`font ${f.name}: not found locally and could not be fetched — the page uses fallback fonts`);
+  return `local("${f.name}")`;
+}
 
 const rd = (p) => readFileSync(p, 'utf8');
 const b64 = (p) => readFileSync(p).toString('base64');
@@ -56,8 +83,7 @@ const audio = Object.fromEntries(readdirSync(join(A, 'audio')).filter((f) => f.e
 const fxtex = Object.fromEntries(Object.entries(FX).map(([k, f]) => [k, `data:image/${f.endsWith('.jpg') ? 'jpeg' : 'png'};base64,${b64(join(A, 'fx', f))}`]));
 const ui = rd(join(A, 'ui.json'));
 const code = {
-  '/*FONT_BENDER*/': 'data:font/woff2;base64,' + b64(join(A, 'fonts', 'bender-regular.woff2')),
-  '/*FONT_NOVECENTO*/': 'data:font/woff2;base64,' + b64(join(A, 'fonts', 'novecento-wide-normal.woff2')),
+  ...Object.fromEntries(await Promise.all(FONTS.map(async (f) => [f.key, await fontSrc(f)]))),
   '/*PIXI*/': safe(rd(join(ROOT, 'node_modules', 'pixi.js', 'dist', 'pixi.min.js'))),
   '/*PIXISPINE*/': safe(rd(join(ROOT, 'node_modules', 'pixi-spine', 'dist', 'pixi-spine.js'))),
   '/*DUELCFG*/': 'const DUELCFG = ' + safe(rd(join(ROOT, 'data', 'duelcfg.json'))) + ';',

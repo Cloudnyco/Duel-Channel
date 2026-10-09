@@ -12,7 +12,7 @@ body:
         > - 一个 issue 只报告**一个**问题。
         > - 使用方法、部署求助请发到 [Discussions 的 Q&A](../discussions/categories/q-a)。
         > - 规则或数值与官方不一致，请用「规则与官方不一致」模板。
-        > - **不要上传任何游戏素材文件**（素材包、构建出的 duel-flow.html、模型、音频）。截图和录屏可以。
+        > - 不需要附带素材或构建出的页面（素材包就在仓库里）。截图和录屏可以。
   - type: checkboxes
     id: checklist
     attributes:

@@ -12,7 +12,7 @@
 > [!IMPORTANT]
 > - 本项目是玩家自制的**非官方同人作品**，与上海鹰角网络科技有限公司（Hypergryph）及其关联方**没有任何关系**，未获其授权或认可。
 > - 《明日方舟》及「争锋频道」相关的名称、角色、美术、Spine 模型、界面、音乐、音效、文本与数据等素材，版权归原权利人所有。这些素材**不适用**本项目的 AGPL-3.0 许可证；AGPL 只覆盖本项目自己编写的代码。
-> - **仓库不包含任何游戏美术、音频、模型或字体。** 页面需要的素材包只能由你在本机从**自己的**游戏客户端准备（[docs/ASSETS.md](docs/ASSETS.md)），请勿再分发。仓库里只有由官方数据表生成的数据（`data/`）和几张截图，它们同样不适用 AGPL。
+> - 仓库收录了页面需要的素材包（`assets/`，从游戏客户端导出），以及由官方数据表生成的数据（`data/`）和截图。它们同样不适用 AGPL，**只能用于非商业用途**。两款显示字体不在仓库中，构建时从公开的字体仓库下载。
 > - 仅供学习交流与个人非商业使用。**严禁任何形式的盈利**：售卖、付费分发、收费开服、广告或打赏变现等。
 > - 权利人如认为本项目侵犯其权益，请通过 Issue 联系，我们会**立即删除**相关内容。
 > - 本项目按「现状」提供，**不提供任何担保**，使用风险自负。完整条款见 [NOTICE.md](NOTICE.md)。
@@ -51,24 +51,18 @@ English summary: [below](#english).
 
 **只是想加入朋友开的服务器？** 不需要下载任何东西，用浏览器打开对方给你的地址即可（第一次约下载 9 MB，之后走浏览器缓存）。
 
-开服的人需要 Node.js 22 或 24，以及 Chrome / Edge 等 Chromium 浏览器。
+自己开服或单机游玩需要 Node.js 22 或 24，以及 Chrome / Edge 等 Chromium 浏览器。素材包已经在仓库里，clone 下来就能用。
 
 ```bash
 git clone https://github.com/Cloudnyco/Duel-Channel.git
 cd duel-channel
 ```
 
-1. **准备素材包**：按 [docs/ASSETS.md](docs/ASSETS.md) 在 `assets/` 下放好从你自己的客户端准备的素材，然后检查是否齐全：
+1. **一键开服**：Windows 双击 `start.cmd`；Linux / macOS 运行 `./start.sh`。脚本会安装依赖、构建页面（第一次会下载两款字体）、询问是否让局域网里的朋友加入，然后启动服务器、打印要分享的地址并打开浏览器（参数见 [docs/DEPLOY.md](docs/DEPLOY.md)）。
 
-   ```bash
-   npm run assets:check
-   ```
+2. **单机**：构建后直接用浏览器打开 `public/duel-flow.html`（单文件，约 16 MB，含素材）。
 
-2. **一键开服**：Windows 双击 `start.cmd`；Linux / macOS 运行 `./start.sh`。脚本会安装依赖、按需构建页面、询问是否让局域网里的朋友加入，然后启动服务器、打印要分享的地址并打开浏览器（参数见 [docs/DEPLOY.md](docs/DEPLOY.md)）。
-
-3. **单机**：构建后直接用浏览器打开 `public/duel-flow.html`（单文件，约 16 MB，含素材，只在本机使用）。
-
-手动的方式：`npm ci`、`npm run build`、`npm start`。
+手动的方式：`npm ci`、`npm run build`、`npm start`。也可以用 Docker 镜像，见 [docs/DEPLOY.md](docs/DEPLOY.md)。
 
 ## 联机
 
@@ -88,7 +82,7 @@ npm start                                   # 网关 :8600 + 3 个对战实例 :
 
 ```bash
 npm test             # 战斗模拟（确定性、40 场黄金对局、官方规则）+ 8 个机器人走完一整局的联机端到端测试
-npm run check        # 模板与页面脚本、数据文件、未误提交素材
+npm run check        # 模板与页面脚本、数据文件、素材包完整、未提交字体与构建产物
 npm run lint         # ESLint
 node tools/golden.mjs   # 规则或数值有意改动后，重新生成黄金对局并审阅 diff
 ```
@@ -134,7 +128,7 @@ docs/           部署、素材、机制、架构
 
 本项目自己编写的代码与文档以 **GNU Affero 通用公共许可证第 3 版或更新版本**（AGPL-3.0-or-later）发布，全文见 [LICENSE](LICENSE)。按 AGPL 第 13 条，如果你修改后通过网络向他人提供服务，需要向这些用户提供你修改后的源代码（开始界面页脚的「源代码」链接可改为你的仓库）。
 
-游戏素材与数据不在授权范围内，见 [NOTICE.md](NOTICE.md)；第三方库见 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)。
+游戏素材与数据不在授权范围内，仅限非商业使用，见 [NOTICE.md](NOTICE.md)；第三方库见 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)。
 
 ## 致谢与数据来源
 
@@ -147,4 +141,4 @@ docs/           部署、素材、机制、架构
 
 **Duel Channel** is an unofficial fan re-creation of the *Gift Duel* mode of Arknights' limited event *Duel Channel*: watch enemies fight, bet on a side each round, outlast seven other viewers. It plays offline in one HTML file or online through a small Node.js server (gateway + battle instances, deterministic battles replayed by every client).
 
-It is not affiliated with or endorsed by Hypergryph. **This repository contains no game art, audio, models or fonts**; you prepare the asset pack locally from your own client (docs/ASSETS.md) and must not redistribute it. The code is AGPL-3.0-or-later; game assets and data are not covered (NOTICE.md). Non-commercial use only.
+It is not affiliated with or endorsed by Hypergryph. The repository includes the asset pack the page needs (`assets/`, exported from the game client); like the game data, it is not covered by the AGPL and may be used for **non-commercial purposes only** (NOTICE.md). Clone it and run `start.cmd` (Windows) or `./start.sh` (Linux / macOS). The code is AGPL-3.0-or-later.
