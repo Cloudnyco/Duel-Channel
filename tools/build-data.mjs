@@ -2,7 +2,8 @@
 //
 //   data/duelcfg.json    the act1enemyduel configuration (activity_table → activity.ENEMY_DUEL.act1enemyduel: modes,
 //                        rounds, NPC viewers and their pick tables, constants, texts) + the level's rules (runes of
-//                        level_act1enemyduel_01a) + the safe zone (data/sources/env_025_act1enemyduel.json)
+//                        level_act1enemyduel_01a) + the safe zone (data/sources/env_025_act1enemyduel.json) + the
+//                        battle's emoticon theme (display_meta_table → emoticonData)
 //   data/fighters.json   the roster: every duel enemy with a model (see below) — stats, duel score (numOfExtraDrops),
 //                        pool weights, talents, skills from enemy_database; the original enemy's handbook abilities;
 //                        model scale / animation roles / damage type from the model source
@@ -10,8 +11,8 @@
 //
 // Sources
 //   --gamedata <dir>   zh_CN/gamedata of an ArknightsGameData checkout (github.com/Kengxxiao/ArknightsGameData):
-//                      excel/activity_table.json, excel/enemy_handbook_table.json, levels/enemydata/enemy_database.json,
-//                      levels/activities/act1enemyduel/level_act1enemyduel_01a.json
+//                      excel/activity_table.json, excel/enemy_handbook_table.json, excel/display_meta_table.json,
+//                      levels/enemydata/enemy_database.json, levels/activities/act1enemyduel/level_act1enemyduel_01a.json
 //   --models <dir>     a Stronghold Protocol checkout with its assets fetched (github.com/sganggs/Stronghold-Protocol,
 //                      `npm run assets`): data/enemies.json, data/assets.json and public/assets/** hold the enemy
 //                      Spine models and portraits this project reuses (each duel enemy is drawn as its original,
@@ -35,6 +36,7 @@ const db = Object.fromEntries(json(G, 'levels', 'enemydata', 'enemy_database.jso
 const HB = json(G, 'excel', 'enemy_handbook_table.json').enemyData;
 const level = json(G, 'levels', 'activities', 'act1enemyduel', 'level_act1enemyduel_01a.json');
 const zone = json(ROOT, 'data', 'sources', 'env_025_act1enemyduel.json');
+const emo = json(G, 'excel', 'display_meta_table.json').emoticonData;
 
 // ---- the level's rules ------------------------------------------------------------------------------------------------
 const rune = (key) => level.runes.find((r) => r.key === key);
@@ -51,6 +53,8 @@ const duelcfg = {
   modes: cfg.modeData, rounds: cfg.roundData, npcs: cfg.npcData, npcSelector: cfg.npcSelectorData,
   extraScore: cfg.extraScoreData, basicScores: cfg.basicScores, announce: cfg.announceData.map((x) => x.announceText),
   comments: cfg.commentData, tips: cfg.tipsData.map((t) => t.txt), consts: cfg.constData, env,
+  // the emoji panel's theme (enabledEmoticonThemeIdList): its emojis' pictures in their sortId order
+  emoticons: cfg.enabledEmoticonThemeIdList.map((id) => ({ id, pics: emo.emoticonThemeDataDict[id].map((e) => emo.emojiDataDict[e]).sort((a, b) => a.sortId - b.sortId).map((e) => e.picId) })),
 };
 writeFileSync(join(ROOT, 'data', 'duelcfg.json'), JSON.stringify(duelcfg, null, 1) + '\n');
 

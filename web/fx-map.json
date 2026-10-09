@@ -31,6 +31,17 @@
   "ice": "bingkuai_02.png",
   "snow": "xuehua_02.png",
   "flare": "star_03.png",
-  "emojiHello": "pic_hello.png",
+  "pic_left": "pic_left.png",
+  "pic_right": "pic_right.png",
+  "pic_hello": "pic_hello.png",
+  "pic_happy": "pic_happy.png",
+  "pic_think": "pic_think.png",
+  "pic_sad": "pic_sad.png",
+  "pic_what": "pic_what.png",
+  "pic_clown": "pic_clown.png",
+  "pic_wronged": "pic_wronged.png",
+  "pic_shock": "pic_shock.png",
+  "pic_pray": "pic_pray.png",
+  "pic_busk": "pic_busk.png",
   "dissolve": "img_dissolve_01.png"
 }

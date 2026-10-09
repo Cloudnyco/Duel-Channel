@@ -3382,5 +3382,24 @@
   "statusResist": [
    "enemy_15024_dqreid"
   ]
- }
+ },
+ "emoticons": [
+  {
+   "id": "emticon_duel_basic",
+   "pics": [
+    "pic_left",
+    "pic_right",
+    "pic_hello",
+    "pic_happy",
+    "pic_think",
+    "pic_sad",
+    "pic_what",
+    "pic_clown",
+    "pic_wronged",
+    "pic_shock",
+    "pic_pray",
+    "pic_busk"
+   ]
+  }
+ ]
 }

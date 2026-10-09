@@ -13,6 +13,7 @@ class Link {
       let m; try { m = JSON.parse(e.data); } catch (err) { return; }
       m._at = performance.now();
       if (m.t === 'pong') { if (Number.isFinite(m.c)) PING.got(m._at - m.c); return; }
+      if (m.t === 'emoji') { EMO.receive(m); return; }
       const i = this.waiters.findIndex((w) => w.types.includes(m.t));
       if (i >= 0) this.waiters.splice(i, 1)[0].res(m); else this.q.push(m);
     };
@@ -239,6 +240,7 @@ async function searchDialog() {
 async function stGameOnline() {
   let left = false;
   G.log = [];
+  EMO.begin();
   for (;;) {
     const m = await NET.match.next(['round', 'finish']);
     if (m.t !== 'round') { if (m.t === 'finish') applyServerPlayers(m.players); else toast('与对战实例的连接已断开', 3); break; }
@@ -259,6 +261,7 @@ async function stGameOnline() {
     left = await scoreboard(r);
     if (left) { NET.match.send({ t: 'leave' }); break; }
   }
+  EMO.end();
   G.left = left;
   return 'finish';
 }

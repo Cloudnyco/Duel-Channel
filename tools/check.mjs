@@ -18,7 +18,7 @@ for (const k of ['FONT_BENDER', 'FONT_NOVECENTO', 'PIXI', 'PIXISPINE', 'DATA', '
   check(tpl.split(`/*${k}*/`).length === 2, `web/index.src.html: /*${k}*/ must appear exactly once`);
 }
 // the page's scripts are concatenated into one function body: together they must parse
-const body = ['web/src/engine.js', 'web/src/particles.js', 'shared/sim.js', 'web/src/arena.js', 'web/src/net.js', 'web/src/flow.js'].map(rd).join('\n');
+const body = ['web/src/engine.js', 'web/src/particles.js', 'shared/sim.js', 'web/src/arena.js', 'web/src/net.js', 'web/src/emote.js', 'web/src/flow.js'].map(rd).join('\n');
 try { new Function(body); } catch (e) { fails.push('web sources do not parse together: ' + e.message); }
 // data
 const cfg = JSON.parse(rd('data/duelcfg.json')), roster = JSON.parse(rd('data/fighters.json'));

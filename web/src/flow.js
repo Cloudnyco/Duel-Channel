@@ -582,6 +582,16 @@ function lineupRow(scr, side, groups) {
   content.rt.size[1] = total; content.rt.pos[1] = 0;
   if (vp) { vp.rt.size[1] = Math.min(total, 380); scrollable(vp, content, total); }
 }
+// the top bar (panel_top_menu) of the bet and battle screens: the match and round, the latency, the back button (a hint
+// here), the emoji switch and panel
+function topBar(scr, holder, r) {
+  const top = instantiate(scr, scr.one(holder), 'panel_top_menu');
+  scr.text('group_topleft/text_title', `${G.mode.name} · 第 ${r} 轮`, top);
+  watchPing(scr, 'panel_lag/text_num', top);
+  scr.tap('group_topleft/btn_back/hotspot', () => toast('比赛进行中，可在计分板“离开比赛”'), top);
+  EMO.bar(scr, top);
+  return top;
+}
 async function betPhase(r, rd, lineups, winner, net = null) {
   phase(`第 ${r} 轮 · 押注（选择支持的队伍）`);
   const stake = rd.roundScore, solo = !net && isSolo();
@@ -616,6 +626,7 @@ async function betPhase(r, rd, lineups, winner, net = null) {
   const tips = DCFG.tips.filter((x) => !/观众保护|竞猜对决/.test(x)), tip = tips[Math.floor(Math.random() * tips.length)];
   scr.text('panel_contdown_middle/text_info', out ? '你已被淘汰，正在观战……' : solo ? '选择后即开赛 · ' + tip : tip);
   lineupRow(scr, 0, lineups[0]); lineupRow(scr, 1, lineups[1]);
+  topBar(scr, 'manager_mode_view/top_menu_holder', r);
   scr.show('group_staff_info_left/panel_info', false); scr.show('group_staff_info_right/panel_info', false);
   const opened = {};
   for (const side of ['group_staff_info_left', 'group_staff_info_right']) {
@@ -690,7 +701,7 @@ async function betPhase(r, rd, lineups, winner, net = null) {
     if (!red && left <= RED) { red = true; scr.play('panel_contdown_middle', 'battle_ui_countdown_red', { loop: true }); }
     if (left <= RED && left > 0 && Math.ceil(left) !== lastTick) { lastTick = Math.ceil(left); sfx('b_ui_dqcountdown'); }
     let changed = false;
-    for (const x of npcs) if (!x.done && t >= x.at) { x.done = true; x.p.choice = npcDecide(x.p, rd, lineups, winner); changed = true; }
+    for (const x of npcs) if (!x.done && t >= x.at) { x.done = true; x.p.choice = npcDecide(x.p, rd, lineups, winner); changed = true; EMO.npc('bet', x.p, null, 0.2 + Math.random() * 0.8); }
     if (changed) refresh();
   }
   for (const x of npcs) if (!x.done) x.p.choice = npcDecide(x.p, rd, lineups, winner);
@@ -705,14 +716,7 @@ async function battlePhase(r, online = false) {
   const scr = new Screen('battle_state', { z: 20 });
   scr.show('panel_waiting', false);
   scr.text('pnl_round/text_round', pad2(r)); scr.text('pnl_allround/text_allround', '/' + pad2(ROUNDS));
-  const top = instantiate(scr, scr.one('root/top_container'), 'panel_top_menu');
-  scr.text('group_topleft/text_title', `${G.mode.name} · 第 ${r} 轮`, top);
-  watchPing(scr, 'panel_lag/text_num', top);
-  scr.tap('group_topleft/btn_back/hotspot', () => toast('比赛进行中，可在计分板“离开比赛”'), top);
-  scr.tap('btn_emoji_switch/hotspot', () => toast('表情：本演示未实现'), top);
-  scr.tap('btn_emoji_select/hotspot', () => toast('表情：本演示未实现'), top);
-  // the emoji button (on): the default emoticon, pic_hello
-  setImage(scr.one('btn_emoji_select/state_on/container_emoji/img_emoji', top), FXTEX.emojiHello, 'contain');
+  topBar(scr, 'root/top_container', r);
   fillLists(scr, 'content', 'text');
   const c = me.choice;
   scr.show('root/panel_battle_holder/group_support', !!(c && !c.skip));
@@ -737,7 +741,12 @@ async function battlePhase(r, online = false) {
     if (!G.serverResult) { scr.show('panel_waiting', true); phase(`第 ${r} 轮 · 正在等待其他玩家结束观赛……`); }
     await res;
     scr.show('panel_waiting', false);
-  } else result = await startBattle();
+  } else {
+    // offline the NPC viewers react during the fight and to its outcome (online the instance sends theirs)
+    for (const p of players) EMO.npc('battle', p, null, 1 + Math.random() * 7);
+    result = await startBattle();
+    for (const p of players) EMO.npc('result', p, !!(p.choice && !p.choice.skip && (result === 'draw' || p.choice.side === result)), 0.1 + Math.random() * 0.7);
+  }
   phase(`第 ${r} 轮 · ${result === 'draw' ? '平局' : result === 0 ? '左队（红）胜' : '右队（蓝）胜'}`);
   await wait(1.6);
   await fadeOut(scr, 0.25);
@@ -831,6 +840,7 @@ async function stGame() {
   let left = false;
   const rounds = roundsOf(G.mode);
   G.log = [];
+  EMO.begin();
   for (let i = 0; i < rounds.length && !left; i++) {
     const rd = rounds[i], r = rd.round;
     G.round = r;
@@ -848,6 +858,7 @@ async function stGame() {
     left = await scoreboard(r);
     if (players.filter((p) => !p.out).length <= 1) break;
   }
+  EMO.end();
   G.left = left;
   return 'finish';
 }
@@ -963,6 +974,7 @@ function frame(now) {
   tickTimers();
   tickAnims(dt);
   tickSpinners(dt);
+  EMO.tick(dt);
   for (const scr of screens.slice()) layout(scr.root, 1280, 720, [0.5, 0.5], true);
   tickParticles(dt, stageK);
   arenaFrame(dt);
@@ -1123,7 +1135,7 @@ async function boot() {
     for (;;) st = await STATES[st](FLOW.ctx);
   } catch (e) { $('err').textContent = String(e.stack || e); console.error(e); }
 }
-window.__flow = { SND, DCFG, NET, dbg: { STATES, FLOW, get playing() { return playing; }, POOL, startBattle, clearArena, Screen, roundEnd, scoreboard, settle, setupRound, makeLineups, predict, makeWorld, simStep, mulberry32, roundsOf, betPhase, battlePhase, stFinish, stShow, play, get me() { return me; } }, G, get players() { return players; }, CLOCK, screens, arena: () => arena, phase: () => $('phase').textContent,
+window.__flow = { SND, DCFG, NET, EMO, dbg: { STATES, FLOW, get playing() { return playing; }, POOL, startBattle, clearArena, Screen, roundEnd, scoreboard, settle, setupRound, makeLineups, predict, makeWorld, simStep, mulberry32, roundsOf, betPhase, battlePhase, stFinish, stShow, play, get me() { return me; } }, G, get players() { return players; }, CLOCK, screens, arena: () => arena, phase: () => $('phase').textContent,
   // test hook: click the topmost shown, clickable node whose path ends with the suffix
   tap: (suf) => { for (const scr of screens.slice().reverse()) { const s = scr.q(suf).find((x) => x.shown && x.el.onclick); if (s) { s.el.click(); return true; } } return false; } };
 boot();

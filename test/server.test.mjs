@@ -1,5 +1,5 @@
 // The multiplayer server end to end: a gateway and one battle instance on free ports, eight bot clients queue for
-// 礼物对决 and play a whole match (fast timings), the status page and the health probe answer.
+// 礼物对决 and play a whole match (fast timings) sending emojis, the status page and the health probe answer.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
@@ -30,6 +30,11 @@ test('a full match: 8 bots through the queue on one instance', { timeout: 240000
     assert.equal(finished.length, 8, out);
     const ranks = finished.map((l) => Number(l.match(/#(\d+)/)[1])).sort((a, b) => a - b);
     assert.deepEqual(ranks, [1, 2, 3, 4, 5, 6, 7, 8]);
+    // emojis: everyone sees the others'; a double send gets through once; a picture outside the theme never
+    for (const l of finished) {
+      const [, others, burst, bad] = l.match(/emoji: others (\d+), burst (\d+), bad (\d+)/).map(Number);
+      assert.ok(others > 0, l); assert.equal(burst, 1, l); assert.equal(bad, 0, l);
+    }
     const st = await (await fetch(`http://127.0.0.1:${gw}/status`)).json();
     assert.equal(st.instances.length, 1);
   } finally { for (const p of procs) p.kill(); }

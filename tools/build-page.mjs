@@ -64,6 +64,7 @@ const parts = {
   '/*SIM*/': safe(rd(join(ROOT, 'shared', 'sim.js'))),
   '/*ARENA*/': safe(rd(join(ROOT, 'web', 'src', 'arena.js'))),
   '/*NET*/': safe(rd(join(ROOT, 'web', 'src', 'net.js'))),
+  '/*EMOTE*/': safe(rd(join(ROOT, 'web', 'src', 'emote.js'))),
   '/*FLOW*/': safe(rd(join(ROOT, 'web', 'src', 'flow.js'))),
 };
 let out = rd(join(ROOT, 'web', 'index.src.html'));

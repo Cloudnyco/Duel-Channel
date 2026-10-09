@@ -328,3 +328,22 @@ function settleOne(p, choice, rd, w) {
   p.pts = Math.min(C.modeOperationMaxScore || 999999999, p.pts + p.change);
   if (p.pts <= 0) { p.pts = 0; p.out = true; p.outRound = rd.round; }
 }
+
+// The emoji panel's pictures (the battle's emoticon theme, enabledEmoticonThemeIdList → display_meta_table).
+const EMOJI_PICS = (DCFG.emoticons && DCFG.emoticons[0] ? DCFG.emoticons[0].pics : []);
+// An NPC viewer's emoji at a moment of the round, or null. The official data gives the NPC viewers no emoji behaviour
+// (real players send them online); this project lets them react so the barrage lives offline too. moment: 'bet' (just
+// picked: point at the backed side, or ponder a skip), 'battle' (a reaction), 'result' (the round's outcome for its
+// choice). Kept to a sprinkle: a third to a half of them speak per moment, some eight emojis a round.
+function npcEmote(moment, choice, right, rnd) {
+  const has = (p) => EMOJI_PICS.includes(p), any = (a) => { const ok = a.filter(has); return ok.length ? ok[Math.floor(rnd() * ok.length)] : null; };
+  switch (moment) {
+    case 'bet': if (rnd() >= 0.45 || !choice) return null; return choice.skip ? any(['pic_think', 'pic_what']) : any([choice.side ? 'pic_right' : 'pic_left']);
+    case 'battle': return rnd() < 0.3 ? any(['pic_shock', 'pic_pray', 'pic_think', 'pic_what']) : null;
+    case 'result':
+      if (!choice || choice.skip) return rnd() < 0.15 ? any(['pic_what', 'pic_hello']) : null;
+      if (rnd() >= 0.55) return null;
+      return right ? any(['pic_happy', 'pic_busk', 'pic_hello']) : any(['pic_sad', 'pic_wronged', 'pic_clown', 'pic_shock']);
+    default: return null;
+  }
+}

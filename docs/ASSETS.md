@@ -40,7 +40,8 @@ assets/
 
 - 旧版动画的四元数旋转曲线（`m_RotationCurves`）换算为 z 轴欧拉角曲线；
 - 带形状遮罩的材质（`_DissolveMapA`）把遮罩烘进精灵的透明通道，存为 `sprite/<精灵>@<遮罩>`；
-- 每个带非默认材质的节点记下 `comps.mat`（形状着色器、UV 滚动等参数）。
+- 每个带非默认材质的节点记下 `comps.mat`（形状着色器、UV 滚动等参数）；
+- `panel_emoji` 取预制体的根节点（含全屏的 `btn_raycast` 和打开动画 `battle_ui_emoji_select_panel`），而不是同名的内层节点。
 
 ### models.json
 
@@ -60,7 +61,8 @@ node tools/build-data.mjs --gamedata <ArknightsGameData>/zh_CN/gamedata --models
   - `img_fx_*`、`img_uifx_*` 来自界面特效图集；
   - `T_starting_*` / `T_ending_*` / `flow_242` / `mask_*` / `kuangre_01` / `star_*` / `ray_13` / `bingkuai_02` / `xuehua_02` 来自战斗特效包（出入口、安全区边界线、buff）；
   - `map_ground.png` / `map_forbid.png` / `map_hlight.png` 是公共地图图集里地面、禁区地块和高台灯的裁切；
-  - `img_dissolve_01.png` 是转场的方块噪声。
+  - `img_dissolve_01.png` 是转场的方块噪声；
+  - `pic_*.png` 是对战表情主题（`ui/emoticon/theme/[uc]emticon_duel_basic.ab`）的 12 个表情。
 - `fonts/`：Bender 与 Novecento wide（各自作者的许可）。
 
 ## 没有素材时

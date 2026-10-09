@@ -11,8 +11,8 @@ export function loadSim() {
   };
   vm.createContext(ctx);
   vm.runInContext(load('shared/sim.js') + `
-;globalThis.SIM = { makeLineups, predict, npcPick, settleOne, mulberry32, sideScore, makeWorld, simStep, zoneAt, zoneRect,
-  outsideZone, POOL, DCFG, ENV, DT, BATTLE_MAX };`, ctx);
+;globalThis.SIM = { makeLineups, predict, npcPick, npcEmote, settleOne, mulberry32, sideScore, makeWorld, simStep, zoneAt, zoneRect,
+  outsideZone, POOL, DCFG, ENV, DT, BATTLE_MAX, EMOJI_PICS };`, ctx);
   return ctx.SIM;
 }
 // the 礼物对决 match rounds in order

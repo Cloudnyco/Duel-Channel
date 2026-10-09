@@ -11,6 +11,7 @@
 | `../shared/sim.js` | 对战模拟、阵容生成、NPC 选边、结算（页面和服务端共用） |
 | `src/arena.js` | PixiJS 场地：透视地面网格（官方地块图集）、出入口、LED 墙、追光灯、安全区边界线、单位（Spine）、血条、buff / 晕眩 / 冻结效果、命中特效 |
 | `src/net.js` | 联机：大厅与比赛的 WebSocket（`Link`）、延迟探测、服务端玩家、匹配与房间界面 |
+| `src/emote.js` | 表情：顶栏的开关与表情面板、飘落弹幕（轨道选择、缓动曲线）、单机时 NPC 的表情 |
 | `src/flow.js` | 流程状态机（入口 → 选择赛事 → 匹配 / 房间 → 即将开始 → 加载 → 10 轮 → 结算）、方块溶解转场、设置面板与头像、开始界面 |
 
 页面以 `file://` 打开时是单机模式；由网关以 http 提供时自动进入联机模式。
@@ -28,10 +29,10 @@
 | `launch.mjs` | 启动网关和 N 个实例（子进程，统一日志，Ctrl+C 全部停止） |
 | `gateway.mjs` | 提供页面；大厅（昵称、头像校验、匹配队列、群组房间）；`/status`、`/healthz`；把新比赛交给负载最低的实例 |
 | `instance.mjs` | 对战实例：`POST /create`（仅本机）、`/status`、比赛的 WebSocket |
-| `game.mjs` | 一场礼物对决：NPC 补位、轮次、押注校验（观望 / 全力支持的条件）、预先模拟、等待所有人看完战斗、结算与排名 |
+| `game.mjs` | 一场礼物对决：NPC 补位、轮次、押注校验（观望 / 全力支持的条件）、预先模拟、等待所有人看完战斗、结算与排名、表情转发（校验与限频）和 NPC 的表情 |
 | `bots.mjs` | 机器人客户端（无渲染），测试与陪玩 |
 
 消息（JSON over WebSocket）：
 
 - 大厅：`hello` / `welcome`、`queue` / `cancel`、`room.*`、`avatar`、`matched`、`ping` / `pong`。
-- 比赛：`hello`、`phase`、`round`（阵容 + 种子 + 押注时长）、`bets`、`battle`、`result`、`finish`、`ready` / `watched` / `bet` / `leave`、`ping` / `pong`。
+- 比赛：`hello`、`phase`、`round`（阵容 + 种子 + 押注时长）、`bets`、`battle`、`result`、`finish`、`ready` / `watched` / `bet` / `leave`、`emoji`（客户端发 `{ pic }`，服务端转发 `{ id, pic }`）、`ping` / `pong`。

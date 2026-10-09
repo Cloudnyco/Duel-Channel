@@ -68,3 +68,20 @@ test('the level\'s runes are applied: ATK × 1.5, max HP × 0.5', () => {
   assert.equal(W.units[0].maxHp, f.hp * 0.5);
   assert.equal(W.units[0].atk, f.atk * 1.5);
 });
+
+test('emojis: the battle theme\'s 12 pictures; NPC reactions only use them and fit the moment', () => {
+  assert.equal(SIM.EMOJI_PICS.length, 12);
+  assert.equal(SIM.EMOJI_PICS[0], 'pic_left'); assert.equal(SIM.EMOJI_PICS[1], 'pic_right');
+  const rnd = SIM.mulberry32(7), seen = new Set();
+  for (let i = 0; i < 4000; i++) {
+    const left = SIM.npcEmote('bet', { side: 0, kind: 'normal' }, null, rnd), right = SIM.npcEmote('bet', { side: 1, kind: 'all' }, null, rnd);
+    assert.ok(left === null || left === 'pic_left'); assert.ok(right === null || right === 'pic_right');
+    for (const [m, ch, ok] of [['battle', null, null], ['result', { side: 0, kind: 'normal' }, true], ['result', { side: 0, kind: 'normal' }, false], ['result', { skip: true }, null]]) {
+      const pic = SIM.npcEmote(m, ch, ok, rnd);
+      if (pic) { assert.ok(SIM.EMOJI_PICS.includes(pic), pic); seen.add(pic); }
+      if (m === 'result' && ok === true) assert.ok(!['pic_sad', 'pic_wronged', 'pic_clown'].includes(pic));
+      if (m === 'result' && ok === false) assert.ok(!['pic_happy', 'pic_busk'].includes(pic));
+    }
+  }
+  assert.ok(seen.size >= 8, [...seen].join());
+});

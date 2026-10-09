@@ -13,7 +13,7 @@ const ctx = {
   clamp: (v, a, b) => Math.max(a, Math.min(b, v)), lerp: (a, b, t) => a + (b - a) * t, Math, console,
 };
 vm.createContext(ctx);
-vm.runInContext(load('shared/sim.js') + '\n;globalThis.SIM = { makeLineups, predict, npcPick, settleOne, mulberry32, pickWeighted, POOL, DCFG };', ctx);
+vm.runInContext(load('shared/sim.js') + '\n;globalThis.SIM = { makeLineups, predict, npcPick, npcEmote, settleOne, mulberry32, pickWeighted, POOL, DCFG, EMOJI_PICS };', ctx);
 export const SIM = ctx.SIM;
 const C = SIM.DCFG.consts;
 
@@ -33,7 +33,7 @@ const avatarKeys = () => SIM.POOL.map((f) => f.key);
 
 export class Match {
   constructor({ id, mode, humans, npcFill, log = () => {} }) {
-    this.id = id; this.mode = mode; this.log = log; this.done = false; this.round = null; this.phase = 'wait';
+    this.id = id; this.mode = mode; this.log = log; this.done = false; this.round = null; this.phase = 'wait'; this.later = new Set();
     this.rounds = Object.values(SIM.DCFG.rounds).filter((r) => r.modeId === mode).sort((a, b) => a.round - b.round);
     const max = (SIM.DCFG.modes[mode] || {}).maxPlayer || 8;
     const used = new Set(humans.map((h) => h.avatar));
@@ -72,9 +72,28 @@ export class Match {
     else if (m.t === 'watched') p.watched = true;
     else if (m.t === 'leave') { p.left = true; this.log(`${p.name} left`); }
     else if (m.t === 'bet') this.bet(p, m);
+    else if (m.t === 'emoji') this.emoji(p, m.pic);
     // the page's latency probe: echo its clock back
     else if (m.t === 'ping' && Number.isFinite(m.c)) this.send(p, { t: 'pong', c: m.c });
   }
+  // an emoji for the barrage: one of the theme's pictures, while the top bar is up (bets, battle, the round's end), at most
+  // one per consts.chatCd seconds per seat; everyone (the sender too) gets it
+  emoji(p, pic) {
+    if (!['bet', 'battle', 'result'].includes(this.phase) || p.left || !SIM.EMOJI_PICS.includes(pic)) return;
+    const now = Date.now();
+    if (now - (p.emojiAt || 0) < (C.chatCd ?? 1) * 1000 - 50) return;
+    p.emojiAt = now;
+    this.bcast({ t: 'emoji', id: p.id, pic });
+  }
+  // the NPC viewers' reactions (npcEmote), each after a delay of its own
+  npcEmotes(moment, delay, rightOf = () => null) {
+    for (const p of this.players) {
+      if (!p.npc || p.out) continue;
+      const pic = SIM.npcEmote(moment, p.choice, rightOf(p), Math.random);
+      if (pic) this.after(delay(), () => { if (['bet', 'battle', 'result'].includes(this.phase)) this.bcast({ t: 'emoji', id: p.id, pic }); });
+    }
+  }
+  after(ms, fn) { const h = setTimeout(() => { this.later.delete(h); fn(); }, ms); this.later.add(h); }
   // a bet is checked against the round's rules: 观望 only when the round allows it, 支持 only with enough gifts,
   // 全力支持 when the round opens it or the gifts no longer cover the stake
   bet(p, m) {
@@ -118,6 +137,7 @@ export class Match {
       this.bcast({ t: 'finish', players: this.snapshot() });
       this.log(`match ${this.id} finished: ${this.players.slice().sort((a, b) => b.pts - a.pts).map((p) => `${p.name} ${p.pts}`).join(', ')}`);
     } catch (e) { this.log(`match ${this.id} error: ${e.stack || e}`); }
+    for (const h of this.later) clearTimeout(h);
     await sleep(3000);
     for (const p of this.players) if (p.ws) try { p.ws.close(1000, 'match over'); } catch (e) { /* gone */ }
     this.done = true;
@@ -137,6 +157,8 @@ export class Match {
         if (this.phase !== 'bet') return;
         p.choice = SIM.npcPick(p.npc, { pts: p.pts, rd, lineups, winner: pred.winner, sup: this.supporters(), rnd: Math.random });
         this.bcast({ t: 'bets', choices: { [p.id]: p.choice } });
+        const pic = SIM.npcEmote('bet', p.choice, null, Math.random);
+        if (pic) this.after(200 + Math.random() * 800, () => { if (this.phase === 'bet') this.bcast({ t: 'emoji', id: p.id, pic }); });
       }, at);
     });
     await sleep(T.bet);
@@ -149,10 +171,14 @@ export class Match {
     }
     this.phase = 'battle';
     this.bcast({ t: 'battle', choices: Object.fromEntries(this.players.filter((p) => p.choice).map((p) => [p.id, p.choice])) });
+    // reactions while the fight runs (after the clients' round-start banner, within the battle)
+    this.npcEmotes('battle', () => 2500 + Math.random() * Math.max(1000, Math.min(8000, pred.time * 1000)));
     await this.waitHumans((p) => p.watched, pred.time * 1000 + T.battleExtra);
     for (const p of this.players) SIM.settleOne(p, p.choice, rd, pred.winner);
     this.phase = 'result';
     this.bcast({ t: 'result', r: rd.round, w: pred.winner, players: this.snapshot() });
+    // the outcome: the clients show the arena a moment longer before the round's panel
+    this.npcEmotes('result', () => 100 + Math.random() * 700, (p) => p.right);
     await sleep(T.result + T.rank);
   }
 }

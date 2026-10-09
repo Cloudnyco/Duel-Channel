@@ -9,6 +9,7 @@
 | `excel/activity_table.json` → `activity.ENEMY_DUEL.act1enemyduel` | 模式、10 轮的押注额与阵容规则、28 名 NPC 观众与选边策略、常量（押注 20 秒 / 最后 7 秒、计分板 8 秒、初始 10000、倍率 1 / 2、NPC 正确率 0.3、延迟阈值等）、评论与提示文本 | `data/duelcfg.json` |
 | `levels/enemydata/enemy_database.json` | 敌人属性、天赋、技能（含 spCost 与 blackboard）、免疫、分值（`numOfExtraDrops`） | `data/fighters.json` |
 | `excel/enemy_handbook_table.json` | 原型敌人的图鉴能力描述（押注界面的敌人信息） | `data/fighters.json` → `abilities` |
+| `excel/display_meta_table.json` → `emoticonData` | 对战表情主题 `emticon_duel_basic`（`enabledEmoticonThemeIdList`）的 12 个表情，按 `sortId` 排序 | `data/duelcfg.json` → `emoticons` |
 | `levels/activities/act1enemyduel/level_act1enemyduel_01a.json` | 关卡规则：攻击 ×1.5、生命 ×0.5、敌人移速 ×0.5、安全区外的增益参数、火与钢的状态抗性 | `data/duelcfg.json` → `env` |
 | 客户端 `env_025_act1enemyduel`（环境预制体）与 `common_V060_line_1…4`（边界线特效） | 安全区：圆心格 (7, 5)，60 秒后首次缩小，之后每 20 秒一次，依次为 9×7、7×5、5×3、3×1 格 | `data/sources/env_025_act1enemyduel.json` |
 | 客户端地块预制体 `tile_*_dqq` | 圈外地块的 buff（`tile_dqinfect`）：攻击、攻速、移速；出入口格不加移速 | 同上 |
@@ -42,12 +43,24 @@
   - 按敌人数量奇偶选边；
   - `ALWAYS_LEFT`。
 
+## 表情
+
+参数来自对战界面预制体上的组件（`EnemyDuelEmoticonController`、`EnemyDuelEmoticonPageComponent`、`EnemyDuelEmoticonBarrageItem`）和活动常量：
+
+- 押注和对战的顶栏右上角：开关（已开启 / 已屏蔽，屏蔽后不显示弹幕、也不能发送）和表情按钮（显示默认表情 `defaultEmoticonPicId` = `pic_hello`）。
+- 表情面板：一个主题，12 个表情，4 列网格（格子 93.3 px，间距 7.5 px）；点空白处关闭。
+- 发送间隔 `chatCd` = 1 秒（服务端同样限制）。
+- 弹幕：9 条轨道；表情从画面顶端之上（宽度的 0.3–0.7 处，缩放 0.8）落到底端之下（0.05–0.95 处，缩放 1.1），历时 3.2 秒，按预制体的缓动曲线加速下落；自己发的表情带底光。轨道按权重选择：一条轨道上次出表情后，权重按曲线在 15 秒内恢复（9 秒内为 0）。
+- 弹幕层在场地之上、所有状态面板之下（与 `barrage_container` 的位置一致）。
+
 ## 按推断实现的部分
 
 数据和 PRTS 都没有给出、本项目按推断实现的规则：
 
 - **对战超时**：到达 `battlePhaseTimeMax`（200 秒）时双方都未全灭，按平均剩余生命比例判胜负（差距小于 2% 判平局）。实际测试中几乎不会发生。
 - **NPC 的投注方式**：常量 `modeOperationSkipParam` / `BetParam` / `AllinParam` 被解释为观望 / 支持 / 全力支持的权重，全力支持再乘以 NPC 的 `allinProb`。
+- **NPC 观众的表情**：官方数据没有给 NPC 设置表情行为（联机时由真人发送）。本项目让 NPC 在三个时刻有一定概率发表情，使单机时弹幕也有内容：选边后（指向支持的一侧，观望时思考）、对战中（惊讶、祈祷等）、出结果时（猜对开心、猜错难过）。规则在 `shared/sim.js` 的 `npcEmote`，单机页面和服务端共用。
+- **轨道内的位置**：选中轨道后，在轨道宽度内随机取位置（避开两侧各 15%）。
 - **单位分离**：地面单位之间保持最小间距（0.5 格），飞行单位不受限。
 - **远程攻击**：投射物以每秒 9 格飞行，命中目标时结算。
 - 未实现的敌人与技能：竞猜对决的领袖（自在、依然“狼之主”、火与钢）的技能尚未实现（它们只出现在竞猜对决的领袖池）；没有本地模型的敌人不出现。
