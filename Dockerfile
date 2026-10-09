@@ -5,7 +5,7 @@
 #   docker build -t duel-channel .
 #   docker run --rm -p 127.0.0.1:8600:8600 -p 127.0.0.1:8611-8613:8611-8613 \
 #     -v "$PWD/public:/app/public:ro" duel-channel
-FROM node:24-alpine
+FROM node:25-alpine
 WORKDIR /app
 ENV NODE_ENV=production
 COPY package.json package-lock.json ./
