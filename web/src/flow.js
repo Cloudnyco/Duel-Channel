@@ -839,6 +839,73 @@ async function scoreboard(r) {
   await fadeOut(scr, 0.25);
   return leave;
 }
+// 竞猜对决's round settlement (stand_rank_state): every viewer of the match on one board, a card each
+// (panel_enemyduel_turn_settlement_player), in standing order. The cards sit in list_content's GridLayoutGroup (the
+// screen exporter skips that component; its values from the prefab): cells 115 × 152, spacing 10.5 × 12, a fixed 10
+// columns, the block centred, so 30 viewers make three rows of ten. A card: 自己 (yellow) / others / others whose
+// 观众保护 broke (grey); the shield still held or broken (protected rounds only); right this round; OUT (the card's
+// ground fades, a grey mask and the OUT stamp over the portrait, the name at half alpha — panel_..._out_once, played
+// for those OUT this round); on the last board the champion, the viewer still in (when the last ones all go OUT in the
+// same round nobody stands, and no card shows it — an interpretation). list: viewers with { id, name, avatar, me, out,
+// outRound, right, shield, shieldAt, rank }. Resolves true when the viewer chose 离开比赛.
+const STAND_GRID = { cell: [115, 152], gap: [10.5, 12], cols: 10 };
+async function standBoard(r, list, { last = false, seats = list.length } = {}) {
+  phase(last ? '竞猜对决 · 最终排名' : `第 ${r} 轮 · 竞猜结算`);
+  const scr = new Screen('stand_rank_state', { z: 22 });
+  const protectedRound = r <= (C.modeStandShieldTurn ?? 5);
+  scr.text('group_text/text_bg/text_title_name', last ? '最终排名' : `第 ${r} 轮`);
+  scr.text('player_num/title_layout_max/title_layout_min/text_left', String(list.filter((p) => !p.out).length));
+  scr.text('player_num/title_layout_max/title_layout_min/text_total', '/' + seats);
+  const order = list.slice().sort((a, b) => (a.rank || 0) - (b.rank || 0));
+  const box = scr.one('list_content'), { cell, gap, cols } = STAND_GRID;
+  const nx = Math.min(cols, order.length), ny = Math.ceil(order.length / cols);
+  // the content size fitter: as wide as the ten columns (min), as tall as the rows (preferred); a short row stays left
+  // within the block, a block of fewer than ten is centred
+  const fullW = cols * cell[0] + (cols - 1) * gap[0], blockW = nx * cell[0] + (nx - 1) * gap[0];
+  box.rt.size = [fullW, ny * cell[1] + Math.max(0, ny - 1) * gap[1]];
+  order.forEach((p, i) => {
+    const c = instantiate(scr, box, 'panel_enemyduel_turn_settlement_player');
+    const x = (fullW - blockW) / 2 + (i % cols) * (cell[0] + gap[0]), y = Math.floor(i / cols) * (cell[1] + gap[1]);
+    Object.assign(c.rt, { amin: [0, 1], amax: [0, 1], pivot: [0.5, 0.5], pos: [x + cell[0] / 2, -(y + cell[1] / 2)] });
+    const broken = protectedRound && p.shieldAt > 0, base = p.me ? 'mine' : broken ? 'other_shieldbroken' : 'other_normal';
+    for (const k of ['mine', 'other_normal', 'other_shieldbroken']) scr.show(k, k === base, c);
+    scr.image(`${base}/avatar_stencil/img_avarar`, p.avatar, c);
+    scr.text(`${base}/text_name`, p.out ? '' : p.name, c);
+    scr.text('out/text_name', p.name, c);
+    scr.show('out', p.out, c);
+    scr.show('shield', protectedRound && !p.out && p.shield, c);
+    scr.show('shieldbroken', broken && !p.out, c);
+    scr.show('win', !p.out && p.right === true, c);
+    const champ = last && p.rank === 1 && !p.out;
+    scr.show('champion', champ, c);
+    if (p.out) {
+      // OUT this round: the stamp lands now; OUT before: its end state (the others' card ground faded out)
+      if (p.outRound === r) play(c, 'panel_enemyduel_turn_settlement_out_once', { delay: 0.3 + i * 0.01 });
+      else for (const k of ['other_normal/bg', 'other_shieldbroken/bg']) { const g = scr.one(k, c); if (g && g.color) g.color[3] = 0; }
+    }
+    if (broken && !p.out && p.shieldAt === r) play(scr.one('shieldbroken', c), 'panel_enemyduel_turn_settlement_shieldbroken_once', { delay: 0.3 });
+    if (champ) play(scr.one('champion', c), 'panel_enemyduel_turn_settlement_champion_once', { delay: 0.3 });
+  });
+  playLoops(scr);
+  scr.play('enemyduel_turn_settlement', 'enemyduel_turn_settlement_in');
+  // 离开比赛 asks first (the popup by the button)
+  let leave = false;
+  const popup = scr.one('popup_window');
+  popup.active = false;
+  scr.text('popup/bg/text_info', '确定要离开比赛吗？');
+  scr.tap('btn_leavegame/hotspot', () => { popup.active = true; scr.play('popup', 'enemyduel_turn_settlement_popup_in'); });
+  scr.tap('popup/btn_no/hotspot', () => { popup.active = false; });
+  scr.tap('popup/btn_yes/hotspot', () => { leave = true; });
+  let n = C.modeStandRankTime || 8;
+  while (n > 0 && !leave) {
+    scr.text('group_countdown/text_count', String(n));
+    scr.text('group_countdown/text_state', last ? '秒后公布最终结果' : '秒后进入下一轮比赛');
+    for (let k = 0; k < 10 && !leave; k++) await wait(0.1);
+    if (!popup.active) n--;
+  }
+  await fadeOut(scr, 0.25);
+  return leave;
+}
 async function stGame() {
   let left = false;
   const rounds = roundsOf(G.mode);
@@ -1142,7 +1209,7 @@ async function boot() {
     for (;;) st = await STATES[st](FLOW.ctx);
   } catch (e) { REPORT.fatal(e); }
 }
-window.__flow = { SND, DCFG, NET, EMO, REPORT, dbg: { STATES, FLOW, get playing() { return playing; }, POOL, startBattle, clearArena, Screen, roundEnd, scoreboard, settle, setupRound, makeLineups, predict, makeWorld, simStep, mulberry32, roundsOf, betPhase, battlePhase, stFinish, stShow, play, get me() { return me; } }, G, get players() { return players; }, CLOCK, screens, arena: () => arena, phase: () => $('phase').textContent,
+window.__flow = { SND, DCFG, NET, EMO, REPORT, dbg: { STATES, FLOW, get playing() { return playing; }, POOL, startBattle, clearArena, Screen, roundEnd, scoreboard, settle, setupRound, makeLineups, predict, makeWorld, simStep, mulberry32, roundsOf, betPhase, battlePhase, stFinish, stShow, play, standBoard, avatarUri, get me() { return me; } }, G, get players() { return players; }, CLOCK, screens, arena: () => arena, phase: () => $('phase').textContent,
   // test hook: click the topmost shown, clickable node whose path ends with the suffix
   tap: (suf) => { for (const scr of screens.slice().reverse()) { const s = scr.q(suf).find((x) => x.shown && x.el.onclick); if (s) { s.el.click(); return true; } } return false; } };
 boot();
