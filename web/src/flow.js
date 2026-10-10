@@ -601,7 +601,7 @@ function lineupRow(scr, side, groups) {
   const host = scr.one(side === 0 ? 'group_staff_info_left' : 'group_staff_info_right');
   let row = host.el.querySelector(':scope > .lineup');
   if (!row) { row = document.createElement('div'); row.className = 'lineup ' + (side ? 'r' : 'l'); host.el.appendChild(row); }
-  row.innerHTML = groups.map((g) => `<div class="card" title="${g.f.name} ×${g.n}" style="background-image:url(${iconUri(g.f)})"><b>×${g.n}</b><span${[...g.f.name].length > 6 ? ' class="long"' : ''}>${g.f.name}</span></div>`).join('');
+  row.innerHTML = groups.map((g) => `<div class="card" title="${g.f.name} ×${g.n}" style="background-image:url(${iconUri(g.f)})"><b>×${g.n}</b></div>`).join('');
   const content = scr.one((side === 0 ? 'group_staff_info_left' : 'group_staff_info_right') + '/panel_info/main/scrollrect/viewport/content');
   clearKids(content);
   for (const g of groups) {
