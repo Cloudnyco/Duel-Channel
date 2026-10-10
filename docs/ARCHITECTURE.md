@@ -25,7 +25,10 @@
 
 ## 模拟（`shared/sim.js`）
 
-- 固定步长 1/30 秒，`mulberry32` 随机数。只用 IEEE 精确的运算（`sqrt`、加减乘除），时间按整数步计数，所以 Node 和各浏览器逐位一致。
+- 固定步长 1/30 秒，`mulberry32` 随机数。只用 IEEE 精确的运算（`sqrt`、`abs`、`floor`、`round`、`min`、`max`、`imul` 和加减乘除），时间按整数步计数，所以 Node 和各浏览器逐位一致。
+  - ESLint 在 `shared/sim.js` 里禁止三角函数、`hypot`、`pow`、`exp`、`log`、`**` 和 `Math.random`：各引擎在这些函数上的最后几位不同（例如 V8 的 `hypot` 最多差 2 ulp）。
+  - 已验证：540 场对战（40 场黄金对局、竞猜对决 10 轮各 30 场、200 场领袖战）在 Node、Chrome、Firefox、WebKit 中的最终状态逐位相同。
+- 倒计时（攻击间隔、技能、晕眩、重生等）每步减 1/30，小于 1e-9 即视为到点。1/30 无法精确表示，不加容差时 3.5 / 4 / 7 秒这类间隔总会晚一步，而 1.5 秒不会（修正前 48% 的连续攻击晚一步，修正后 1.3%，余下来自安全区等改变攻速的情况）。游戏本身用定点数计算（PRTS），整数步的间隔是精确的。
 - `makeWorld(lineups, seed)` → `simStep(W)` 直到 `W.done`；`predict` 是无渲染的快速版本，服务端用它预先算出结果。
 - 黄金对局（`test/fixtures/golden.json`，`tools/golden.mjs` 生成）锁定 40 场对战的阵容、胜负、结束步数和最终状态哈希。
 

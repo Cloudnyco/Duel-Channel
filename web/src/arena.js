@@ -489,6 +489,9 @@ function anim(u, kind, force) {
   }
 }
 function renderUnit(u, dt) {
+  // a fallen unit that has faded out (alpha 0 from 1.17 s): nothing left to draw — its view hidden, its skeleton no
+  // longer posed every frame (some 40 % of the unit-frames of a battle went to these)
+  if (u.dead && u.deadT >= 1.2) { if (u.view.visible) u.view.visible = false; return; }
   const [sx, sy, k] = proj(u.x, u.y);
   u.view.position.set(sx, sy);
   u.view.zIndex = sy;

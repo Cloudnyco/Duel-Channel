@@ -20,6 +20,11 @@ function mulberry32(a) { return () => { a |= 0; a = (a + 0x6d2b79f5) | 0; let t 
 
 // ---- the sim (no rendering): a world of units, deterministic for a seed ------------------------------------------------
 const DT = 1 / 30, HZ = 30, BATTLE_MAX = DCFG.consts.battlePhaseTimeMax || 200;
+// Timers count down by DT, which 1/30 cannot hold exactly: a 3.5 s countdown is still 4e-15 after its 105th step and
+// would run out one step late, a 1.5 s one would not — which intervals ran late depended on how their decimals round
+// (before this, 48 % of back-to-back attacks, every one of the 3.5 / 4 / 7 s attackers). The game counts in fixed point
+// (PRTS), where a whole number of steps is exact; so a countdown within EPS of zero has run out.
+const EPS = 1e-9;
 const ZONE_FIRST = Math.round((ENV.zoneFirst ?? 60) * HZ), ZONE_EVERY = Math.round((ENV.zoneEvery ?? 20) * HZ);
 const ZONES = ENV.zones || [[4, 3], [3, 2], [2, 1], [1, 0]], ZC = ENV.zoneCentre || [7, 5];
 // the safe zone at step n: -1 before the first, else the index into ZONES (half-extents in tiles around the centre tile)
@@ -193,14 +198,14 @@ function crossBlast(W, u, x, y, mult, cast) {
 }
 // a leader's step (after the damage over time, before the stun): the timers of its skills and states
 function leaderStep(W, u, T, SK) {
-  if (u.invT > 0) u.invT = Math.max(0, u.invT - DT);
-  if (u.rushT > 0) u.rushT -= DT;
+  if (u.invT > 0) { u.invT -= DT; if (u.invT <= EPS) u.invT = 0; }
+  if (u.rushT > 0) { u.rushT -= DT; if (u.rushT <= EPS) u.rushT = 0; }
   // “火与钢”: the low-HP state
   if (T['AtkUp.atk']) { const low = u.hp <= u.maxHp * T['atkup.hp_ratio']; u.atkMul = low ? 1 + T['AtkUp.atk'] : 1; u.dr = low ? T['AtkUp.damage_resistance'] : 0; }
   // “自在”: 纬地经天
   if (SK.CrossAttack) {
     u.crossT -= DT;
-    if (u.crossT <= 0) {
+    if (u.crossT <= EPS) {
       const by = foesOf(W, u).map((v) => [dist(v.x - u.x, v.y - u.y), v]).sort((a, b) => a[0] - b[0]);
       if (by.length) {
         u.crossT = SK.CrossAttack.cd;
@@ -218,7 +223,7 @@ function leaderStep(W, u, T, SK) {
     u.burstT -= DT;
     if (u.hold > 0) {
       u.hold -= DT;
-      if (u.hold <= 0) {
+      if (u.hold <= EPS) {
         u.hold = 0;
         if (u.barrier > 0) {
           u.barrier = 0;
@@ -227,7 +232,7 @@ function leaderStep(W, u, T, SK) {
           W.events.push(['barrierblast', u]);
         }
       }
-    } else if (u.burstT <= 0 && foesOf(W, u).some((v) => dist(v.x - u.x, v.y - u.y) <= burst.bb.range_radius)) {
+    } else if (u.burstT <= EPS && foesOf(W, u).some((v) => dist(v.x - u.x, v.y - u.y) <= burst.bb.range_radius)) {
       u.burstT = burst.cd; u.barrier = burst.bb.dynamic * BARRIER_K; u.hold = burst.bb.duration; u.skillSeq++;
       W.events.push(['barrier', u]);
     }
@@ -239,7 +244,7 @@ function leaderStep(W, u, T, SK) {
       if (u.fearHp0 - u.hp >= -F.hp_ratio_offset * u.maxHp) fearAllOff(W, u);
     } else if (u.charge > 0) {
       u.charge -= DT;
-      if (u.charge <= 0) {
+      if (u.charge <= EPS) {
         u.charge = 0;
         const tgts = drawN(foesOf(W, u), F.max_target, W.rng);
         if (tgts.length) {
@@ -248,9 +253,9 @@ function leaderStep(W, u, T, SK) {
         }
       }
     } else {
-      if (u.fearWait > 0) u.fearWait -= DT;
+      if (u.fearWait > EPS) u.fearWait -= DT;
       u.fsp = Math.min(C.sp, u.fsp + (T['Passive.sp'] || 1) * DT);
-      if (u.fsp >= C.sp && u.fearWait <= 0 && foesOf(W, u).length) { u.charge = F.duration_wait; W.events.push(['fearcharge', u]); }
+      if (u.fsp >= C.sp - EPS && u.fearWait <= EPS && foesOf(W, u).length) { u.charge = F.duration_wait; W.events.push(['fearcharge', u]); }
     }
   }
 }
@@ -283,7 +288,7 @@ function simStep(W) {
     if (u.dead) continue;
     if (u.rebornT > 0) {
       u.rebornT -= DT;
-      if (u.rebornT <= 0) {
+      if (u.rebornT <= EPS) {
         const T = u.f.talents; u.rebornT = 0; u.hp = u.maxHp * (T['Reborn.hp_ratio'] || 1); u.enhanced = true;
         u.atk += (T['enhance.atk'] || 0) * ENV.atkMul; u.defv += T['enhance.def'] || 0; u.res += T['enhance.magic_resistance'] || 0;
         u.bat = Math.max(0.3, u.bat + (T['enhance.base_attack_time'] || 0)); u.speed += (T['enhance.move_speed'] || 0) * ENV.moveMultiplier;
@@ -304,7 +309,7 @@ function simStep(W) {
     } else { u.outN = 0; u.stacks = 0; }
     const T = u.f.talents || {};
     if (T['periodic_damage.damage']) hurt(W, u, T['periodic_damage.damage'] * DT);
-    if (u.bleed.length) { for (const b of u.bleed) { hurt(W, u, b.arts ? b.dps * DT * Math.max(0.05, 1 - u.res / 100) : b.dps * DT); b.t -= DT; } u.bleed = u.bleed.filter((b) => b.t > 0); }
+    if (u.bleed.length) { for (const b of u.bleed) { hurt(W, u, b.arts ? b.dps * DT * Math.max(0.05, 1 - u.res / 100) : b.dps * DT); b.t -= DT; } u.bleed = u.bleed.filter((b) => b.t > EPS); }
     // 溶血骇惧 on this unit: HP lost at a rate rising over duration_bleed seconds to hp_ratio of max HP a second
     if (u.fear) { const F = u.fear.src.f.skillData.FearCage.bb; u.fear.t += DT; hurt(W, u, F.hp_ratio * u.maxHp * Math.min(1, u.fear.t / F.duration_bleed) * DT); }
     if (u.dead || u.rebornT > 0) continue;
@@ -312,17 +317,17 @@ function simStep(W) {
     // 庞贝: a blast at everything in range every few seconds
     if (u.rangeT) {
       u.rangeT -= DT;
-      if (u.rangeT <= 0) {
+      if (u.rangeT <= EPS) {
         u.rangeT = T['rangedamage.interval'];
         for (const v of W.units) if (!v.dead && v.side !== u.side && dist(v.x - u.x, v.y - u.y) <= u.reach) strike(W, v, T['rangedamage.attack@damage'] * Math.max(0.05, 1 - v.res / 100));
         W.events.push(['blast', u]);
       }
     }
-    if (u.stun > 0) { u.stun -= DT; if (u.stun <= 0) { u.stun = 0; u.stunKind = ''; } continue; }
+    if (u.stun > 0) { u.stun -= DT; if (u.stun <= EPS) { u.stun = 0; u.stunKind = ''; } continue; }
     // queued hits (the attack clip's hit frame)
     u.pending = u.pending.filter((p) => {
       p.t -= DT;
-      if (p.t > 0) return true;
+      if (p.t > EPS) return true;
       for (const tg of p.tgts) {
         if (tg.dead || tg.rebornT) continue;
         for (let i = 0; i < p.times; i++) {
@@ -333,7 +338,7 @@ function simStep(W) {
       return false;
     });
     u.retarget -= DT;
-    if (!u.target || u.target.dead || u.target.rebornT || u.retarget <= 0) { u.target = nearestEnemy(W, u); u.retarget = 0.5; }
+    if (!u.target || u.target.dead || u.target.rebornT || u.retarget <= EPS) { u.target = nearestEnemy(W, u); u.retarget = 0.5; }
     const tg = u.target;
     u.cd -= DT;
     if (!tg) { u.state = 'idle'; continue; }
@@ -347,7 +352,7 @@ function simStep(W) {
       const step = Math.min(d - u.reach * 0.9, u.speed * (u.outside && !gate ? ENV.ringMove : 1) * rush * DT);
       u.x += dx / d * step; u.y += dy / d * step;
       u.state = 'move';
-    } else if (u.cd <= 0) {
+    } else if (u.cd <= EPS) {
       let aspd = u.aspd + (u.outside ? ENV.ringAspd : 0);
       if (T['selfbuff.attack_speed'] && u.hp < u.maxHp * (T['selfbuff.hp_ratio'] || 0.5)) aspd += T['selfbuff.attack_speed'];
       if (u.fear) aspd = Math.max(10, aspd + u.fear.src.f.skillData.FearCage.bb.attack_speed);
@@ -369,7 +374,7 @@ function simStep(W) {
   for (const u of W.units) { u.x = clamp(u.x, 0.1, AW - 0.1); u.y = clamp(u.y, 0.1, AH - 0.1); }
   // shots
   W.shots = W.shots.filter((s) => {
-    if (s.delay > 0) { s.delay -= DT; return true; }
+    if (s.delay > EPS) { s.delay -= DT; return true; }
     const dx = s.tgt.x - s.x, dy = s.tgt.y - s.y, d = dist(dx, dy);
     if (d < 0.3 || s.tgt.dead) {
       if (s.o && s.o.cross) crossBlast(W, s.src, s.tgt.x, s.tgt.y, s.mult, s.o.cross);
@@ -408,6 +413,8 @@ function predict(lineups, seed) {
 const POOL_FIELD = { poolNormal: 'normal', poolSmallEnemy: 'small', poolBoss: 'boss' };
 const sideScore = (gs) => gs.reduce((s, g) => s + g.f.score * g.n, 0);
 const sidePower = (gs) => gs.reduce((s, g) => s + g.n * g.f.power, 0);
+// (the default generator serves the page's decorations only; the sim passes its own)
+// eslint-disable-next-line no-restricted-properties
 const pick = (a, rng = Math.random) => a[Math.floor(rng() * a.length)];
 function pickWeighted(list, w, rng) {
   const tot = list.reduce((a, x) => a + w(x), 0);
