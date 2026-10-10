@@ -531,14 +531,36 @@ function drawGround(W) {
 // ---- the field's traps (sim.js TRAPS) ---------------------------------------------------------------------------------
 // 障碍物 and 源石祭坛 are the client's own meshes (their prefabs in pkgrps/btl_pfb_tokens: the crate S_common_box_01 with
 // TX_Common_wild_01, the altar S_curse_device with TX_curse_device; assets/traps.json, TRAP_MESH): each vertex goes
-// through the floor's projection at its height, the triangles facing away dropped and the rest drawn far to near. The
-// other three carry no model of their own — the 弩炮's is the stage scene's, the 清债程序's and the 梅什科线圈's are
-// effects (trap_crsbow_effect, map_electric_grid_start_01), none of them in the package or the public dumps — and are
-// drawn here as stand-ins marked with their official pictures (ArknightsAssets2: the 梅什科线圈 avatar, the 弩炮 / 清债
-// 程序 skill icons). Bolts are drawn like the units' shots; an altar's pulse lights the tiles of its range, a coil's
-// current is a crackling line for its 0.7 s.
+// through the floor's projection at its height, the triangles facing away dropped and the rest drawn far to near.
+// The 梅什科线圈 has no model: it is its effects (battle/prefabs/effects/map) — at each current the start effect
+// map_electric_grid_start_01 at the coil (a column of flow_35 in violet blue, 0.5 s), the current map_electric_grid_01
+// from coil to coil (three LineRenderers 0.35 up: shangdian_07's lightning 0.25 wide, scrolling along it, over a violet
+// glow of mask_08 0.5 wide and a teal one 0.3 wide), and on a unit it stops map_electric_grid_buff_01 (the electric_01
+// cage). Between currents the game shows nothing; here the column stays faintly lit so the coils can be seen while
+// betting. The 清债程序's bullets are its trap_crsbow_attack_01_trail (the cansld_01 ball, a trail 0.15 wide over 0.1 s
+// from yellow to red and a brown one 0.2 wide over 0.2 s). The 弩炮 and the 清债程序 themselves (the stage scene's,
+// trap_crsbow_effect) and the 弩炮's bolt are in none of the packages here: stand-ins marked with their official
+// skill icons (ArknightsAssets2). An altar's pulse lights the tiles of its range.
 const TRAP_TEX = { crate: 'trapCrate', ore: 'trapOre', ballista: 'trapBallis', crossbow: 'trapCrsbow', coil: 'trapCoil' };
 const TRAP_COL = { ore: 0xffa040, coil: 0x9fd8ff, shot: COL.phys };
+// the coil's effects' colours (the materials' tints × 2, the particle shaders' way): the start column, the current's
+// lightning (× the LineRenderer's gradient), its violet glow and teal underlay (α 0.63 / 0.56), the stopped unit's cage
+const ELEC = { box: 0x5a3cff, line: 0x3087ff, glow: 0x420fe6, glowA: 0.63, under: 0x0099a3, underA: 0.56, buff: 0x9e42ff };
+// a textured strip (a LineRenderer's quad: the texture stretched along it, repeating when it scrolls)
+function makeStrip(name, add) {
+  const t = tex(name);
+  t.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
+  const m = new PIXI.SimpleMesh(t, new Float32Array(8), new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]), new Uint16Array([0, 1, 2, 0, 2, 3]), PIXI.DRAW_MODES.TRIANGLES);
+  if (add) m.blendMode = ADD();
+  return m;
+}
+function setStrip(m, x0, y0, x1, y1, w, u0) {
+  const dx = x1 - x0, dy = y1 - y0, L = Math.hypot(dx, dy) || 1, nx = -dy / L * w / 2, ny = dx / L * w / 2, v = m.vertices;
+  v[0] = x0 + nx; v[1] = y0 + ny; v[2] = x1 + nx; v[3] = y1 + ny; v[4] = x1 - nx; v[5] = y1 - ny; v[6] = x0 - nx; v[7] = y0 - ny;
+  const uv = m.uvBuffer.data;
+  uv[0] = u0; uv[2] = u0 + 1; uv[4] = u0 + 1; uv[6] = u0;
+  m.uvBuffer.update();
+}
 function trapQuad(g, pts, fill, a, line) {
   g.beginFill(fill, a); if (line) g.lineStyle(1, line, 0.5); g.drawPolygon(pts.flatMap((q) => [q[0], q[1]])); g.endFill(); g.lineStyle(0);
 }
@@ -603,13 +625,12 @@ function makeTrapView(t) {
     pic(FLOOR.T * k * 0.55 / 128).position.set(x, y - FLOOR.T * k * 0.3);
     icon.scale.x *= t.dir[0] < 0 ? -1 : 1;
   } else {
-    // the coil: a post, its picture on top
-    const [x, y, k] = projH(t.x, t.y, 0), h = FLOOR.T * k * 0.9;
-    g.beginFill(0x1d2326, 1); g.drawEllipse(x, y, FLOOR.T * k * 0.24, FLOOR.T * k * 0.1); g.endFill();
-    g.beginFill(0x3a4448, 1); g.drawRect(x - 3 * k, y - h, 6 * k, h); g.endFill();
-    glow = new PIXI.Sprite(tex('glow')); glow.anchor.set(0.5); glow.blendMode = ADD(); glow.tint = TRAP_COL.coil; glow.position.set(x, y - h); glow.scale.set(0.3 * k);
-    v.addChild(glow);
-    pic(FLOOR.T * k * 0.7 / 180).position.set(x, y - h - FLOOR.T * k * 0.1); icon.tint = 0xcfe9ff;
+    // the coil: the start effect's column (flow_35, its streaks rising from the floor), dim between currents
+    const [x, y, k] = projH(t.x, t.y, 0);
+    const col = new PIXI.Sprite(tex('elecBox')); col.anchor.set(0.5, 1); col.blendMode = ADD(); col.tint = ELEC.box;
+    // (scales from the textures' own 128 px: a data URI may not have loaded yet)
+    col.position.set(x, y); col.scale.set(FLOOR.T * k * 0.6 / 128, FLOOR.T * k * 0.62 / 128);
+    v.addChild(col); t.box = col; t.boxT = 0; t.boxK = k;
   }
   t.glow = glow; t.icon = icon;
   const [, fy] = proj(t.x, Math.min(AH + 1, t.y + 0.5));
@@ -624,7 +645,13 @@ function drawTraps(W, dt) {
     if (!t.view) { if (t.dead) continue; t.view = makeTrapView(t); }
     if (t.dead) { if (t.view.visible) t.view.visible = false; continue; }
     if (t.kind === 'ore' && t.glow) t.glow.alpha = 0.15 + 0.55 * clamp(t.sp / Math.max(1e-6, t.cost), 0, 1) ** 3;
-    if (t.kind === 'coil' && t.glow) t.glow.alpha = 0.35 + 0.25 * Math.sin(arena.t * 6 + t.i);
+    if (t.kind === 'coil' && t.box) {
+      // a flash of 0.5 s at each current (the start effect), else a dim glow
+      if (t.boxT > 0) t.boxT = Math.max(0, t.boxT - dt);
+      const f = t.boxT / 0.5;
+      t.box.alpha = 0.22 + 0.06 * Math.sin(arena.t * 3 + t.i) + 0.78 * f;
+      t.box.scale.y = FLOOR.T * t.boxK * 0.62 / 128 * (1 + 0.25 * f);
+    }
     if (t.kind === 'crate' && t.hpBar) {
       const r = t.hp / t.maxHp;
       t.hpBar.clear();
@@ -636,6 +663,27 @@ function drawTraps(W, dt) {
   for (const b of W.bolts) {
     if (b.delay > 0) continue;
     const [sx, sy, k] = projH(b.x, b.y, b.t.kind === 'ballista' || b.t.kind === 'crossbow' ? RIM_H * 0.6 + 0.2 : 0.3);
+    if (b.t.kind === 'crossbow') {
+      // trap_crsbow_attack_01_trail: the ball (cansld_01, 0.4 tile) and its two trails, back along its way
+      if (!b.g) {
+        b.g = new PIXI.Container();
+        const ab = new PIXI.Graphics(), add = new PIXI.Graphics(), ball = new PIXI.Sprite(tex('crsbowBall'));
+        add.blendMode = ADD(); ball.anchor.set(0.5); b.g.addChild(ab, add, ball); arena.fx.addChild(b.g);
+      }
+      const [ab, add, ball] = b.g.children, h = RIM_H * 0.6 + 0.2, back = (d) => projH(b.x - b.t.dir[0] * d, b.y - b.t.dir[1] * d, h);
+      ball.position.set(sx, sy); ball.scale.set(FLOOR.T * k * 0.4 / 64);
+      // trail_ab (0.2 wide, 0.2 s = 2 tiles at 10 a second, brown, α 0.45) and trail_add (0.15, 0.1 s, yellow → red)
+      for (const [tr, len, w, c0, c1, a0] of [[ab, 2, 0.2, 0x4d2d14, 0x090706, 0.45], [add, 1, 0.15, 0xffd93e, 0xff1400, 1]]) {
+        tr.clear();
+        const n = 6;
+        for (let i = 0; i < n; i++) {
+          const [ax, ay] = back(len * i / n), [bx2, by2] = back(len * (i + 1) / n);
+          tr.lineStyle({ width: w * FLOOR.T * k * (1 - i / n * 0.5), color: lerpCol(c0, c1, i / n), alpha: a0 * (1 - i / n), cap: 'round' });
+          tr.moveTo(ax, ay); tr.lineTo(bx2, by2);
+        }
+      }
+      continue;
+    }
     if (!b.g) {
       b.g = new PIXI.Container();
       const head = new PIXI.Sprite(tex('beam')); head.anchor.set(0.5); head.blendMode = ADD(); head.tint = TRAP_COL.shot; head.scale.set(0.08, b.t.kind === 'ballista' ? 0.3 : 0.16);
@@ -646,18 +694,27 @@ function drawTraps(W, dt) {
     }
     b.g.position.set(sx, sy); b.g.scale.set(k);
   }
-  // the currents (0.7 s) and the lit tiles of a pulse (0.5 s)
+  // the currents (0.7 s: map_electric_grid_01's three strips) and the lit tiles of a pulse (0.5 s)
   const g = arena.trapG;
   g.clear();
-  arena.arcs = (arena.arcs || []).filter((a) => (a.t -= dt) > 0);
+  arena.arcs = (arena.arcs || []).filter((a) => { a.t -= dt; if (a.t > 0) return true; a.c.destroy({ children: true }); return false; });
   for (const a of arena.arcs) {
-    const [x0, y0] = projH(a.L.a.x, a.L.a.y, 0.9), [x1, y1] = projH(a.L.b.x, a.L.b.y, 0.9), n = 9, al = Math.min(1, a.t / 0.2);
-    for (const [w, col, aa] of [[6, TRAP_COL.coil, 0.25], [2, 0xffffff, 0.9]]) {
-      g.lineStyle(w, col, aa * al); g.moveTo(x0, y0);
-      for (let i = 1; i < n; i++) g.lineTo(x0 + (x1 - x0) * i / n + (Math.random() - 0.5) * 10, y0 + (y1 - y0) * i / n + (Math.random() - 0.5) * 10);
-      g.lineTo(x1, y1);
-    }
-    g.lineStyle(0);
+    const [x0, y0, k0] = projH(a.L.a.x, a.L.a.y, 0.35), [x1, y1, k1] = projH(a.L.b.x, a.L.b.y, 0.35), k = (k0 + k1) / 2, al = Math.min(1, a.t / 0.15);
+    const [under, glow, line] = a.c.children;
+    a.u = (a.u || 0) + dt;
+    setStrip(under, x0, y0, x1, y1, 0.3 * FLOOR.T * k, 0); under.alpha = ELEC.underA * al;
+    setStrip(glow, x0, y0, x1, y1, 0.5 * FLOOR.T * k, 0); glow.alpha = ELEC.glowA * al;
+    setStrip(line, x0, y0, x1, y1, 0.25 * FLOOR.T * k, a.u * 1.0); line.alpha = al;
+  }
+  // a stopped unit's cage (map_electric_grid_buff_01: electric_01, flickering, while it cannot move)
+  for (const u of W.units) {
+    if (u.elecT > 0 && !u.dead && u.view) {
+      u.elecT -= dt;
+      if (!u.elecS) { u.elecS = new PIXI.Sprite(tex('elecBuff')); u.elecS.anchor.set(0.5, 0.75); u.elecS.blendMode = ADD(); u.elecS.tint = ELEC.buff; arena.fx.addChild(u.elecS); }
+      const [x, y, k] = proj(u.x, u.y);
+      u.elecS.position.set(x, y - FLOOR.T * k * 0.23); u.elecS.scale.set(FLOOR.T * k * 0.55 / 128, FLOOR.T * k * 0.62 / 128);
+      u.elecS.alpha = 0.55 + 0.35 * Math.random();
+    } else if (u.elecS) { u.elecS.destroy(); u.elecS = null; }
   }
   arena.lit = (arena.lit || []).filter((l) => (l.t -= dt) > 0);
   for (const l of arena.lit) {
@@ -678,9 +735,28 @@ function trapEvent(kind, u, a) {
   } else if (kind === 'trapfire') {
     const [x, y, k] = projH(a.x + a.dir[0] * 0.4, a.y + a.dir[1] * 0.4, RIM_H + 0.25);
     FX.spawn('flare', x, y, { life: 0.22, s0: 0.25 * k, s1: 0.55 * k, a0: 0.9, tint: TRAP_COL.shot });
-  } else if (kind === 'arc') { arena.arcs = arena.arcs || []; arena.arcs.push({ L: a, t: 0.7 }); }
-  else if (kind === 'shock') { if (u.view) { const [x, y, k] = chest(u, 0.5); FX.spawn('burst', x, y, { life: 0.3, s0: 0.25 * k, s1: 0.6 * k, tint: TRAP_COL.coil }); } }
-  else if (kind === 'bolt') { if (u.view) fxHit(u, { f: { dmg: 'phys' }, x: u.x - a.t.dir[0] }); }
+  } else if (kind === 'arc') {
+    // the current's strips (under the units' effects), and the start effect at its coil: the column flares, sparks
+    const c = new PIXI.Container();
+    const under = makeStrip('elecGlow', false), glow = makeStrip('elecGlow', true), line = makeStrip('elecLine', true);
+    under.tint = ELEC.under; glow.tint = ELEC.glow; line.tint = ELEC.line;
+    c.addChild(under, glow, line); arena.fx.addChildAt(c, 0);
+    arena.arcs = arena.arcs || []; arena.arcs.push({ L: a, t: 0.7, c });
+    for (const t of [a.a, a.b]) {
+      t.boxT = 0.5;
+      const [x, y, k] = projH(t.x, t.y, 0.35);
+      for (let i = 0; i < 3; i++) FX.spawn('star', x + (Math.random() - 0.5) * 16 * k, y + (Math.random() - 0.5) * 10 * k, { life: 0.35, s0: 0.25 * k, s1: 0.5 * k, tint: 0xbfa8ff, r: Math.random() * 6 });
+    }
+  } else if (kind === 'shock') { u.elecT = Math.max(u.elecT || 0, a.a.slug || 1.5); }
+  else if (kind === 'bolt') {
+    if (!u.view) return;
+    if (a.t.kind === 'crossbow') {
+      // trap_crsbow_attack_01_hit: a burst of sparks in the bullet's orange
+      const [x, y, k] = chest(u, 0.5);
+      FX.spawn('star', x, y, { life: 0.2, s0: 0.35 * k, s1: 0.7 * k, tint: 0xffb347, r: Math.random() * 6 });
+      for (let i = 0; i < 5; i++) { const an = Math.random() * Math.PI * 2, sp = 100 + Math.random() * 140; FX.spawn('spark', x, y, { life: 0.3, s0: 0.7 * k, s1: 0.2 * k, sy: 1.8, tint: 0xffa040, vx: Math.cos(an) * sp, vy: Math.sin(an) * sp * 0.6, face: true }); }
+    } else fxHit(u, { f: { dmg: 'phys' }, x: u.x - a.t.dir[0] });
+  }
   else if (kind === 'cratehit') {
     a.hitT = 0.08;
     const [x, y, k] = projH(a.x, a.y, 0.35);
@@ -770,6 +846,8 @@ function clearArena() {
     for (const b of arena.W.bolts) if (b.g) b.g.destroy({ children: true });
   }
   FX.clear();
+  for (const a of arena.arcs || []) a.c.destroy({ children: true });
+  if (arena.W) for (const u of arena.W.units) if (u.elecS) { u.elecS.destroy(); u.elecS = null; }
   arena.groundG.clear(); arena.trapG.clear(); arena.arcs = []; arena.lit = [];
   if (arena.boss) { arena.boss.c.visible = false; arena.boss.c.alpha = 0; arena.boss.unit = null; }
   arena.W = null; arena.running = false;

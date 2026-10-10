@@ -80,5 +80,10 @@
   "pic_sorry_battle": "pic_sorry_battle.png",
   "pic_bye_battle": "pic_bye_battle.png",
   "pic_distrust_battle": "pic_distrust_battle.png",
-  "pic_very_soon_battle": "pic_very_soon_battle.png"
+  "pic_very_soon_battle": "pic_very_soon_battle.png",
+  "elecLine": "shangdian_07.png",
+  "elecGlow": "mask_08.png",
+  "elecBox": "flow_35.png",
+  "elecBuff": "electric_01.png",
+  "crsbowBall": "cansld_01.png"
 }

@@ -76,7 +76,9 @@ Ark-Models 有 4 个原型只登记了名字、没有文件，用最接近的模
   - `sprite_enemy_boss_avatar_bg.png`、`sprite_enemy_boss_hp_bg.png`、`sprite_bar_glow.png`、`sprite_white_slider_fill.png`、`sprite_enemy_boss_hud_large.png` 和 `boss_avatar_enemy_1526_sfsui.png`（岁相的纹章）来自战斗界面公共包（`arts/ui/[uc]battlecommon.ab`），是巨型首领面板 `panel_enemy_boss_info`（`battle/[pack]common.ab`）用的贴图；
   - `pic_*.png` 是 5 个表情主题（`ui/emoticon/theme/[uc]emticon_duel_basic.ab`、`[uc]emoticon_foolsday_amiya` / `_wisdel` / `_doctor`、`[uc]emoticon_originium_slug`）中对战用的表情（12 + 4 × 6）；后加的 24 个按精灵的原始矩形（120 × 120）补回裁掉的透明边；
   - `TX_Common_wild_01.png`、`TX_curse_device.png`（缩到 512 × 512）是障碍物和源石祭坛的模型贴图，模型本身在 `traps.json`：两种装置的预制体在战斗装置合包 `pkgrps/btl_pfb_tokens_*` 里，网格分别来自 `arts/maps/common/meshes/s_common_box_01.ab` 和 `s_curse_device.ab`，材质在 `arts/maps/common/res.ab`；导出时把节点变换算进顶点，存为 [列偏移, 行偏移（向远侧为正）, 高度]（格）；
-  - `trap_001_crate.png`、`trap_019_electric.png`（装置头像）和 `skill_icon_sktok_ore.png` / `_ballis.png` / `_crsbow.png`（装置技能图标）来自公开仓库 [ArknightsAssets/ArknightsAssets2](https://github.com/ArknightsAssets/ArknightsAssets2)（`cn` 分支）。弩炮的外形属于关卡场景，清债程序和梅什科线圈的外形是特效（`trap_crsbow_effect`、`map_electric_grid_start_01`），三者都是热更新内容，安装包和公开仓库里都没有，场上暂时用简单造型加这些图标代替。
+  - `trap_001_crate.png`、`trap_019_electric.png`（装置头像）和 `skill_icon_sktok_ore.png` / `_ballis.png` / `_crsbow.png`（装置技能图标）来自公开仓库 [ArknightsAssets/ArknightsAssets2](https://github.com/ArknightsAssets/ArknightsAssets2)（`cn` 分支）；
+  - `shangdian_07.png`、`mask_08.png`、`flow_35.png`、`electric_01.png` 是梅什科线圈的特效贴图（`battle/prefabs/effects/map.ab` 的 `map_electric_grid_01` 电流、`map_electric_grid_start_01` 放电、`map_electric_grid_buff_01` 停顿，贴图在 `refs_fx_texture_*` 包里），`cansld_01.png` 是清债程序子弹 `trap_crsbow_attack_01_trail`（`battle/prefabs/effects/trap.ab`）的本体。线圈的预制体没有模型，游戏里平时看不见，只在放电时出现特效；本项目让放电光柱在两次放电之间保持暗淡常亮，押注时能看出线圈的位置。
+  - 弩炮的外形属于关卡场景，清债程序的炮台是特效 `trap_crsbow_effect`，弩炮的箭也没有本体贴图，这些在安装包和公开仓库里都没有，场上暂时用简单造型加装置技能图标代替。
 - `audio/m_nobetnolife.ogg`：默认 BGM（塞壬唱片），没有时页面不播放音乐，可以在设置里换曲。
 - `fonts/`：见本页开头。
 
