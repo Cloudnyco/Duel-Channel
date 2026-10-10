@@ -44,7 +44,8 @@ function loadFighter(f) {
   spineData.set(f.model, p);
   return p;
 }
-const iconUri = (f) => (f && f.icon ? 'data:image/png;base64,' + f.icon : '');
+// an enemy's portrait: WebP (the pack's, tools/build-data.mjs) — or PNG, told apart by the data's first bytes (RIFF / PNG)
+const iconUri = (f) => (f && f.icon ? `data:image/${f.icon.startsWith('UklGR') ? 'webp' : 'png'};base64,${f.icon}` : '');
 function lerpCol(a, b, t) {
   const r = lerp((a >> 16) & 255, (b >> 16) & 255, t), g = lerp((a >> 8) & 255, (b >> 8) & 255, t), bl = lerp(a & 255, b & 255, t);
   return (Math.round(r) << 16) | (Math.round(g) << 8) | Math.round(bl);
@@ -67,10 +68,10 @@ function initArena() {
   arenaApp = new PIXI.Application({ view: $('arena'), width: 1280, height: 720, backgroundColor: 0x070909, antialias: true, autoStart: false });
   arena = {
     root: new PIXI.Container(), back: new PIXI.Container(), floor: new PIXI.Container(), pools: new PIXI.Container(), zoneL: new PIXI.Container(), groundG: new PIXI.Graphics(),
-    unitsC: new PIXI.Container(), fx: new PIXI.Container(), air: new PIXI.Container(), W: null, acc: 0, ff: 1, running: false, t: 0, spots: [], built: false,
+    unitsC: new PIXI.Container(), fx: new PIXI.Container(), air: new PIXI.Container(), trapG: new PIXI.Graphics(), W: null, acc: 0, ff: 1, running: false, t: 0, spots: [], built: false,
   };
   arenaApp.stage.addChild(arena.root);
-  arena.root.addChild(arena.back, arena.floor, arena.zoneL, arena.groundG, arena.pools, arena.unitsC, arena.fx, arena.air);
+  arena.root.addChild(arena.back, arena.floor, arena.zoneL, arena.groundG, arena.trapG, arena.pools, arena.unitsC, arena.fx, arena.air);
   arena.zoneShown = -2; arena.flashT = 0;
   arena.unitsC.sortableChildren = true;
   FX.layer = arena.fx;
@@ -527,6 +528,170 @@ function drawGround(W) {
   }
 }
 
+// ---- the field's traps (sim.js TRAPS) ---------------------------------------------------------------------------------
+// 障碍物 and 源石祭坛 are the client's own meshes (their prefabs in pkgrps/btl_pfb_tokens: the crate S_common_box_01 with
+// TX_Common_wild_01, the altar S_curse_device with TX_curse_device; assets/traps.json, TRAP_MESH): each vertex goes
+// through the floor's projection at its height, the triangles facing away dropped and the rest drawn far to near. The
+// other three carry no model of their own — the 弩炮's is the stage scene's, the 清债程序's and the 梅什科线圈's are
+// effects (trap_crsbow_effect, map_electric_grid_start_01), none of them in the package or the public dumps — and are
+// drawn here as stand-ins marked with their official pictures (ArknightsAssets2: the 梅什科线圈 avatar, the 弩炮 / 清债
+// 程序 skill icons). Bolts are drawn like the units' shots; an altar's pulse lights the tiles of its range, a coil's
+// current is a crackling line for its 0.7 s.
+const TRAP_TEX = { crate: 'trapCrate', ore: 'trapOre', ballista: 'trapBallis', crossbow: 'trapCrsbow', coil: 'trapCoil' };
+const TRAP_COL = { ore: 0xffa040, coil: 0x9fd8ff, shot: COL.phys };
+function trapQuad(g, pts, fill, a, line) {
+  g.beginFill(fill, a); if (line) g.lineStyle(1, line, 0.5); g.drawPolygon(pts.flatMap((q) => [q[0], q[1]])); g.endFill(); g.lineStyle(0);
+}
+// a trap's mesh (TRAP_MESH: v = [column offset, row offset (up the field), height] per vertex in tiles, uv, f) on the field
+function trapMesh(t, M) {
+  const n = M.v.length / 3, xy = new Float32Array(n * 2), uv = new Float32Array(n * 2), depth = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    const fx = t.x + M.v[i * 3], fy = t.y - M.v[i * 3 + 1], h = M.v[i * 3 + 2], [sx, sy] = projH(fx, fy, h);
+    xy[i * 2] = sx; xy[i * 2 + 1] = sy; uv[i * 2] = M.uv[i * 2]; uv[i * 2 + 1] = 1 - M.uv[i * 2 + 1];
+    // nearer the viewer: further down the field and higher (the camera looks down from the near side)
+    depth[i] = fy + h * 0.9;
+  }
+  const tris = [];
+  for (let i = 0; i < M.f.length; i += 3) {
+    const a = M.f[i], b = M.f[i + 1], c = M.f[i + 2];
+    const cross = (xy[b * 2] - xy[a * 2]) * (xy[c * 2 + 1] - xy[a * 2 + 1]) - (xy[b * 2 + 1] - xy[a * 2 + 1]) * (xy[c * 2] - xy[a * 2]);
+    if (cross * TRAP_FRONT <= 0) continue;
+    tris.push([depth[a] + depth[b] + depth[c], a, b, c]);
+  }
+  tris.sort((p, q) => p[0] - q[0]);
+  const idx = new Uint16Array(tris.length * 3);
+  tris.forEach((q, i) => { idx[i * 3] = q[1]; idx[i * 3 + 1] = q[2]; idx[i * 3 + 2] = q[3]; });
+  return new PIXI.SimpleMesh(tex(M.tex), xy, uv, idx, PIXI.DRAW_MODES.TRIANGLES);
+}
+// the winding of a face towards the viewer, once projected (the exported meshes' order, checked on the crate's lid)
+const TRAP_FRONT = -1;
+function makeTrapView(t) {
+  const v = new PIXI.Container(), g = new PIXI.Graphics(), c = t.x - 0.5, r = t.y - 0.5;
+  const M = typeof TRAP_MESH !== 'undefined' && TRAP_MESH[t.key];
+  v.addChild(g);
+  const rim = t.kind === 'ballista' || t.kind === 'crossbow', base = rim ? RIM_H : 0;
+  const block = (h, inset, top, front, side) => {
+    const x0 = c + inset, x1 = c + 1 - inset, y0 = r + inset, y1 = r + 1 - inset, b = base;
+    if (t.x < AW / 2) trapQuad(g, [projH(x1, y0, b + h), projH(x1, y1, b + h), projH(x1, y1, b), projH(x1, y0, b)], side, 1);
+    else trapQuad(g, [projH(x0, y0, b + h), projH(x0, y1, b + h), projH(x0, y1, b), projH(x0, y0, b)], side, 1);
+    trapQuad(g, [projH(x0, y1, b + h), projH(x1, y1, b + h), projH(x1, y1, b), projH(x0, y1, b)], front, 1);
+    trapQuad(g, [projH(x0, y0, b + h), projH(x1, y0, b + h), projH(x1, y1, b + h), projH(x0, y1, b + h)], top, 1, 0x8a9396);
+    return projH(t.x, t.y, b + h);
+  };
+  let icon = null, glow = null;
+  const pic = (scale, sy) => { icon = new PIXI.Sprite(tex(TRAP_TEX[t.kind])); icon.anchor.set(0.5); icon.scale.set(scale, scale * (sy || 1)); v.addChild(icon); return icon; };
+  if (M) {
+    v.addChild(trapMesh(t, M));
+    const [x, y, k] = projH(t.x, t.y, 0.1);
+    if (t.kind === 'ore') {
+      glow = new PIXI.Sprite(tex('glow')); glow.anchor.set(0.5); glow.blendMode = ADD(); glow.tint = TRAP_COL.ore; glow.position.set(x, y); glow.scale.set(FLOOR.T * k * 1.6 / 256, FLOOR.T * k * 0.9 / 256); v.addChildAt(glow, 0);
+    }
+    if (t.kind === 'crate') { t.hpBar = new PIXI.Graphics(); v.addChild(t.hpBar); t.mesh = v.children[0]; }
+  } else if (t.kind === 'crate') {
+    const [x, y, k] = block(0.55, 0.06, 0x2c3438, 0x1b2124, 0x151a1c);
+    // a hazard band across the front
+    const [ax, ay] = projH(c + 0.06, r + 0.94, 0.2), [bx, by] = projH(c + 0.94, r + 0.94, 0.2), [, cy] = projH(c, r + 0.94, 0.3);
+    g.beginFill(COL.yellow, 0.85); g.drawRect(ax, cy, bx - ax, ay - cy); g.endFill();
+    pic(FLOOR.T * k * 0.62 / 180, 0.62).position.set(x, y); icon.alpha = 0.75; icon.tint = 0xd8dde0;
+    t.hpBar = new PIXI.Graphics(); v.addChild(t.hpBar);
+  } else if (t.kind === 'ore') {
+    const [x, y, k] = block(0.14, 0.04, 0x2a2420, 0x1a1512, 0x14100e);
+    glow = new PIXI.Sprite(tex('glow')); glow.anchor.set(0.5); glow.blendMode = ADD(); glow.tint = TRAP_COL.ore; glow.position.set(x, y); glow.scale.set(FLOOR.T * k * 1.6 / 256, FLOOR.T * k * 0.9 / 256); v.addChildAt(glow, 0);
+    pic(FLOOR.T * k * 0.7 / 128, 0.62).position.set(x, y); icon.tint = 0xffd2a8;
+  } else if (rim) {
+    const [x, y, k] = block(0.3, 0.12, 0x343c40, 0x20272a, 0x181d20);
+    pic(FLOOR.T * k * 0.55 / 128).position.set(x, y - FLOOR.T * k * 0.3);
+    icon.scale.x *= t.dir[0] < 0 ? -1 : 1;
+  } else {
+    // the coil: a post, its picture on top
+    const [x, y, k] = projH(t.x, t.y, 0), h = FLOOR.T * k * 0.9;
+    g.beginFill(0x1d2326, 1); g.drawEllipse(x, y, FLOOR.T * k * 0.24, FLOOR.T * k * 0.1); g.endFill();
+    g.beginFill(0x3a4448, 1); g.drawRect(x - 3 * k, y - h, 6 * k, h); g.endFill();
+    glow = new PIXI.Sprite(tex('glow')); glow.anchor.set(0.5); glow.blendMode = ADD(); glow.tint = TRAP_COL.coil; glow.position.set(x, y - h); glow.scale.set(0.3 * k);
+    v.addChild(glow);
+    pic(FLOOR.T * k * 0.7 / 180).position.set(x, y - h - FLOOR.T * k * 0.1); icon.tint = 0xcfe9ff;
+  }
+  t.glow = glow; t.icon = icon;
+  const [, fy] = proj(t.x, Math.min(AH + 1, t.y + 0.5));
+  v.zIndex = fy;
+  arena.unitsC.addChild(v);
+  return v;
+}
+// each frame: the traps' views (made on first sight), the altars' charge, the crates' HP, the bolts, the currents and
+// the altars' lit tiles
+function drawTraps(W, dt) {
+  for (const t of W.traps) {
+    if (!t.view) { if (t.dead) continue; t.view = makeTrapView(t); }
+    if (t.dead) { if (t.view.visible) t.view.visible = false; continue; }
+    if (t.kind === 'ore' && t.glow) t.glow.alpha = 0.15 + 0.55 * clamp(t.sp / Math.max(1e-6, t.cost), 0, 1) ** 3;
+    if (t.kind === 'coil' && t.glow) t.glow.alpha = 0.35 + 0.25 * Math.sin(arena.t * 6 + t.i);
+    if (t.kind === 'crate' && t.hpBar) {
+      const r = t.hp / t.maxHp;
+      t.hpBar.clear();
+      if (r < 1) { const [x, y, k] = projH(t.x, t.y, 0.75), w = FLOOR.T * k * 0.7; t.hpBar.beginFill(0x000000, 0.55); t.hpBar.drawRect(x - w / 2, y, w, 4); t.hpBar.endFill(); t.hpBar.beginFill(0xd8dde0, 0.9); t.hpBar.drawRect(x - w / 2, y, w * r, 4); t.hpBar.endFill(); }
+      const face = t.mesh || t.icon;
+      if (face) { if (t.hitT > 0) { t.hitT -= dt; face.tint = 0xffd6c8; } else face.tint = t.mesh ? 0xffffff : 0xd8dde0; }
+    }
+  }
+  for (const b of W.bolts) {
+    if (b.delay > 0) continue;
+    const [sx, sy, k] = projH(b.x, b.y, b.t.kind === 'ballista' || b.t.kind === 'crossbow' ? RIM_H * 0.6 + 0.2 : 0.3);
+    if (!b.g) {
+      b.g = new PIXI.Container();
+      const head = new PIXI.Sprite(tex('beam')); head.anchor.set(0.5); head.blendMode = ADD(); head.tint = TRAP_COL.shot; head.scale.set(0.08, b.t.kind === 'ballista' ? 0.3 : 0.16);
+      const glow = new PIXI.Sprite(tex('glow')); glow.anchor.set(0.5); glow.blendMode = ADD(); glow.tint = TRAP_COL.shot; glow.scale.set(0.1); glow.alpha = 0.6;
+      b.g.addChild(glow, head); arena.fx.addChild(b.g);
+      const [tx, ty] = projH(b.x + b.t.dir[0], b.y + b.t.dir[1], 0.3);
+      head.rotation = Math.atan2(ty - sy, tx - sx) + Math.PI / 2;
+    }
+    b.g.position.set(sx, sy); b.g.scale.set(k);
+  }
+  // the currents (0.7 s) and the lit tiles of a pulse (0.5 s)
+  const g = arena.trapG;
+  g.clear();
+  arena.arcs = (arena.arcs || []).filter((a) => (a.t -= dt) > 0);
+  for (const a of arena.arcs) {
+    const [x0, y0] = projH(a.L.a.x, a.L.a.y, 0.9), [x1, y1] = projH(a.L.b.x, a.L.b.y, 0.9), n = 9, al = Math.min(1, a.t / 0.2);
+    for (const [w, col, aa] of [[6, TRAP_COL.coil, 0.25], [2, 0xffffff, 0.9]]) {
+      g.lineStyle(w, col, aa * al); g.moveTo(x0, y0);
+      for (let i = 1; i < n; i++) g.lineTo(x0 + (x1 - x0) * i / n + (Math.random() - 0.5) * 10, y0 + (y1 - y0) * i / n + (Math.random() - 0.5) * 10);
+      g.lineTo(x1, y1);
+    }
+    g.lineStyle(0);
+  }
+  arena.lit = (arena.lit || []).filter((l) => (l.t -= dt) > 0);
+  for (const l of arena.lit) {
+    for (const [c, r] of RANGES[l.t0.range] || []) {
+      const tx = l.t0.tx + c, ty = l.t0.ty + r;
+      if (tx < 0 || tx >= AW || ty < 0 || ty >= AH) continue;
+      const q = [proj(tx, ty), proj(tx + 1, ty), proj(tx + 1, ty + 1), proj(tx, ty + 1)];
+      g.beginFill(TRAP_COL.ore, 0.45 * l.t / 0.5); g.drawPolygon(q.flatMap((p) => [p[0], p[1]])); g.endFill();
+    }
+  }
+}
+function trapEvent(kind, u, a) {
+  if (kind === 'pulse') {
+    const [x, y, k] = projH(a.x, a.y, 0.2), R = 2.5 * FLOOR.T * k;
+    arena.lit = arena.lit || []; arena.lit.push({ t0: a, t: 0.5 });
+    FX.spawn('ring', x, y, { life: 0.5, s0: 0.1, s1: R * 2 / 256, sy: 0.42, a0: 0.9, tint: TRAP_COL.ore });
+    FX.spawn('disc', x, y - 10 * k, { life: 0.3, s0: 0.2 * k, s1: 0.9 * k, a0: 0.8, tint: TRAP_COL.ore });
+  } else if (kind === 'trapfire') {
+    const [x, y, k] = projH(a.x + a.dir[0] * 0.4, a.y + a.dir[1] * 0.4, RIM_H + 0.25);
+    FX.spawn('flare', x, y, { life: 0.22, s0: 0.25 * k, s1: 0.55 * k, a0: 0.9, tint: TRAP_COL.shot });
+  } else if (kind === 'arc') { arena.arcs = arena.arcs || []; arena.arcs.push({ L: a, t: 0.7 }); }
+  else if (kind === 'shock') { if (u.view) { const [x, y, k] = chest(u, 0.5); FX.spawn('burst', x, y, { life: 0.3, s0: 0.25 * k, s1: 0.6 * k, tint: TRAP_COL.coil }); } }
+  else if (kind === 'bolt') { if (u.view) fxHit(u, { f: { dmg: 'phys' }, x: u.x - a.t.dir[0] }); }
+  else if (kind === 'cratehit') {
+    a.hitT = 0.08;
+    const [x, y, k] = projH(a.x, a.y, 0.35);
+    FX.spawn('star', x, y, { life: 0.16, s0: 0.3 * k, s1: 0.6 * k, tint: COL.phys, r: Math.random() * 6 });
+  } else if (kind === 'crategone') {
+    const [x, y, k] = projH(a.x, a.y, 0.3);
+    for (let i = 0; i < 4; i++) FX.spawn(i % 2 ? 'smokeA' : 'smokeB', x + (Math.random() - 0.5) * 30 * k, y, { normal: true, life: 1, s0: 0.3 * k, s1: 0.7 * k, a0: 0.45, tint: 0x6f7678, vy: -20, vr: (Math.random() - 0.5) });
+    for (let i = 0; i < 10; i++) { const an = Math.random() * Math.PI * 2, sp = 120 + Math.random() * 160; FX.spawn('rhombus', x, y, { life: 0.5, s0: 0.5 * k, s1: 0.1, tint: 0x9aa3a6, vx: Math.cos(an) * sp, vy: Math.sin(an) * sp * 0.5 - 80, g: 420, vr: 6 }); }
+  }
+}
+
 // The giant boss panel: the client's panel_enemy_boss_info (UIEnemyGiantBossInfoPanel, battle/[pack]common.ab) — a
 // giant's HP is not the bar under a unit but this banner at the top of the screen: the enemy's emblem in front of a
 // hatched band (sprite_enemy_boss_avatar_bg 744 × 155, emblem frame 140 × 120, both × 1.5), and across it the long bar
@@ -571,11 +736,12 @@ function bossPanel(W, dt) {
 }
 
 // ---- the visible arena: the sim's world (sim.js) with Spine views --------------------------------------------------------
-// seed null (online, the bets still open): a stand-in world shows the line-up until the battle's seed comes (reseedRound)
-function setupRound(lineups, seed) {
+// seed null (online, the bets still open): a stand-in world shows the line-up until the battle's seed comes (reseedRound);
+// traps: the round's field traps (makeTraps), known before the bets like the line-up
+function setupRound(lineups, seed, traps) {
   clearArena();
-  arena.lineups = lineups; arena.standIn = seed == null;
-  arena.W = makeWorld(lineups, seed ?? 0, true);
+  arena.lineups = lineups; arena.traps = traps || []; arena.standIn = seed == null;
+  arena.W = makeWorld(lineups, seed ?? 0, true, arena.traps);
   // a giant makes its entrance as the line-up comes on
   for (const u of arena.W.units) attachView(u, u.giant);
   arena.acc = 0; arena.ff = 1; arena.running = false;
@@ -589,16 +755,22 @@ function setupRound(lineups, seed) {
 // each unit glides the few hundredths of a tile from where it stood to its own place (vox / voy, easing to 0)
 function reseedRound(seed) {
   if (!arena.W || !arena.standIn) return;
-  const old = arena.W, W = makeWorld(arena.lineups, seed, true);
+  const old = arena.W, W = makeWorld(arena.lineups, seed, true, arena.traps);
   for (const u of old.units) if (u.view) u.view.destroy({ children: true });
+  for (const t of old.traps) if (t.view) t.view.destroy({ children: true });
   [0, 1].forEach((sd) => W.all[sd].forEach((u, i) => { const o = old.all[sd][i]; if (o && o.f === u.f) { u.vox = o.x - u.x; u.voy = o.y - u.y; } }));
   arena.W = W; arena.standIn = false;
   for (const u of W.units) attachView(u, false);
 }
 function clearArena() {
-  if (arena.W) { for (const u of arena.W.units) if (u.view) u.view.destroy({ children: true }); for (const s of arena.W.shots) if (s.g) s.g.destroy({ children: true }); }
+  if (arena.W) {
+    for (const u of arena.W.units) if (u.view) u.view.destroy({ children: true });
+    for (const s of arena.W.shots) if (s.g) s.g.destroy({ children: true });
+    for (const t of arena.W.traps) if (t.view) t.view.destroy({ children: true });
+    for (const b of arena.W.bolts) if (b.g) b.g.destroy({ children: true });
+  }
   FX.clear();
-  arena.groundG.clear();
+  arena.groundG.clear(); arena.trapG.clear(); arena.arcs = []; arena.lit = [];
   if (arena.boss) { arena.boss.c.visible = false; arena.boss.c.alpha = 0; arena.boss.unit = null; }
   arena.W = null; arena.running = false;
   arena.flashT = 0;
@@ -922,6 +1094,7 @@ function arenaFrame(dt) {
       else if (kind === 'barrier' || kind === 'barrierbreak' || kind === 'barrierblast') { fxBarrier(u, kind); if (kind !== 'barrierbreak') u.wantSkill = true; }
       else if (kind === 'fearcharge') u.wantSkill = true;
       else if (kind === 'fear' || kind === 'fearend') { if (u.view) fxFear(u, kind === 'fear'); }
+      else if (kind === 'pulse' || kind === 'trapfire' || kind === 'arc' || kind === 'shock' || kind === 'bolt' || kind === 'cratehit' || kind === 'crategone') { if (!busy || kind === 'crategone' || kind === 'pulse') trapEvent(kind, u, a); }
     }
     W.events.length = 0;
     if (W.done) {
@@ -932,6 +1105,7 @@ function arenaFrame(dt) {
   const adt = dt * (arena.running ? rate : 1);
   if (W) {
     drawGround(W);
+    drawTraps(W, adt);
     for (const u of W.units) if (u.view) renderUnit(u, adt);
     bossPanel(W, dt);
     // projectiles: physical — a white-yellow streak; arts — a violet orb; both leave a short trail

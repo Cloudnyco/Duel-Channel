@@ -8,6 +8,7 @@ Libraries installed through npm keep their own licenses. Two of them are inlined
 | [pixi-spine](https://github.com/pixijs/spine) 4.0 (`pixi-spine`) | Spine 3.8 skeletons (inlined into the page) | MIT; contains the Spine Runtimes, under the [Spine Runtimes License Agreement](https://esotericsoftware.com/spine-runtimes-license) — see NOTICE.md §1 for the additional permission |
 | [ws](https://github.com/websockets/ws) 8 | the gateway's lobby and the instances' match sockets | MIT |
 | [ESLint](https://eslint.org/), `@eslint/js`, `globals` | development only | MIT |
+| [jSquash](https://github.com/jamsinclair/jSquash) (`@jsquash/png`, `@jsquash/webp`): the [Squoosh](https://github.com/GoogleChromeLabs/squoosh) codecs compiled to WebAssembly | development only: `tools/build-data.mjs` turns the enemy portraits into WebP | Apache-2.0 |
 
 Fonts:
 
@@ -23,3 +24,4 @@ Data and models:
 - `data/*.json` are generated from [ArknightsGameData](https://github.com/Kengxxiao/ArknightsGameData) (game data © Hypergryph; see NOTICE.md §2).
 - `data/sources/prts-extra-cost.json` lists each duel enemy's per-unit extra cost as given on [PRTS](https://prts.wiki/) (争锋频道/选手信息; PRTS text is CC BY-NC-SA 3.0); the game's tables do not carry it.
 - `assets/models/` holds enemy Spine models from [isHarryh/Ark-Models](https://github.com/isHarryh/Ark-Models) and portraits from [yuanyan3060/ArknightsGameResource](https://github.com/yuanyan3060/ArknightsGameResource) (game art © Hypergryph; see NOTICE.md §2).
+- `assets/fx/trap_001_crate.png`, `trap_019_electric.png` and `skill_icon_sktok_*.png` (the field traps' avatars and skill icons) are from [ArknightsAssets/ArknightsAssets2](https://github.com/ArknightsAssets/ArknightsAssets2) (game art © Hypergryph; see NOTICE.md §2).

@@ -29,7 +29,9 @@ const roundsOf = (mode) => roundTable(mode.id);
 const isSolo = () => G.mode.id === 'soloOperation';
 let ME_NAME = '博士', ME_TAG = '#' + (1000 + Math.floor(Math.random() * 9000));
 let players = [], me = null;
-const G = { round: 0, mode: MODES_MATCH.find((m) => m.id === 'multiOperationMatch'), log: [], best: 0, bestPass: 0 };
+// records: each mode card's own (modeRecordDesc), by mode id — 礼物对决 / 自娱自乐's 最高礼物赢取 (the most gifts at a
+// match's end), 竞猜对决's 最佳竞猜排名 (the best place reached); none yet: absent
+const G = { round: 0, mode: MODES_MATCH.find((m) => m.id === 'multiOperationMatch'), log: [], records: {} };
 const standMode = () => isStand(G.mode.id);
 
 function newPlayers() {
@@ -306,7 +308,7 @@ function fillCard(scr, c, m) {
   scr.show('root_bottom/text', m.multi, c); scr.show('root_bottom/text_single', !m.multi, c);
   scr.text('root_bottom/text', String(m.n), c); scr.text('root_bottom/text_single', String(m.n), c);
   scr.text('ver_layout/name', m.name, c); scr.text('ver_layout/en_name', m.en, c);
-  const best = m.key === 'stand' ? G.bestPass : G.best, rec = m.record && best > 0;
+  const best = G.records[m.id] || 0, rec = m.record && best > 0;
   scr.show('record_toggle/root_max', rec, c); scr.show('record_toggle/text_norecord', !rec, c);
   scr.text('root_max/text_num', String(best), c); if (m.record) scr.text('root_max/text_desc', m.record, c);
   scr.show('group_lock', !!m.locked, c); scr.text('group_lock/root_title/text', m.locked || '', c);
@@ -1029,10 +1031,10 @@ async function stGame() {
     G.round = r;
     if (stand) standShields(players, r);
     const seed = (Math.random() * 2 ** 31) | 0;
-    const lineups = makeLineups(rd, mulberry32(seed ^ 0x5bd1e995));
-    const pred = predict(lineups, seed);
-    G.log.push({ r, seed, lineups: lineups.map((x) => x.map((g) => `${g.f.name}×${g.n}`).join(' + ')), cost: lineups.map(sideScore), pred: pred.winner, len: pred.time });
-    setupRound(lineups, seed);
+    const lrng = mulberry32(seed ^ 0x5bd1e995), lineups = makeLineups(rd, lrng), traps = makeTraps(rd, lrng);
+    const pred = predict(lineups, seed, traps);
+    G.log.push({ r, seed, lineups: lineups.map((x) => x.map((g) => `${g.f.name}×${g.n}`).join(' + ')), traps, cost: lineups.map(sideScore), pred: pred.winner, len: pred.time });
+    setupRound(lineups, seed, traps);
     await betPhase(r, rd, lineups, pred.winner);
     const w = await battlePhase(r);
     if (w !== pred.winner) console.warn('replay differs from the prediction', r, w, pred.winner);
@@ -1122,13 +1124,15 @@ async function stFinish() {
   wait(0.05).then(() => scrollTo((myRank - 1) * 87 - 200));
   scr.text('name_layout_min/text_name', `Dr.${me.name}`);
   // 竞猜对决: the rounds guessed right (竞猜轮次 … 轮), its own record and comments, no gift strategies
-  const best = stand ? me.pass > G.bestPass && !!G.mode.record : me.pts > G.best && !!G.mode.record;
+  const was = G.records[G.mode.id], best = !!G.mode.record && (stand ? !was || myRank < was : me.pts > (was || 0));
   scr.text('title_layout_min/text_comment', stand ? finishCommentStand(myRank) : finishComment(myRank, best));
   scr.show('panel_assets/title_operation', !stand); scr.show('panel_assets/title_stand', stand);
   scr.text('assets_layout_min/text_num', stand ? String(me.pass) : fmt(me.pts)); scr.show('assets_layout_min/text_turn', stand);
-  scr.show('assets_layout_min/group_best', best);
+  // (the prefab's best mark sits by the number shown there: 竞猜对决's record is its place, not its rounds — the mode card
+  // shows it)
+  scr.show('assets_layout_min/group_best', best && !stand);
   scr.show('group_left/group_betting', !stand);
-  if (best) { if (stand) G.bestPass = me.pass; else G.best = me.pts; }
+  if (best) G.records[G.mode.id] = stand ? myRank : me.pts;
   scr.text('group_rank/text_rank', String(myRank));
   scr.show('group_rank/rank_top3', myRank <= 3);
   injectImg(scr.one('panel_avatar/container_avatar_img'), me.avatar, 'inj avatar');

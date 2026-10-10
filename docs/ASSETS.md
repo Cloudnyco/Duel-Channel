@@ -13,7 +13,8 @@ assets/
   ui.json           活动界面：各界面与模板的节点树、精灵图、动画曲线、UI Spine、粒子贴图
   models/<原型>.json 一个原型敌人的模型与头像：{ icon, spine: { skel, atlas, pages, pma, anims } }（113 个）
   audio/*.ogg       界面音效（b_ui_dq*、g_ui_dq*、g_ui_tabswitch / matchsucceed / matchcancel）；可选 m_nobetnolife.ogg 作为默认 BGM
-  fx/*              web/fx-map.json 列出的特效、地块与 buff 贴图
+  fx/*              web/fx-map.json 列出的特效、地块、buff、表情与装置贴图
+  traps.json        场地装置的模型：{ 装置: { tex（fx 角色）, v, uv, f } }（障碍物、源石祭坛）
   fonts/            构建时下载的字体（不提交）
 ```
 
@@ -52,7 +53,7 @@ assets/
 三期争锋频道（青草城、蜜果城、绿藤城）全部 113 种敌人的模型。争锋频道的敌人在客户端里按原型敌人（`originalEnemyId`）绘制，所以一个文件对应一个原型。来源都是社区维护的公开仓库：
 
 - Spine 3.8 模型（skel、atlas、png）：[isHarryh/Ark-Models](https://github.com/isHarryh/Ark-Models) 的 `models_enemies/`；
-- 头像：[yuanyan3060/ArknightsGameResource](https://github.com/yuanyan3060/ArknightsGameResource) 的 `enemy/`；
+- 头像：[yuanyan3060/ArknightsGameResource](https://github.com/yuanyan3060/ArknightsGameResource) 的 `enemy/`，转成 WebP（质量 90，保留透明通道；`tools/lib/webp.mjs`，用编译成 WebAssembly 的 squoosh 编解码器 `@jsquash/png` / `@jsquash/webp`，不需要本机编译），全部头像从约 4.9 MB 减到约 1.2 MB；
 - 数据表：[Kengxxiao/ArknightsGameData](https://github.com/Kengxxiao/ArknightsGameData)。
 
 ```bash
@@ -73,7 +74,9 @@ Ark-Models 有 4 个原型只登记了名字、没有文件，用最接近的模
   - `map_ground.png` / `map_forbid.png` / `map_hlight.png` 是公共地图图集里地面、禁区地块和高台灯的裁切；
   - `img_dissolve_01.png` 是转场的方块噪声；
   - `sprite_enemy_boss_avatar_bg.png`、`sprite_enemy_boss_hp_bg.png`、`sprite_bar_glow.png`、`sprite_white_slider_fill.png`、`sprite_enemy_boss_hud_large.png` 和 `boss_avatar_enemy_1526_sfsui.png`（岁相的纹章）来自战斗界面公共包（`arts/ui/[uc]battlecommon.ab`），是巨型首领面板 `panel_enemy_boss_info`（`battle/[pack]common.ab`）用的贴图；
-  - `pic_*.png` 是对战表情主题（`ui/emoticon/theme/[uc]emticon_duel_basic.ab`）的 12 个表情。
+  - `pic_*.png` 是 5 个表情主题（`ui/emoticon/theme/[uc]emticon_duel_basic.ab`、`[uc]emoticon_foolsday_amiya` / `_wisdel` / `_doctor`、`[uc]emoticon_originium_slug`）中对战用的表情（12 + 4 × 6）；后加的 24 个按精灵的原始矩形（120 × 120）补回裁掉的透明边；
+  - `TX_Common_wild_01.png`、`TX_curse_device.png`（缩到 512 × 512）是障碍物和源石祭坛的模型贴图，模型本身在 `traps.json`：两种装置的预制体在战斗装置合包 `pkgrps/btl_pfb_tokens_*` 里，网格分别来自 `arts/maps/common/meshes/s_common_box_01.ab` 和 `s_curse_device.ab`，材质在 `arts/maps/common/res.ab`；导出时把节点变换算进顶点，存为 [列偏移, 行偏移（向远侧为正）, 高度]（格）；
+  - `trap_001_crate.png`、`trap_019_electric.png`（装置头像）和 `skill_icon_sktok_ore.png` / `_ballis.png` / `_crsbow.png`（装置技能图标）来自公开仓库 [ArknightsAssets/ArknightsAssets2](https://github.com/ArknightsAssets/ArknightsAssets2)（`cn` 分支）。弩炮的外形属于关卡场景，清债程序和梅什科线圈的外形是特效（`trap_crsbow_effect`、`map_electric_grid_start_01`），三者都是热更新内容，安装包和公开仓库里都没有，场上暂时用简单造型加这些图标代替。
 - `audio/m_nobetnolife.ogg`：默认 BGM（塞壬唱片），没有时页面不播放音乐，可以在设置里换曲。
 - `fonts/`：见本页开头。
 

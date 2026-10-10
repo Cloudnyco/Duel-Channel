@@ -89,9 +89,12 @@ const physOf = (atk, v, pen) => Math.max(atk * 0.05, atk - defOf(v) * (1 - (pen 
 // 抵抗 (PRTS 术语释义: stun, cold, freeze … last half as long): the level's rune (火与钢) or the enemy's own (handbook)
 const resists = (v) => RESIST.has(v.f.key) || v.resist;
 
-function makeWorld(lineups, seed, visual) {
+// traps: the round's field traps (makeTraps; none by default)
+function makeWorld(lineups, seed, visual, traps) {
   const W = { units: [], shots: [], t: 0, n: 0, zone: -1, rng: mulberry32(seed), visual, result: null, done: false, events: [],
-    reserve: [], born: [], timers: [], ground: [], hurt: [false, false], start: [0, 0], all: [[], []], coming: [0, 0] };
+    reserve: [], born: [], timers: [], ground: [], hurt: [false, false], start: [0, 0], all: [[], []], coming: [0, 0],
+    traps: (traps || []).map(makeTrap), bolts: [], links: [] };
+  trapTiles(W); W.links = coilLinks(W);
   lineups.forEach((groups, side) => {
     const flat = [];
     // a 协同 group enters whole with its head (data/fighters.json group)
@@ -1185,6 +1188,201 @@ function surpriseStep(W) {
   }
 }
 
+// ---- TRAPS: the field's 奇怪的装置 (PRTS 争锋频道: 场地内可能会出现奇怪的装置！掌控优势地形也是胜利的一环！) --------------
+// Each event's battle stage has two versions (stageIds a / b: the same runes and map, different traps); a round plays
+// one of them, 50 : 50 (the data does not say how the game picks one), and from its waves' random groups one pack of
+// traps per group by weight (DUELCFG.stages; data/duelcfg.json traps: the traps' own numbers). The traps are drawn with
+// the line-ups' generator (makeTraps), so they are known — and shown — while the viewers bet, like the line-ups; the
+// battle's seed plays no part. What they do (character_table / skill_table; PRTS's 装置 pages):
+//   障碍物 (trap_163_foolcrate): blocks its tile, 5000 HP — ground units go round (a blocked tile costs 1000 tiles of
+//     walking, PRTS 阻挡路线), and one with no other way breaks it;
+//   源石祭坛 (trap_213_dqore): its tile is for flyers only, it cannot be hurt; every 7 s (from 7 s) a pulse, 500 true damage
+//     to every unit of either side on the tiles of its x-1 range (the diamond of radius 2). (It also strengthens some
+//     Sarkaz — none of them is a duel enemy.)
+//   弩炮 (trap_214_dqballis), on the rim: every 5 s (from 5 s) a bolt straight ahead (10 tiles a second, PRTS), 100
+//     physical damage (ATK × atk_scale) to the first unit it touches, either side's;
+//   解雇者清债程序 (trap_215_dqcrsbow), on the rim: every 5 s three such bullets — 0.2 s apart and as fast as the bolt (an
+//     interpretation: neither number is in the data or on PRTS);
+//   梅什科线圈 (trap_216_dqelec): cannot be hurt, does not block; every 2.3 s (from 2.3 s) a current 0.65 wide runs for
+//     0.7 s to each coil within its x-2 range placed before it (PRTS), and a unit touching it takes 250 arts damage and
+//     停顿 (cannot move) for 1.5 s, once a current.
+// Neither side owns a trap: what they do falls on both alike (the stages' layouts are symmetric).
+const TRAP_DATA = DCFG.traps || {}, STAGES = DCFG.stages || {};
+const TRAP_KIND = { trap_163_foolcrate: 'crate', trap_213_dqore: 'ore', trap_214_dqballis: 'ballista', trap_215_dqcrsbow: 'crossbow', trap_216_dqelec: 'coil' };
+// (the level's rows count up from the near side of the field, the bottom of the screen: row r is at y = AH + 0.5 − r, and
+// UP is towards smaller y)
+const TRAP_DIR = { UP: [0, -1], DOWN: [0, 1], RIGHT: [1, 0], LEFT: [-1, 0] };
+const BOLT_V = 10, BOLT_R = 0.35, VOLLEY = { trap_215_dqcrsbow: { n: 3, gap: 0.2 } }, COIL = { on: 0.7, half: 0.65 / 2 };
+// a round's traps: [[key, column, row, direction], …] in the level's tiles (the field is columns 1 … 13 and rows 1 … 9)
+function makeTraps(rd, rng) {
+  const st = rd && STAGES[rd.act];
+  if (!st || !st.length) return [];
+  const stage = st[Math.floor(rng() * st.length)], out = [];
+  for (const g of stage.groups) for (const t of pickWeighted(g, (p) => p.w, rng).traps) out.push(t);
+  return out;
+}
+function makeTrap(t, i) {
+  const [key, col, row, dir] = t, D = TRAP_DATA[key] || {}, S = D.skill || { sp: {}, bb: {} };
+  const tx = col - 1, ty = AH - row;
+  return { key, kind: TRAP_KIND[key] || 'crate', i, col, row, tx, ty, x: tx + 0.5, y: ty + 0.5, dir: TRAP_DIR[dir] || [0, 0], tile: tx >= 0 && tx < AW && ty >= 0 && ty < AH ? tx + ty * AW : -1,
+    hp: D.hp || 1, maxHp: D.hp || 1, atk: (D.atk || 0) * (S.bb.atk_scale ?? 1), sp: S.sp.init || 0, cost: key === 'trap_216_dqelec' ? S.bb.interval : S.sp.cost || 0,
+    dmg: S.bb.value ?? S.bb['attack@value'] ?? 0, slug: S.bb['attack@sluggish'] || 0, range: S.range, dead: false, view: null };
+}
+// the tiles ground units cannot cross: 1 a crate (it can be broken), 2 an altar's (flyers only)
+function trapTiles(W) {
+  W.block = new Uint8Array(AW * AH); W.blockN = 0; W.nav = new Map(); W.blockAt = [];
+  for (const t of W.traps) if (t.tile >= 0 && !t.dead && (t.kind === 'crate' || t.kind === 'ore')) { W.block[t.tile] = t.kind === 'crate' ? 1 : 2; W.blockN++; W.blockAt.push([t.tx, t.ty]); }
+}
+// the coils' currents: from each coil to every coil before it within its x-2 range
+function coilLinks(W) {
+  const cs = W.traps.filter((t) => t.kind === 'coil'), out = [];
+  cs.forEach((a, i) => { for (const b of cs.slice(0, i)) if ((RANGES[a.range] || []).some(([c, r]) => b.col === a.col + c && b.row === a.row + r) && (a.col !== b.col || a.row !== b.row)) out.push({ a, b, t: 0, hit: null }); });
+  return out;
+}
+// ground units' way round the blocked tiles: for a goal tile, each tile's cost to it (10 a step, 14 a diagonal step not
+// cutting a blocked corner, onto a crate's tile 10000 more, onto an altar's not at all), worked out once per goal while
+// the tiles stay as they are
+function navField(W, goal) {
+  let F = W.nav.get(goal);
+  if (F) return F;
+  const N = AW * AH, done = new Uint8Array(N);
+  F = new Float64Array(N).fill(Infinity); F[goal] = 0;
+  for (;;) {
+    let c = -1, best = Infinity;
+    for (let i = 0; i < N; i++) if (!done[i] && F[i] < best) { best = F[i]; c = i; }
+    if (c < 0) break;
+    done[c] = 1;
+    if (c !== goal && W.block[c] === 2) continue;
+    const cx = c % AW, cy = (c - cx) / AW;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      if (!dx && !dy) continue;
+      const nx = cx + dx, ny = cy + dy;
+      if (nx < 0 || nx >= AW || ny < 0 || ny >= AH) continue;
+      const n = nx + ny * AW;
+      if (W.block[n] === 2 || done[n]) continue;
+      if (dx && dy && (W.block[cx + ny * AW] || W.block[nx + cy * AW])) continue;
+      const w = best + (dx && dy ? 14 : 10) + (W.block[n] === 1 ? 10000 : 0);
+      if (w < F[n]) F[n] = w;
+    }
+  }
+  W.nav.set(goal, F);
+  return F;
+}
+// does the line from (x0, y0) to (x1, y1), as wide as a unit (0.2 each side), stay off the blocked tiles?
+function clearLine(W, x0, y0, x1, y1) {
+  const lx = Math.min(x0, x1) - 0.2, hx = Math.max(x0, x1) + 0.2, ly = Math.min(y0, y1) - 0.2, hy = Math.max(y0, y1) + 0.2;
+  if (!W.blockAt.some(([c, r]) => c + 1 > lx && c < hx && r + 1 > ly && r < hy)) return true;
+  const dx = x1 - x0, dy = y1 - y0, L = dist(dx, dy), n = Math.ceil(L / 0.1);
+  const ox = L > 1e-9 ? -dy / L * 0.2 : 0, oy = L > 1e-9 ? dx / L * 0.2 : 0;
+  for (let i = 0; i <= n; i++) {
+    const x = x0 + dx * i / Math.max(1, n), y = y0 + dy * i / Math.max(1, n);
+    for (const k of [0, 1, -1]) {
+      const px = x + ox * k, py = y + oy * k;
+      if (px < 0 || px >= AW || py < 0 || py >= AH) continue;
+      if (W.block[tileX(px) + tileY(py) * AW]) return false;
+    }
+  }
+  return true;
+}
+// the way for a ground unit to (ax, ay) on a field with blocked tiles: null — straight there; [x, y] — the farthest
+// tile ahead on the cheapest way that it can walk to in a line; { crate } — the way goes through a crate it stands at
+function steer(W, u, ax, ay) {
+  if (clearLine(W, u.x, u.y, ax, ay)) return null;
+  const goal = tileX(ax) + tileY(ay) * AW, F = navField(W, goal);
+  let c = tileX(u.x) + tileY(u.y) * AW, to = null;
+  for (let k = 0; k < 8 && c !== goal; k++) {
+    const cx = c % AW, cy = (c - cx) / AW;
+    let nxt = -1, best = F[c];
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      const nx = cx + dx, ny = cy + dy;
+      if ((!dx && !dy) || nx < 0 || nx >= AW || ny < 0 || ny >= AH) continue;
+      const n = nx + ny * AW;
+      if (F[n] < best) { best = F[n]; nxt = n; }
+    }
+    if (nxt < 0) break;
+    const px = nxt % AW + 0.5, py = (nxt - nxt % AW) / AW + 0.5;
+    if (W.block[nxt] === 1) {
+      if (k > 0) break;
+      const crate = W.traps.find((t) => t.tile === nxt && !t.dead);
+      if (crate && Math.max(Math.abs(u.x - px), Math.abs(u.y - py)) <= 0.5 + 0.3) return { crate };
+      return [px, py];
+    }
+    if (k > 0 && !clearLine(W, u.x, u.y, px, py)) break;
+    to = [px, py]; c = nxt;
+  }
+  return to;
+}
+function trapStep(W) {
+  for (const t of W.traps) {
+    if (t.dead || t.kind === 'crate') continue;
+    if (t.kind === 'coil') continue;
+    t.sp += DT;
+    if (t.sp < t.cost - EPS) continue;
+    t.sp = 0;
+    if (t.kind === 'ore') {
+      for (const v of W.units) if (live(v) && inShape(t.range, t.tx, t.ty, v)) strike(W, v, t.dmg, null, 'true');
+      if (W.visual) W.events.push(['pulse', null, t]);
+    } else {
+      const V = VOLLEY[t.key] || { n: 1, gap: 0 };
+      for (let i = 0; i < V.n; i++) W.bolts.push({ t, x: t.x, y: t.y, delay: i * V.gap, g: null });
+      if (W.visual) W.events.push(['trapfire', null, t]);
+    }
+  }
+  // the coils' currents: every interval, for COIL.on seconds; a unit touching one is hit once by it
+  for (const L of W.links) {
+    L.t += DT;
+    const per = L.a.cost;
+    if (L.t >= per - EPS && !L.hit) { L.hit = new Set(); L.on = 0; L.t = 0; if (W.visual) W.events.push(['arc', null, L]); }
+    if (!L.hit) continue;
+    const ax = L.a.x, ay = L.a.y, bx = L.b.x - ax, by = L.b.y - ay, l2 = bx * bx + by * by;
+    for (const v of W.units) {
+      if (!live(v) || L.hit.has(v)) continue;
+      const k = clamp(((v.x - ax) * bx + (v.y - ay) * by) / l2, 0, 1);
+      if (dist(v.x - ax - bx * k, v.y - ay - by * k) > COIL.half) continue;
+      L.hit.add(v);
+      strike(W, v, artsOf(L.a.dmg, v), null, 'arts');
+      if (live(v)) v.root = Math.max(v.root, L.a.slug);
+      if (W.visual) W.events.push(['shock', v, L]);
+    }
+    L.on += DT;
+    if (L.on >= COIL.on - EPS) L.hit = null;
+  }
+  // bolts and bullets: straight on, hitting the first unit they touch (the nearest along their way this step)
+  if (W.bolts.length) W.bolts = W.bolts.filter((b) => {
+    if (b.delay > EPS) { b.delay -= DT; return true; }
+    const [dx, dy] = b.t.dir, s = BOLT_V * DT;
+    let first = null, fk = Infinity;
+    for (const v of W.units) {
+      if (!live(v)) continue;
+      // (a giant: the point of its body nearest the bolt)
+      const [vx, vy] = v.giant ? aimAt(b, v) : [v.x, v.y], k = (vx - b.x) * dx + (vy - b.y) * dy;
+      if (k < -BOLT_R || k > s + BOLT_R) continue;
+      if (Math.abs((vx - b.x) * dy - (vy - b.y) * dx) > BOLT_R) continue;
+      if (k < fk) { fk = k; first = v; }
+    }
+    if (first) {
+      strike(W, first, physOf(b.t.atk, first), null, 'phys');
+      if (W.visual) W.events.push(['bolt', first, b]);
+      if (b.g) b.g.destroy();
+      return false;
+    }
+    b.x += dx * s; b.y += dy * s;
+    if (b.x < -1.5 || b.x > AW + 1.5 || b.y < -1.5 || b.y > AH + 1.5) { if (b.g) b.g.destroy(); return false; }
+    return true;
+  });
+}
+// a ground unit breaking the crate in its way: its attack, on its own clock, the crate's HP down by its ATK (a crate
+// has no DEF or RES); a crate at 0 is gone and the way is open
+function breakCrate(W, u, c) {
+  u.facing = c.x > u.x ? 1 : -1;
+  if (u.cd > EPS || u.disarm > 0 || u.noAtk > 0 || u.passive) { if (u.state === 'move') u.state = 'idle'; return; }
+  const iv = u.fixedIv || u.bat * 100 / Math.min(600, Math.max(10, u.aspd + u.bAspd - (u.cold > 0 ? 30 : 0)));
+  u.cd = iv; u.state = 'attack'; u.attackSeq++; u.attackIv = iv;
+  c.hp -= atkOf(u) * (u.outside ? 1 + ENV.ringAtk : 1);
+  if (W.visual) W.events.push(['cratehit', u, c]);
+  if (c.hp <= 0) { c.hp = 0; c.dead = true; trapTiles(W); W.events.push(['crategone', null, c]); }
+}
+
 // the attack about to start: { tgts, o (hit options), times, mult, skill, heal, none (no blow), again (止戈者) }. A
 // skill fires on a full charge (one point an attack: SP_SKILL); the enemy's hook shapes the rest. “自在” and 依然“狼之主”'s
 // second forms attack twice.
@@ -1209,6 +1407,7 @@ function simStep(W) {
   if (W.timers.length) runTimers(W);
   if (W.reserve.length) surpriseStep(W);
   if (W.ground.length) groundStep(W);
+  if (W.traps.length) trapStep(W);
   for (const u of W.units) {
     if (u.dead) continue;
     if (u.rebornT > 0) {
@@ -1281,9 +1480,17 @@ function simStep(W) {
     const still = u.hold > 0 || u.root > 0 || u.giant;         // behind the barrier, rooted, a giant: no move
     if (d > u.reach && still) u.state = 'idle';
     else if (d > u.reach) {
-      const rush = u.rushT > 0 ? 1 + u.f.skillData.Rush.bb.move_speed : 1, dd = d;
-      const step = Math.min(d - u.reach * 0.9, u.speed * (1 + u.bMs) * u.bMsMul * (u.outside && !gate ? ENV.ringMove : 1) * rush * DT);
-      if (dd > 0) { u.x += dx / dd * step; u.y += dy / dd * step; }
+      // the field's blocked tiles (TRAPS): a ground unit goes round them, or breaks the crate that leaves no other way
+      let way = null;
+      if (W.blockN && !u.f.fly) {
+        if (u.wayTg !== tg || W.n - u.wayN >= 6 || u.wayV !== W.nav || (u.way && u.way.crate && u.way.crate.dead)) { u.way = steer(W, u, ax, ay); u.wayTg = tg; u.wayN = W.n; u.wayV = W.nav; }
+        way = u.way;
+      }
+      if (way && way.crate) { breakCrate(W, u, way.crate); continue; }
+      const rush = u.rushT > 0 ? 1 + u.f.skillData.Rush.bb.move_speed : 1;
+      const mx = way ? way[0] - u.x : dx, my = way ? way[1] - u.y : dy, dd = way ? dist(mx, my) : d;
+      const step = Math.min(way ? dd : d - u.reach * 0.9, u.speed * (1 + u.bMs) * u.bMsMul * (u.outside && !gate ? ENV.ringMove : 1) * rush * DT);
+      if (dd > 0) { u.x += mx / dd * step; u.y += my / dd * step; }
       u.state = 'move';
     } else if (u.passive || u.disarm > 0 || u.noAtk > 0 || u.spin > 0) { if (u.state === 'move') u.state = 'idle'; }
     else if (u.cd <= EPS) {
@@ -1335,6 +1542,15 @@ function simStep(W) {
       if (m === r) u.x = B.x1 + 1e-6; else if (m === l) u.x = B.x0 - 1e-6; else if (m === t) u.y = B.y0 - 1e-6; else u.y = B.y1 + 1e-6;
     }
   }
+  // nor on a blocked tile (TRAPS): one who got on is set on its nearest edge
+  if (W.blockN) for (const u of body) {
+    const c = tileX(u.x), r = tileY(u.y);
+    if (!W.block[c + r * AW]) continue;
+    const free = (x, y) => x >= 0 && x < AW && y >= 0 && y < AH && !W.block[x + y * AW];
+    const out = [[u.x - c, c - 1, r, () => { u.x = c - 1e-6; }], [c + 1 - u.x, c + 1, r, () => { u.x = c + 1 + 1e-6; }],
+      [u.y - r, c, r - 1, () => { u.y = r - 1e-6; }], [r + 1 - u.y, c, r + 1, () => { u.y = r + 1 + 1e-6; }]].filter((e) => free(e[1], e[2])).sort((a, b) => a[0] - b[0]);
+    if (out.length) out[0][3]();
+  }
   for (const u of W.units) { u.x = clamp(u.x, 0.1, AW - 0.1); u.y = clamp(u.y, 0.1, AH - 0.1); }
   // shots
   W.shots = W.shots.filter((s) => {
@@ -1375,8 +1591,8 @@ function simStep(W) {
   }
 }
 // the outcome of a match-up, computed ahead (headless, same seed and steps as the replay)
-function predict(lineups, seed) {
-  const W = makeWorld(lineups, seed, false);
+function predict(lineups, seed, traps) {
+  const W = makeWorld(lineups, seed, false, traps);
   while (!W.done) simStep(W);
   return { winner: W.result, time: W.t };
 }
@@ -1561,14 +1777,19 @@ function standRanks(players) {
   return rank;
 }
 
-// The emoji panel's pictures (the battle's emoticon theme, enabledEmoticonThemeIdList → display_meta_table).
-const EMOJI_PICS = (DCFG.emoticons && DCFG.emoticons[0] ? DCFG.emoticons[0].pics : []);
+// The emoji panel's themes (enabledEmoticonThemeIdList → display_meta_table, each theme's ENEMYDUEL_BATTLE pictures):
+// the duel's own (emticon_duel_basic, 12) first, then the four themes a player may own (6 each). Every theme is open
+// here (the game sells the others; this demo has no account). EMOJI_PICS: every picture one may send; the NPC viewers
+// keep to the basic theme (EMOJI_BASIC).
+const EMOJI_THEMES = DCFG.emoticons || [];
+const EMOJI_BASIC = EMOJI_THEMES[0] ? EMOJI_THEMES[0].pics : [];
+const EMOJI_PICS = [...new Set(EMOJI_THEMES.flatMap((t) => t.pics))];
 // An NPC viewer's emoji at a moment of the round, or null. The official data gives the NPC viewers no emoji behaviour
 // (real players send them online); this project lets them react so the barrage lives offline too. moment: 'bet' (just
 // picked: point at the backed side, or ponder a skip), 'battle' (a reaction), 'result' (the round's outcome for its
 // choice). Kept to a sprinkle: a third to a half of them speak per moment, some eight emojis a round.
 function npcEmote(moment, choice, right, rnd) {
-  const has = (p) => EMOJI_PICS.includes(p), any = (a) => { const ok = a.filter(has); return ok.length ? ok[Math.floor(rnd() * ok.length)] : null; };
+  const has = (p) => EMOJI_BASIC.includes(p), any = (a) => { const ok = a.filter(has); return ok.length ? ok[Math.floor(rnd() * ok.length)] : null; };
   switch (moment) {
     case 'bet': if (rnd() >= 0.45 || !choice) return null; return choice.skip ? any(['pic_think', 'pic_what']) : any([choice.side ? 'pic_right' : 'pic_left']);
     case 'battle': return rnd() < 0.3 ? any(['pic_shock', 'pic_pray', 'pic_think', 'pic_what']) : null;

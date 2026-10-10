@@ -16,14 +16,14 @@
      2
     ],
     [
-     "enemy_5043_dqgscr",
+     "enemy_15048_dqdivi",
      4
     ]
    ]
   ],
   "winner": 0,
-  "steps": 747,
-  "hash": "b34eb4bd086f422b"
+  "steps": 948,
+  "hash": "c2bd78e50b552531"
  },
  {
   "round": 1,
@@ -36,8 +36,8 @@
      1
     ],
     [
-     "enemy_5052_dqsbr",
-     6
+     "enemy_5043_dqgscr",
+     5
     ]
    ],
    [
@@ -48,8 +48,8 @@
    ]
   ],
   "winner": 1,
-  "steps": 1492,
-  "hash": "8f1ef1550410b05e"
+  "steps": 1940,
+  "hash": "3647515bab9648b2"
  },
  {
   "round": 1,
@@ -240,7 +240,7 @@
      5
     ],
     [
-     "enemy_15041_dqgrg",
+     "enemy_15064_dqdru",
      7
     ]
    ],
@@ -256,8 +256,8 @@
    ]
   ],
   "winner": 0,
-  "steps": 1632,
-  "hash": "51eec0a15d94f522"
+  "steps": 2744,
+  "hash": "fd6882df1538a32c"
  },
  {
   "round": 4,
@@ -338,8 +338,8 @@
   "lineups": [
    [
     [
-     "enemy_5052_dqsbr",
-     11
+     "enemy_5043_dqgscr",
+     10
     ],
     [
      "enemy_15004_dqdhdt",
@@ -354,8 +354,8 @@
    ]
   ],
   "winner": 1,
-  "steps": 525,
-  "hash": "5223068b6333fda5"
+  "steps": 514,
+  "hash": "83ee96bf87df15fc"
  },
  {
   "round": 5,
@@ -682,7 +682,7 @@
   "lineups": [
    [
     [
-     "enemy_15041_dqgrg",
+     "enemy_15064_dqdru",
      9
     ],
     [
@@ -710,8 +710,8 @@
    ]
   ],
   "winner": 0,
-  "steps": 2081,
-  "hash": "4abe26e61416a3c8"
+  "steps": 2339,
+  "hash": "05b3d8a381c2ac03"
  },
  {
   "round": 8,
@@ -734,12 +734,12 @@
    ],
    [
     [
-     "enemy_15048_dqdivi",
+     "enemy_15038_dqhtbw",
      10
     ],
     [
-     "enemy_15030_dqsgpr",
-     6
+     "enemy_15041_dqgrg",
+     7
     ],
     [
      "enemy_15094_dqgent",
@@ -748,8 +748,8 @@
    ]
   ],
   "winner": 1,
-  "steps": 2400,
-  "hash": "256d2b673a4a3d2d"
+  "steps": 2040,
+  "hash": "dc94d60b8fe34977"
  },
  {
   "round": 9,
@@ -806,8 +806,8 @@
      2
     ],
     [
-     "enemy_5052_dqsbr",
-     9
+     "enemy_5043_dqgscr",
+     8
     ],
     [
      "enemy_15083_dqymot",
@@ -820,8 +820,8 @@
    ]
   ],
   "winner": 0,
-  "steps": 2077,
-  "hash": "070d35525a1653c3"
+  "steps": 2425,
+  "hash": "84a0dc3a506d7244"
  },
  {
   "round": 9,
@@ -830,7 +830,7 @@
   "lineups": [
    [
     [
-     "enemy_15048_dqdivi",
+     "enemy_15038_dqhtbw",
      17
     ],
     [
@@ -840,8 +840,8 @@
    ],
    [
     [
-     "enemy_15064_dqdru",
-     13
+     "enemy_15015_dqmerr",
+     8
     ],
     [
      "enemy_15008_dqspsb",
@@ -849,9 +849,9 @@
     ]
    ]
   ],
-  "winner": 1,
-  "steps": 1344,
-  "hash": "f5d441a6e5a1f548"
+  "winner": 0,
+  "steps": 833,
+  "hash": "f03648a9402d7d6d"
  },
  {
   "round": 10,
@@ -970,8 +970,8 @@
    ],
    [
     [
-     "enemy_5043_dqgscr",
-     14
+     "enemy_15048_dqdivi",
+     15
     ],
     [
      "enemy_15077_dqqzts",
@@ -983,9 +983,9 @@
     ]
    ]
   ],
-  "winner": 1,
-  "steps": 2927,
-  "hash": "a78ef53ba70bda5b"
+  "winner": 0,
+  "steps": 2766,
+  "hash": "8581fc816ae1d3b3"
  },
  {
   "round": 1,
@@ -1004,14 +1004,14 @@
      5
     ],
     [
-     "enemy_15015_dqmerr",
+     "enemy_15030_dqsgpr",
      2
     ]
    ]
   ],
   "winner": 0,
-  "steps": 906,
-  "hash": "2571b473179fdf8c"
+  "steps": 1002,
+  "hash": "d04c83de65a3f50b"
  },
  {
   "round": 1,
@@ -1240,7 +1240,7 @@
      3
     ],
     [
-     "enemy_5052_dqsbr",
+     "enemy_5043_dqgscr",
      7
     ],
     [
@@ -1260,7 +1260,2821 @@
    ]
   ],
   "winner": 0,
-  "steps": 2039,
-  "hash": "9458e5dad4b4a484"
+  "steps": 2125,
+  "hash": "bf4c8ab128577f87"
+ },
+ {
+  "round": 1,
+  "roundId": "multi_op_m_r01@act1enemyduel",
+  "seed": 11,
+  "lineups": [
+   [
+    [
+     "enemy_15058_dqtank",
+     3
+    ]
+   ],
+   [
+    [
+     "enemy_15010_dqcadk",
+     3
+    ],
+    [
+     "enemy_15083_dqymot",
+     1
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_163_foolcrate",
+    7,
+    9,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    8,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    7,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    3,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    2,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    1,
+    "UP"
+   ]
+  ],
+  "winner": 1,
+  "steps": 855,
+  "hash": "9f0ff65cfed567d0"
+ },
+ {
+  "round": 2,
+  "roundId": "multi_op_m_r02@act1enemyduel",
+  "seed": 40514,
+  "lineups": [
+   [
+    [
+     "enemy_15094_dqgent",
+     11
+    ],
+    [
+     "enemy_15080_dqgtop",
+     2
+    ]
+   ],
+   [
+    [
+     "enemy_15036_dqalme",
+     20
+    ],
+    [
+     "enemy_15043_dqrckm",
+     1
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_163_foolcrate",
+    7,
+    6,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    5,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    4,
+    "UP"
+   ]
+  ],
+  "winner": 0,
+  "steps": 2464,
+  "hash": "f99625559a4e356e"
+ },
+ {
+  "round": 3,
+  "roundId": "multi_op_m_r03@act1enemyduel",
+  "seed": 81017,
+  "lineups": [
+   [
+    [
+     "enemy_5037_dqdbox",
+     7
+    ],
+    [
+     "enemy_15041_dqgrg",
+     5
+    ]
+   ],
+   [
+    [
+     "enemy_15033_dqclif",
+     2
+    ],
+    [
+     "enemy_15027_dqmtrs",
+     3
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_163_foolcrate",
+    7,
+    1,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    2,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    3,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    8,
+    1,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    6,
+    9,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    7,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    8,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    9,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    5,
+    6,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    5,
+    5,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    5,
+    4,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    9,
+    6,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    9,
+    5,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    9,
+    4,
+    "UP"
+   ]
+  ],
+  "winner": 1,
+  "steps": 1600,
+  "hash": "f243e48910d898dc"
+ },
+ {
+  "round": 4,
+  "roundId": "multi_op_m_r04@act1enemyduel",
+  "seed": 121520,
+  "lineups": [
+   [
+    [
+     "enemy_15031_dqhlti",
+     2
+    ],
+    [
+     "enemy_15006_dqkrgm",
+     2
+    ],
+    [
+     "enemy_5042_dqkght_2",
+     2
+    ]
+   ],
+   [
+    [
+     "enemy_15017_dqdwlo",
+     5
+    ],
+    [
+     "enemy_15007_dqbear",
+     2
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_213_dqore",
+    5,
+    7,
+    "UP"
+   ],
+   [
+    "trap_213_dqore",
+    5,
+    3,
+    "UP"
+   ],
+   [
+    "trap_213_dqore",
+    9,
+    7,
+    "UP"
+   ],
+   [
+    "trap_213_dqore",
+    9,
+    3,
+    "UP"
+   ]
+  ],
+  "winner": 1,
+  "steps": 1307,
+  "hash": "a48ab2431707c082"
+ },
+ {
+  "round": 5,
+  "roundId": "multi_op_m_r05@act1enemyduel",
+  "seed": 162023,
+  "lineups": [
+   [
+    [
+     "enemy_15052_dqboar",
+     5
+    ],
+    [
+     "enemy_15043_dqrckm",
+     1
+    ],
+    [
+     "enemy_15008_dqspsb",
+     20
+    ]
+   ],
+   [
+    [
+     "enemy_15016_dqdkma",
+     5
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_213_dqore",
+    6,
+    5,
+    "UP"
+   ],
+   [
+    "trap_213_dqore",
+    8,
+    5,
+    "UP"
+   ]
+  ],
+  "winner": 1,
+  "steps": 2932,
+  "hash": "37d5d7d6736b3599"
+ },
+ {
+  "round": 6,
+  "roundId": "multi_op_m_r06@act1enemyduel",
+  "seed": 202526,
+  "lineups": [
+   [
+    [
+     "enemy_5046_dqmir",
+     6
+    ],
+    [
+     "enemy_15043_dqrckm",
+     2
+    ]
+   ],
+   [
+    [
+     "enemy_5045_dqjedi_2",
+     5
+    ],
+    [
+     "enemy_15083_dqymot",
+     3
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_214_dqballis",
+    3,
+    10,
+    "DOWN"
+   ],
+   [
+    "trap_214_dqballis",
+    5,
+    10,
+    "DOWN"
+   ],
+   [
+    "trap_214_dqballis",
+    7,
+    10,
+    "DOWN"
+   ],
+   [
+    "trap_214_dqballis",
+    9,
+    10,
+    "DOWN"
+   ],
+   [
+    "trap_214_dqballis",
+    11,
+    10,
+    "DOWN"
+   ]
+  ],
+  "winner": 0,
+  "steps": 2354,
+  "hash": "0c349dbb16e1c628"
+ },
+ {
+  "round": 7,
+  "roundId": "multi_op_m_r07@act1enemyduel",
+  "seed": 243029,
+  "lineups": [
+   [
+    [
+     "enemy_15026_dqmtrf",
+     2
+    ],
+    [
+     "enemy_15046_dqxts",
+     25
+    ],
+    [
+     "enemy_15043_dqrckm",
+     1
+    ]
+   ],
+   [
+    [
+     "enemy_5053_dqllme",
+     1
+    ],
+    [
+     "enemy_15079_dqkodo",
+     3
+    ],
+    [
+     "enemy_5043_dqgscr",
+     9
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_214_dqballis",
+    0,
+    6,
+    "RIGHT"
+   ],
+   [
+    "trap_214_dqballis",
+    0,
+    5,
+    "RIGHT"
+   ],
+   [
+    "trap_214_dqballis",
+    0,
+    4,
+    "RIGHT"
+   ],
+   [
+    "trap_214_dqballis",
+    14,
+    6,
+    "LEFT"
+   ],
+   [
+    "trap_214_dqballis",
+    14,
+    5,
+    "LEFT"
+   ],
+   [
+    "trap_214_dqballis",
+    14,
+    4,
+    "LEFT"
+   ]
+  ],
+  "winner": 1,
+  "steps": 2880,
+  "hash": "aed0801bde44fed4"
+ },
+ {
+  "round": 8,
+  "roundId": "multi_op_m_r08@act1enemyduel",
+  "seed": 283532,
+  "lineups": [
+   [
+    [
+     "enemy_15046_dqxts",
+     25
+    ],
+    [
+     "enemy_15059_dqhmmr",
+     2
+    ],
+    [
+     "enemy_15083_dqymot",
+     2
+    ],
+    [
+     "enemy_15043_dqrckm",
+     2
+    ]
+   ],
+   [
+    [
+     "enemy_5028_dqlime_2",
+     29
+    ],
+    [
+     "enemy_15086_dqcbld",
+     6
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_163_foolcrate",
+    7,
+    9,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    8,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    7,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    3,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    2,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    1,
+    "UP"
+   ]
+  ],
+  "winner": 0,
+  "steps": 1756,
+  "hash": "ae58e796981eecd6"
+ },
+ {
+  "round": 9,
+  "roundId": "multi_op_m_r09@act1enemyduel",
+  "seed": 324035,
+  "lineups": [
+   [
+    [
+     "enemy_15092_dqudg",
+     3
+    ],
+    [
+     "enemy_15034_dqdrp",
+     28
+    ],
+    [
+     "enemy_5041_dqkght",
+     13
+    ]
+   ],
+   [
+    [
+     "enemy_15008_dqspsb",
+     51
+    ],
+    [
+     "enemy_15055_dqrhcr",
+     9
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_163_foolcrate",
+    7,
+    6,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    5,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    4,
+    "UP"
+   ]
+  ],
+  "winner": 1,
+  "steps": 2624,
+  "hash": "c35fbaab549c9564"
+ },
+ {
+  "round": 10,
+  "roundId": "multi_op_m_r10@act1enemyduel",
+  "seed": 364538,
+  "lineups": [
+   [
+    [
+     "enemy_5038_dqiprr_2",
+     8
+    ],
+    [
+     "enemy_15012_dqbsli",
+     16
+    ],
+    [
+     "enemy_5043_dqgscr",
+     7
+    ],
+    [
+     "enemy_15066_dqdudu",
+     4
+    ]
+   ],
+   [
+    [
+     "enemy_15034_dqdrp",
+     24
+    ],
+    [
+     "enemy_15049_dqfrog",
+     5
+    ],
+    [
+     "enemy_5044_dqzeni",
+     9
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_163_foolcrate",
+    7,
+    1,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    2,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    3,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    8,
+    1,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    6,
+    9,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    7,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    8,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    9,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    5,
+    6,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    5,
+    5,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    5,
+    4,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    9,
+    6,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    9,
+    5,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    9,
+    4,
+    "UP"
+   ]
+  ],
+  "winner": 0,
+  "steps": 1794,
+  "hash": "6e7afcc941eda95f"
+ },
+ {
+  "round": 1,
+  "roundId": "multi_op_m_r01@act1enemyduel",
+  "seed": 405041,
+  "lineups": [
+   [
+    [
+     "enemy_15012_dqbsli",
+     9
+    ],
+    [
+     "enemy_5037_dqdbox",
+     4
+    ]
+   ],
+   [
+    [
+     "enemy_15045_dqrbty",
+     2
+    ],
+    [
+     "enemy_15027_dqmtrs",
+     3
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_213_dqore",
+    5,
+    7,
+    "UP"
+   ],
+   [
+    "trap_213_dqore",
+    5,
+    3,
+    "UP"
+   ],
+   [
+    "trap_213_dqore",
+    9,
+    7,
+    "UP"
+   ],
+   [
+    "trap_213_dqore",
+    9,
+    3,
+    "UP"
+   ]
+  ],
+  "winner": 1,
+  "steps": 707,
+  "hash": "fc784d09e9582026"
+ },
+ {
+  "round": 2,
+  "roundId": "multi_op_m_r02@act1enemyduel",
+  "seed": 445544,
+  "lineups": [
+   [
+    [
+     "enemy_15009_dqmgcs",
+     6
+    ],
+    [
+     "enemy_15053_dqtrtl",
+     6
+    ]
+   ],
+   [
+    [
+     "enemy_15091_dqbus",
+     3
+    ],
+    [
+     "enemy_5036_dqger_2",
+     1
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_213_dqore",
+    6,
+    5,
+    "UP"
+   ],
+   [
+    "trap_213_dqore",
+    8,
+    5,
+    "UP"
+   ]
+  ],
+  "winner": 0,
+  "steps": 874,
+  "hash": "fc13b8c1bb9221cb"
+ },
+ {
+  "round": 3,
+  "roundId": "multi_op_m_r03@act1enemyduel",
+  "seed": 486047,
+  "lineups": [
+   [
+    [
+     "enemy_15012_dqbsli",
+     13
+    ],
+    [
+     "enemy_15088_dqterm",
+     1
+    ]
+   ],
+   [
+    [
+     "enemy_5039_dqgint",
+     1
+    ],
+    [
+     "enemy_15091_dqbus",
+     3
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_214_dqballis",
+    3,
+    10,
+    "DOWN"
+   ],
+   [
+    "trap_214_dqballis",
+    5,
+    10,
+    "DOWN"
+   ],
+   [
+    "trap_214_dqballis",
+    7,
+    10,
+    "DOWN"
+   ],
+   [
+    "trap_214_dqballis",
+    9,
+    10,
+    "DOWN"
+   ],
+   [
+    "trap_214_dqballis",
+    11,
+    10,
+    "DOWN"
+   ]
+  ],
+  "winner": 1,
+  "steps": 3092,
+  "hash": "2f1aa54a9bf07cb1"
+ },
+ {
+  "round": 4,
+  "roundId": "multi_op_m_r04@act1enemyduel",
+  "seed": 526550,
+  "lineups": [
+   [
+    [
+     "enemy_5028_dqlime_2",
+     19
+    ],
+    [
+     "enemy_15003_dqltsw",
+     3
+    ]
+   ],
+   [
+    [
+     "enemy_15051_dqxjl",
+     8
+    ],
+    [
+     "enemy_15016_dqdkma",
+     3
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_214_dqballis",
+    0,
+    6,
+    "RIGHT"
+   ],
+   [
+    "trap_214_dqballis",
+    0,
+    5,
+    "RIGHT"
+   ],
+   [
+    "trap_214_dqballis",
+    0,
+    4,
+    "RIGHT"
+   ],
+   [
+    "trap_214_dqballis",
+    14,
+    6,
+    "LEFT"
+   ],
+   [
+    "trap_214_dqballis",
+    14,
+    5,
+    "LEFT"
+   ],
+   [
+    "trap_214_dqballis",
+    14,
+    4,
+    "LEFT"
+   ]
+  ],
+  "winner": 1,
+  "steps": 1361,
+  "hash": "a22d467f263488dd"
+ },
+ {
+  "round": 5,
+  "roundId": "multi_op_m_r05@act1enemyduel",
+  "seed": 567053,
+  "lineups": [
+   [
+    [
+     "enemy_15040_dqrdmn",
+     7
+    ]
+   ],
+   [
+    [
+     "enemy_15077_dqqzts",
+     3
+    ],
+    [
+     "enemy_5043_dqgscr",
+     7
+    ],
+    [
+     "enemy_15067_dqdidi",
+     2
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_215_dqcrsbow",
+    4,
+    10,
+    "DOWN"
+   ],
+   [
+    "trap_215_dqcrsbow",
+    6,
+    10,
+    "DOWN"
+   ],
+   [
+    "trap_215_dqcrsbow",
+    8,
+    10,
+    "DOWN"
+   ],
+   [
+    "trap_215_dqcrsbow",
+    10,
+    10,
+    "DOWN"
+   ]
+  ],
+  "winner": 1,
+  "steps": 2059,
+  "hash": "f35a4d3d19ac30a0"
+ },
+ {
+  "round": 6,
+  "roundId": "multi_op_m_r06@act1enemyduel",
+  "seed": 607556,
+  "lineups": [
+   [
+    [
+     "enemy_15081_dqmage",
+     6
+    ],
+    [
+     "enemy_15035_dqbone",
+     23
+    ]
+   ],
+   [
+    [
+     "enemy_15037_dqhtms",
+     8
+    ],
+    [
+     "enemy_15003_dqltsw",
+     4
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_215_dqcrsbow",
+    0,
+    7,
+    "RIGHT"
+   ],
+   [
+    "trap_215_dqcrsbow",
+    0,
+    3,
+    "RIGHT"
+   ],
+   [
+    "trap_215_dqcrsbow",
+    14,
+    7,
+    "LEFT"
+   ],
+   [
+    "trap_215_dqcrsbow",
+    14,
+    3,
+    "LEFT"
+   ]
+  ],
+  "winner": 1,
+  "steps": 1396,
+  "hash": "eff970e7803a1b8b"
+ },
+ {
+  "round": 7,
+  "roundId": "multi_op_m_r07@act1enemyduel",
+  "seed": 648059,
+  "lineups": [
+   [
+    [
+     "enemy_5044_dqzeni",
+     9
+    ],
+    [
+     "enemy_5045_dqjedi_2",
+     3
+    ],
+    [
+     "enemy_15089_dqbgpa",
+     2
+    ]
+   ],
+   [
+    [
+     "enemy_5037_dqdbox",
+     5
+    ],
+    [
+     "enemy_15082_dqklr",
+     4
+    ],
+    [
+     "enemy_15087_dqkkt",
+     3
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_216_dqelec",
+    4,
+    9,
+    "UP"
+   ],
+   [
+    "trap_216_dqelec",
+    4,
+    7,
+    "UP"
+   ],
+   [
+    "trap_216_dqelec",
+    4,
+    3,
+    "UP"
+   ],
+   [
+    "trap_216_dqelec",
+    4,
+    1,
+    "UP"
+   ],
+   [
+    "trap_216_dqelec",
+    10,
+    9,
+    "UP"
+   ],
+   [
+    "trap_216_dqelec",
+    10,
+    7,
+    "UP"
+   ],
+   [
+    "trap_216_dqelec",
+    10,
+    3,
+    "UP"
+   ],
+   [
+    "trap_216_dqelec",
+    10,
+    1,
+    "UP"
+   ]
+  ],
+  "winner": 1,
+  "steps": 2011,
+  "hash": "ba76a5ee107a04d7"
+ },
+ {
+  "round": 8,
+  "roundId": "multi_op_m_r08@act1enemyduel",
+  "seed": 688562,
+  "lineups": [
+   [
+    [
+     "enemy_15051_dqxjl",
+     10
+    ],
+    [
+     "enemy_15052_dqboar",
+     4
+    ],
+    [
+     "enemy_15035_dqbone",
+     14
+    ],
+    [
+     "enemy_15029_dqfrtu",
+     3
+    ]
+   ],
+   [
+    [
+     "enemy_15019_dqharc",
+     3
+    ],
+    [
+     "enemy_5035_dqveng_2",
+     4
+    ],
+    [
+     "enemy_5034_dqield",
+     7
+    ],
+    [
+     "enemy_15033_dqclif",
+     1
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_216_dqelec",
+    4,
+    6,
+    "UP"
+   ],
+   [
+    "trap_216_dqelec",
+    4,
+    4,
+    "UP"
+   ],
+   [
+    "trap_216_dqelec",
+    10,
+    6,
+    "UP"
+   ],
+   [
+    "trap_216_dqelec",
+    10,
+    4,
+    "UP"
+   ]
+  ],
+  "winner": 1,
+  "steps": 2765,
+  "hash": "a51c54f4bc6d4241"
+ },
+ {
+  "round": 9,
+  "roundId": "multi_op_m_r09@act2enemyduel",
+  "seed": 729065,
+  "lineups": [
+   [
+    [
+     "enemy_15031_dqhlti",
+     3
+    ],
+    [
+     "enemy_15080_dqgtop",
+     1
+    ],
+    [
+     "enemy_15030_dqsgpr",
+     6
+    ],
+    [
+     "enemy_15055_dqrhcr",
+     4
+    ]
+   ],
+   [
+    [
+     "enemy_15051_dqxjl",
+     8
+    ],
+    [
+     "enemy_5039_dqgint",
+     1
+    ],
+    [
+     "enemy_15019_dqharc",
+     3
+    ],
+    [
+     "enemy_15086_dqcbld",
+     3
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_163_foolcrate",
+    5,
+    7,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    6,
+    7,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    7,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    8,
+    7,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    9,
+    7,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    5,
+    3,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    6,
+    3,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    3,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    8,
+    3,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    9,
+    3,
+    "UP"
+   ]
+  ],
+  "winner": 1,
+  "steps": 2747,
+  "hash": "82e464068bf2696c"
+ },
+ {
+  "round": 10,
+  "roundId": "multi_op_m_r10@act2enemyduel",
+  "seed": 769568,
+  "lineups": [
+   [
+    [
+     "enemy_5053_dqllme",
+     2
+    ],
+    [
+     "enemy_5051_dqrwar",
+     9
+    ],
+    [
+     "enemy_5036_dqger_2",
+     2
+    ],
+    [
+     "enemy_15022_dqhvys",
+     3
+    ]
+   ],
+   [
+    [
+     "enemy_15080_dqgtop",
+     3
+    ],
+    [
+     "enemy_15083_dqymot",
+     3
+    ],
+    [
+     "enemy_15030_dqsgpr",
+     6
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_163_foolcrate",
+    5,
+    5,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    6,
+    5,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    5,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    8,
+    5,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    9,
+    5,
+    "UP"
+   ]
+  ],
+  "winner": 0,
+  "steps": 2069,
+  "hash": "5037ef262ea4d7b3"
+ },
+ {
+  "round": 1,
+  "roundId": "multi_op_m_r01@act2enemyduel",
+  "seed": 810071,
+  "lineups": [
+   [
+    [
+     "enemy_15030_dqsgpr",
+     3
+    ],
+    [
+     "enemy_15013_dqsnsl",
+     8
+    ]
+   ],
+   [
+    [
+     "enemy_5031_dqrtar_2",
+     3
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_214_dqballis",
+    5,
+    10,
+    "DOWN"
+   ],
+   [
+    "trap_214_dqballis",
+    7,
+    10,
+    "DOWN"
+   ],
+   [
+    "trap_214_dqballis",
+    9,
+    10,
+    "DOWN"
+   ]
+  ],
+  "winner": 1,
+  "steps": 867,
+  "hash": "6b58beaad3c98d39"
+ },
+ {
+  "round": 2,
+  "roundId": "multi_op_m_r02@act2enemyduel",
+  "seed": 850574,
+  "lineups": [
+   [
+    [
+     "enemy_15026_dqmtrf",
+     3
+    ]
+   ],
+   [
+    [
+     "enemy_15073_dqkght",
+     1
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_214_dqballis",
+    0,
+    6,
+    "RIGHT"
+   ],
+   [
+    "trap_214_dqballis",
+    0,
+    5,
+    "RIGHT"
+   ],
+   [
+    "trap_214_dqballis",
+    0,
+    4,
+    "RIGHT"
+   ],
+   [
+    "trap_214_dqballis",
+    14,
+    6,
+    "LEFT"
+   ],
+   [
+    "trap_214_dqballis",
+    14,
+    5,
+    "LEFT"
+   ],
+   [
+    "trap_214_dqballis",
+    14,
+    4,
+    "LEFT"
+   ]
+  ],
+  "winner": 1,
+  "steps": 779,
+  "hash": "f10077ab650dd768"
+ },
+ {
+  "round": 3,
+  "roundId": "multi_op_m_r03@act2enemyduel",
+  "seed": 891077,
+  "lineups": [
+   [
+    [
+     "enemy_15013_dqsnsl",
+     12
+    ],
+    [
+     "enemy_15023_dqwlfm",
+     1
+    ]
+   ],
+   [
+    [
+     "enemy_15093_dqzfkl",
+     1
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_215_dqcrsbow",
+    0,
+    6,
+    "RIGHT"
+   ],
+   [
+    "trap_215_dqcrsbow",
+    14,
+    4,
+    "LEFT"
+   ]
+  ],
+  "winner": 0,
+  "steps": 2310,
+  "hash": "31492c815ddbdc94"
+ },
+ {
+  "round": 4,
+  "roundId": "multi_op_m_r04@act2enemyduel",
+  "seed": 931580,
+  "lineups": [
+   [
+    [
+     "enemy_15038_dqhtbw",
+     7
+    ],
+    [
+     "enemy_15053_dqtrtl",
+     5
+    ],
+    [
+     "enemy_15046_dqxts",
+     17
+    ]
+   ],
+   [
+    [
+     "enemy_15039_dqrgrd",
+     5
+    ],
+    [
+     "enemy_15051_dqxjl",
+     6
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_215_dqcrsbow",
+    3,
+    10,
+    "DOWN"
+   ],
+   [
+    "trap_215_dqcrsbow",
+    11,
+    10,
+    "DOWN"
+   ]
+  ],
+  "winner": 0,
+  "steps": 3185,
+  "hash": "7d499e65742b25e2"
+ },
+ {
+  "round": 5,
+  "roundId": "multi_op_m_r05@act2enemyduel",
+  "seed": 972083,
+  "lineups": [
+   [
+    [
+     "enemy_15009_dqmgcs",
+     9
+    ],
+    [
+     "enemy_15030_dqsgpr",
+     8
+    ]
+   ],
+   [
+    [
+     "enemy_15081_dqmage",
+     4
+    ],
+    [
+     "enemy_15088_dqterm",
+     1
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_163_foolcrate",
+    5,
+    7,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    5,
+    6,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    5,
+    5,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    5,
+    3,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    9,
+    3,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    9,
+    4,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    9,
+    5,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    9,
+    7,
+    "UP"
+   ]
+  ],
+  "winner": 0,
+  "steps": 1002,
+  "hash": "256f926f32cfd9ad"
+ },
+ {
+  "round": 6,
+  "roundId": "multi_op_m_r06@act2enemyduel",
+  "seed": 1012586,
+  "lineups": [
+   [
+    [
+     "enemy_5035_dqveng_2",
+     7
+    ],
+    [
+     "enemy_15051_dqxjl",
+     12
+    ]
+   ],
+   [
+    [
+     "enemy_5051_dqrwar",
+     9
+    ],
+    [
+     "enemy_15064_dqdru",
+     10
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_163_foolcrate",
+    5,
+    7,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    5,
+    5,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    5,
+    4,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    5,
+    3,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    9,
+    3,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    9,
+    5,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    9,
+    6,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    9,
+    7,
+    "UP"
+   ]
+  ],
+  "winner": 0,
+  "steps": 2155,
+  "hash": "4322cdcfc576a5f0"
+ },
+ {
+  "round": 7,
+  "roundId": "multi_op_m_r07@act2enemyduel",
+  "seed": 1053089,
+  "lineups": [
+   [
+    [
+     "enemy_15045_dqrbty",
+     5
+    ],
+    [
+     "enemy_5039_dqgint",
+     1
+    ]
+   ],
+   [
+    [
+     "enemy_15051_dqxjl",
+     13
+    ],
+    [
+     "enemy_15005_dqdsbs",
+     4
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_163_foolcrate",
+    5,
+    7,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    6,
+    7,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    7,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    8,
+    7,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    9,
+    7,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    5,
+    3,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    6,
+    3,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    3,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    8,
+    3,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    9,
+    3,
+    "UP"
+   ]
+  ],
+  "winner": 1,
+  "steps": 1920,
+  "hash": "73c01b37ec2d3f67"
+ },
+ {
+  "round": 8,
+  "roundId": "multi_op_m_r08@act2enemyduel",
+  "seed": 1093592,
+  "lineups": [
+   [
+    [
+     "enemy_15035_dqbone",
+     20
+    ],
+    [
+     "enemy_15082_dqklr",
+     4
+    ],
+    [
+     "enemy_5033_dqmstr_2",
+     6
+    ]
+   ],
+   [
+    [
+     "enemy_15083_dqymot",
+     2
+    ],
+    [
+     "enemy_15045_dqrbty",
+     3
+    ],
+    [
+     "enemy_5036_dqger_2",
+     2
+    ],
+    [
+     "enemy_15015_dqmerr",
+     5
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_213_dqore",
+    5,
+    7,
+    "UP"
+   ],
+   [
+    "trap_213_dqore",
+    9,
+    3,
+    "UP"
+   ]
+  ],
+  "winner": 0,
+  "steps": 1544,
+  "hash": "057689c803e86308"
+ },
+ {
+  "round": 9,
+  "roundId": "multi_op_m_r09@act2enemyduel",
+  "seed": 1134095,
+  "lineups": [
+   [
+    [
+     "enemy_15010_dqcadk",
+     4
+    ],
+    [
+     "enemy_15091_dqbus",
+     5
+    ],
+    [
+     "enemy_5053_dqllme",
+     2
+    ]
+   ],
+   [
+    [
+     "enemy_15053_dqtrtl",
+     9
+    ],
+    [
+     "enemy_5035_dqveng_2",
+     4
+    ],
+    [
+     "enemy_5036_dqger_2",
+     2
+    ],
+    [
+     "enemy_15002_dqwing",
+     3
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_213_dqore",
+    5,
+    3,
+    "UP"
+   ],
+   [
+    "trap_213_dqore",
+    9,
+    7,
+    "UP"
+   ]
+  ],
+  "winner": 1,
+  "steps": 1752,
+  "hash": "8c9c14c140991b97"
+ },
+ {
+  "round": 10,
+  "roundId": "multi_op_m_r10@act2enemyduel",
+  "seed": 1174598,
+  "lineups": [
+   [
+    [
+     "enemy_15085_dqji",
+     3
+    ],
+    [
+     "enemy_15088_dqterm",
+     2
+    ],
+    [
+     "enemy_15015_dqmerr",
+     6
+    ]
+   ],
+   [
+    [
+     "enemy_5032_dqmon",
+     9
+    ],
+    [
+     "enemy_5044_dqzeni",
+     8
+    ],
+    [
+     "enemy_15041_dqgrg",
+     8
+    ],
+    [
+     "enemy_5046_dqmir",
+     6
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_213_dqore",
+    7,
+    8,
+    "UP"
+   ],
+   [
+    "trap_213_dqore",
+    7,
+    2,
+    "UP"
+   ],
+   [
+    "trap_213_dqore",
+    7,
+    5,
+    "UP"
+   ]
+  ],
+  "winner": 1,
+  "steps": 1253,
+  "hash": "39c524e64442277c"
+ },
+ {
+  "round": 1,
+  "roundId": "multi_op_m_r01@act2enemyduel",
+  "seed": 1215101,
+  "lineups": [
+   [
+    [
+     "enemy_15079_dqkodo",
+     2
+    ]
+   ],
+   [
+    [
+     "enemy_5029_dqslim",
+     9
+    ],
+    [
+     "enemy_15088_dqterm",
+     1
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_216_dqelec",
+    5,
+    8,
+    "UP"
+   ],
+   [
+    "trap_216_dqelec",
+    4,
+    6,
+    "UP"
+   ],
+   [
+    "trap_216_dqelec",
+    4,
+    4,
+    "UP"
+   ],
+   [
+    "trap_216_dqelec",
+    5,
+    2,
+    "UP"
+   ],
+   [
+    "trap_216_dqelec",
+    9,
+    8,
+    "UP"
+   ],
+   [
+    "trap_216_dqelec",
+    10,
+    6,
+    "UP"
+   ],
+   [
+    "trap_216_dqelec",
+    10,
+    4,
+    "UP"
+   ],
+   [
+    "trap_216_dqelec",
+    9,
+    2,
+    "UP"
+   ]
+  ],
+  "winner": 0,
+  "steps": 1095,
+  "hash": "f13a923a23153557"
+ },
+ {
+  "round": 2,
+  "roundId": "multi_op_m_r02@act2enemyduel",
+  "seed": 1255604,
+  "lineups": [
+   [
+    [
+     "enemy_15013_dqsnsl",
+     11
+    ],
+    [
+     "enemy_15054_dqprpn",
+     4
+    ]
+   ],
+   [
+    [
+     "enemy_15084_dqhfly",
+     26
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_216_dqelec",
+    6,
+    7,
+    "UP"
+   ],
+   [
+    "trap_216_dqelec",
+    8,
+    7,
+    "UP"
+   ],
+   [
+    "trap_216_dqelec",
+    7,
+    9,
+    "UP"
+   ],
+   [
+    "trap_216_dqelec",
+    6,
+    3,
+    "UP"
+   ],
+   [
+    "trap_216_dqelec",
+    8,
+    3,
+    "UP"
+   ],
+   [
+    "trap_216_dqelec",
+    7,
+    1,
+    "UP"
+   ]
+  ],
+  "winner": 0,
+  "steps": 526,
+  "hash": "91399e87e42fb695"
+ },
+ {
+  "round": 3,
+  "roundId": "multi_op_m_r03@act2enemyduel",
+  "seed": 1296107,
+  "lineups": [
+   [
+    [
+     "enemy_15081_dqmage",
+     3
+    ],
+    [
+     "enemy_5044_dqzeni",
+     5
+    ],
+    [
+     "enemy_5051_dqrwar",
+     4
+    ]
+   ],
+   [
+    [
+     "enemy_15011_dqnhst",
+     4
+    ],
+    [
+     "enemy_15084_dqhfly",
+     11
+    ],
+    [
+     "enemy_15085_dqji",
+     1
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_215_dqcrsbow",
+    3,
+    10,
+    "DOWN"
+   ],
+   [
+    "trap_215_dqcrsbow",
+    4,
+    10,
+    "DOWN"
+   ],
+   [
+    "trap_215_dqcrsbow",
+    10,
+    10,
+    "DOWN"
+   ],
+   [
+    "trap_215_dqcrsbow",
+    11,
+    10,
+    "DOWN"
+   ]
+  ],
+  "winner": 1,
+  "steps": 733,
+  "hash": "2e1ce539c6a6ad5d"
+ },
+ {
+  "round": 4,
+  "roundId": "multi_op_m_r04@act2enemyduel",
+  "seed": 1336610,
+  "lineups": [
+   [
+    [
+     "enemy_15037_dqhtms",
+     4
+    ],
+    [
+     "enemy_15030_dqsgpr",
+     4
+    ],
+    [
+     "enemy_15077_dqqzts",
+     3
+    ]
+   ],
+   [
+    [
+     "enemy_15064_dqdru",
+     6
+    ],
+    [
+     "enemy_15085_dqji",
+     3
+    ],
+    [
+     "enemy_15052_dqboar",
+     3
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_215_dqcrsbow",
+    0,
+    7,
+    "RIGHT"
+   ],
+   [
+    "trap_215_dqcrsbow",
+    0,
+    6,
+    "RIGHT"
+   ],
+   [
+    "trap_215_dqcrsbow",
+    0,
+    5,
+    "RIGHT"
+   ],
+   [
+    "trap_215_dqcrsbow",
+    14,
+    5,
+    "LEFT"
+   ],
+   [
+    "trap_215_dqcrsbow",
+    14,
+    4,
+    "LEFT"
+   ],
+   [
+    "trap_215_dqcrsbow",
+    14,
+    3,
+    "LEFT"
+   ]
+  ],
+  "winner": 1,
+  "steps": 1272,
+  "hash": "c6aae5a318a83b6e"
+ },
+ {
+  "round": 5,
+  "roundId": "multi_op_m_r05@act2enemyduel",
+  "seed": 1377113,
+  "lineups": [
+   [
+    [
+     "enemy_15016_dqdkma",
+     3
+    ],
+    [
+     "enemy_15084_dqhfly",
+     24
+    ]
+   ],
+   [
+    [
+     "enemy_15083_dqymot",
+     3
+    ],
+    [
+     "enemy_15033_dqclif",
+     2
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_214_dqballis",
+    0,
+    7,
+    "RIGHT"
+   ],
+   [
+    "trap_214_dqballis",
+    0,
+    6,
+    "RIGHT"
+   ],
+   [
+    "trap_214_dqballis",
+    0,
+    5,
+    "RIGHT"
+   ],
+   [
+    "trap_214_dqballis",
+    0,
+    4,
+    "RIGHT"
+   ],
+   [
+    "trap_214_dqballis",
+    0,
+    3,
+    "RIGHT"
+   ],
+   [
+    "trap_214_dqballis",
+    14,
+    7,
+    "LEFT"
+   ],
+   [
+    "trap_214_dqballis",
+    14,
+    6,
+    "LEFT"
+   ],
+   [
+    "trap_214_dqballis",
+    14,
+    5,
+    "LEFT"
+   ],
+   [
+    "trap_214_dqballis",
+    14,
+    4,
+    "LEFT"
+   ],
+   [
+    "trap_214_dqballis",
+    14,
+    3,
+    "LEFT"
+   ]
+  ],
+  "winner": 0,
+  "steps": 1514,
+  "hash": "ae1f9a9482ca04aa"
+ },
+ {
+  "round": 6,
+  "roundId": "multi_op_m_r06@act2enemyduel",
+  "seed": 1417616,
+  "lineups": [
+   [
+    [
+     "enemy_15007_dqbear",
+     2
+    ],
+    [
+     "enemy_15004_dqdhdt",
+     7
+    ]
+   ],
+   [
+    [
+     "enemy_15064_dqdru",
+     6
+    ],
+    [
+     "enemy_15053_dqtrtl",
+     4
+    ],
+    [
+     "enemy_15066_dqdudu",
+     2
+    ],
+    [
+     "enemy_15092_dqudg",
+     2
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_214_dqballis",
+    5,
+    10,
+    "DOWN"
+   ],
+   [
+    "trap_214_dqballis",
+    6,
+    10,
+    "DOWN"
+   ],
+   [
+    "trap_214_dqballis",
+    7,
+    10,
+    "DOWN"
+   ],
+   [
+    "trap_214_dqballis",
+    8,
+    10,
+    "DOWN"
+   ],
+   [
+    "trap_214_dqballis",
+    9,
+    10,
+    "DOWN"
+   ]
+  ],
+  "winner": 1,
+  "steps": 2204,
+  "hash": "29f3ce281da19aa7"
+ },
+ {
+  "round": 7,
+  "roundId": "multi_op_m_r07@act3enemyduel",
+  "seed": 1458119,
+  "lineups": [
+   [
+    [
+     "enemy_5039_dqgint",
+     1
+    ],
+    [
+     "enemy_15017_dqdwlo",
+     5
+    ],
+    [
+     "enemy_15044_dqtisd",
+     2
+    ]
+   ],
+   [
+    [
+     "enemy_15034_dqdrp",
+     30
+    ],
+    [
+     "enemy_15059_dqhmmr",
+     5
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_163_foolcrate",
+    5,
+    7,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    5,
+    6,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    5,
+    4,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    9,
+    7,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    5,
+    3,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    9,
+    6,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    9,
+    4,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    9,
+    3,
+    "UP"
+   ]
+  ],
+  "winner": 1,
+  "steps": 2280,
+  "hash": "8712a877a4eb45c0"
+ },
+ {
+  "round": 8,
+  "roundId": "multi_op_m_r08@act3enemyduel",
+  "seed": 1498622,
+  "lineups": [
+   [
+    [
+     "enemy_15013_dqsnsl",
+     12
+    ],
+    [
+     "enemy_15015_dqmerr",
+     5
+    ],
+    [
+     "enemy_15066_dqdudu",
+     4
+    ]
+   ],
+   [
+    [
+     "enemy_15051_dqxjl",
+     16
+    ],
+    [
+     "enemy_5048_dqingd",
+     6
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_163_foolcrate",
+    6,
+    5,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    7,
+    5,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    8,
+    5,
+    "UP"
+   ]
+  ],
+  "winner": 1,
+  "steps": 1831,
+  "hash": "9b686ae1f2028e0d"
+ },
+ {
+  "round": 9,
+  "roundId": "multi_op_m_r09@act3enemyduel",
+  "seed": 1539125,
+  "lineups": [
+   [
+    [
+     "enemy_15030_dqsgpr",
+     11
+    ],
+    [
+     "enemy_15021_dqdurg",
+     3
+    ]
+   ],
+   [
+    [
+     "enemy_15066_dqdudu",
+     7
+    ],
+    [
+     "enemy_15002_dqwing",
+     5
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_163_foolcrate",
+    6,
+    6,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    6,
+    5,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    6,
+    4,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    8,
+    6,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    8,
+    5,
+    "UP"
+   ],
+   [
+    "trap_163_foolcrate",
+    8,
+    4,
+    "UP"
+   ]
+  ],
+  "winner": 0,
+  "steps": 1121,
+  "hash": "00a131166e4da006"
+ },
+ {
+  "round": 10,
+  "roundId": "multi_op_m_r10@act3enemyduel",
+  "seed": 1579628,
+  "lineups": [
+   [
+    [
+     "enemy_15008_dqspsb",
+     30
+    ],
+    [
+     "enemy_15088_dqterm",
+     1
+    ],
+    [
+     "enemy_5032_dqmon",
+     7
+    ],
+    [
+     "enemy_15026_dqmtrf",
+     2
+    ]
+   ],
+   [
+    [
+     "enemy_15012_dqbsli",
+     18
+    ],
+    [
+     "enemy_15092_dqudg",
+     2
+    ],
+    [
+     "enemy_15044_dqtisd",
+     3
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_213_dqore",
+    7,
+    5,
+    "UP"
+   ]
+  ],
+  "winner": 1,
+  "steps": 2489,
+  "hash": "f2a8c269a850feba"
+ },
+ {
+  "round": 1,
+  "roundId": "multi_op_m_r01@act3enemyduel",
+  "seed": 1620131,
+  "lineups": [
+   [
+    [
+     "enemy_15005_dqdsbs",
+     1
+    ],
+    [
+     "enemy_5036_dqger_2",
+     1
+    ]
+   ],
+   [
+    [
+     "enemy_15038_dqhtbw",
+     9
+    ]
+   ]
+  ],
+  "traps": [
+   [
+    "trap_214_dqballis",
+    0,
+    7,
+    "RIGHT"
+   ],
+   [
+    "trap_214_dqballis",
+    0,
+    6,
+    "RIGHT"
+   ],
+   [
+    "trap_214_dqballis",
+    0,
+    4,
+    "RIGHT"
+   ],
+   [
+    "trap_214_dqballis",
+    0,
+    3,
+    "RIGHT"
+   ],
+   [
+    "trap_214_dqballis",
+    14,
+    7,
+    "LEFT"
+   ],
+   [
+    "trap_214_dqballis",
+    14,
+    6,
+    "LEFT"
+   ],
+   [
+    "trap_214_dqballis",
+    14,
+    5,
+    "LEFT"
+   ],
+   [
+    "trap_214_dqballis",
+    14,
+    4,
+    "LEFT"
+   ],
+   [
+    "trap_214_dqballis",
+    14,
+    3,
+    "LEFT"
+   ]
+  ],
+  "winner": 0,
+  "steps": 3195,
+  "hash": "a17b2132b4adf9e2"
  }
 ]

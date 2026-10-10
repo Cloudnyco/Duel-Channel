@@ -7814,6 +7814,92 @@
     -2
    ]
   ],
+  "x-2": [
+   [
+    -1,
+    2
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    -2,
+    1
+   ],
+   [
+    -1,
+    1
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    -2,
+    0
+   ],
+   [
+    -1,
+    0
+   ],
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    -2,
+    -1
+   ],
+   [
+    -1,
+    -1
+   ],
+   [
+    0,
+    -1
+   ],
+   [
+    1,
+    -1
+   ],
+   [
+    2,
+    -1
+   ],
+   [
+    -1,
+    -2
+   ],
+   [
+    0,
+    -2
+   ],
+   [
+    1,
+    -2
+   ]
+  ],
   "x-4": [
    [
     -1,
@@ -7901,24 +7987,6 @@
     "pic_foolamiya_03_battle",
     "pic_foolamiya_04_battle",
     "pic_foolamiya_05_battle",
-    "pic_foolamiya_06_battle",
-    "pic_foolamiya_01_battle",
-    "pic_foolamiya_01_battle",
-    "pic_foolamiya_01_battle",
-    "pic_foolamiya_02_battle",
-    "pic_foolamiya_02_battle",
-    "pic_foolamiya_02_battle",
-    "pic_foolamiya_03_battle",
-    "pic_foolamiya_03_battle",
-    "pic_foolamiya_03_battle",
-    "pic_foolamiya_04_battle",
-    "pic_foolamiya_04_battle",
-    "pic_foolamiya_04_battle",
-    "pic_foolamiya_05_battle",
-    "pic_foolamiya_05_battle",
-    "pic_foolamiya_05_battle",
-    "pic_foolamiya_06_battle",
-    "pic_foolamiya_06_battle",
     "pic_foolamiya_06_battle"
    ]
   },
@@ -7930,24 +7998,6 @@
     "pic_foolwisdel_03_battle",
     "pic_foolwisdel_04_battle",
     "pic_foolwisdel_05_battle",
-    "pic_foolwisdel_06_battle",
-    "pic_foolwisdel_01_battle",
-    "pic_foolwisdel_01_battle",
-    "pic_foolwisdel_01_battle",
-    "pic_foolwisdel_02_battle",
-    "pic_foolwisdel_02_battle",
-    "pic_foolwisdel_02_battle",
-    "pic_foolwisdel_03_battle",
-    "pic_foolwisdel_03_battle",
-    "pic_foolwisdel_03_battle",
-    "pic_foolwisdel_04_battle",
-    "pic_foolwisdel_04_battle",
-    "pic_foolwisdel_04_battle",
-    "pic_foolwisdel_05_battle",
-    "pic_foolwisdel_05_battle",
-    "pic_foolwisdel_05_battle",
-    "pic_foolwisdel_06_battle",
-    "pic_foolwisdel_06_battle",
     "pic_foolwisdel_06_battle"
    ]
   },
@@ -7959,84 +8009,1810 @@
     "pic_fooldoctor_04_battle",
     "pic_fooldoctor_05_battle",
     "pic_fooldoctor_06_battle",
-    "pic_fooldoctor_08_battle",
-    "pic_fooldoctor_01_battle",
-    "pic_fooldoctor_01_battle",
-    "pic_fooldoctor_01_battle",
-    "pic_fooldoctor_02_battle",
-    "pic_fooldoctor_02_battle",
-    "pic_fooldoctor_02_battle",
-    "pic_fooldoctor_04_battle",
-    "pic_fooldoctor_04_battle",
-    "pic_fooldoctor_04_battle",
-    "pic_fooldoctor_05_battle",
-    "pic_fooldoctor_05_battle",
-    "pic_fooldoctor_05_battle",
-    "pic_fooldoctor_06_battle",
-    "pic_fooldoctor_06_battle",
-    "pic_fooldoctor_06_battle",
-    "pic_fooldoctor_08_battle",
-    "pic_fooldoctor_08_battle",
     "pic_fooldoctor_08_battle"
    ]
   },
   {
    "id": "emoticon_originium_slug",
    "pics": [
-    "pic_hello",
-    "pic_nice_work",
-    "pic_thanks",
-    "pic_bye",
-    "pic_sorry",
-    "pic_exchange",
-    "pic_exchange",
-    "pic_coming",
-    "pic_hurry",
-    "pic_very_soon",
-    "pic_hello",
-    "pic_hello",
-    "pic_nice_work",
-    "pic_nice_work",
-    "pic_thanks",
-    "pic_thanks",
-    "pic_sorry",
-    "pic_bye",
-    "pic_coming",
-    "pic_sorry",
-    "pic_distrust",
-    "pic_exchange",
-    "pic_ufirst",
-    "pic_nice_work",
-    "pic_coming",
-    "pic_mefirst",
-    "pic_thanks",
-    "pic_hurry",
-    "pic_hurry",
-    "pic_sorry",
-    "pic_very_soon",
-    "pic_very_soon",
-    "pic_bye",
-    "pic_distrust",
-    "pic_distrust",
-    "pic_ufirst",
-    "pic_very_soon",
-    "pic_mefirst",
-    "pic_nice_work_battle",
-    "pic_nice_work_battle",
     "pic_nice_work_battle",
     "pic_thanks_battle",
-    "pic_thanks_battle",
-    "pic_thanks_battle",
-    "pic_sorry_battle",
-    "pic_sorry_battle",
     "pic_sorry_battle",
     "pic_bye_battle",
-    "pic_bye_battle",
     "pic_distrust_battle",
-    "pic_distrust_battle",
-    "pic_very_soon_battle",
     "pic_very_soon_battle"
    ]
   }
- ]
+ ],
+ "stages": {
+  "act1enemyduel": [
+   {
+    "id": "act1enemyduel_02a",
+    "groups": [
+     [
+      {
+       "w": 100,
+       "traps": []
+      },
+      {
+       "w": 8,
+       "traps": [
+        [
+         "trap_163_foolcrate",
+         7,
+         9,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         8,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         7,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         3,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         2,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         1,
+         "UP"
+        ]
+       ]
+      },
+      {
+       "w": 8,
+       "traps": [
+        [
+         "trap_163_foolcrate",
+         7,
+         6,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         5,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         4,
+         "UP"
+        ]
+       ]
+      },
+      {
+       "w": 8,
+       "traps": [
+        [
+         "trap_163_foolcrate",
+         7,
+         1,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         2,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         3,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         8,
+         1,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         6,
+         9,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         7,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         8,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         9,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         5,
+         6,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         5,
+         5,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         5,
+         4,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         9,
+         6,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         9,
+         5,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         9,
+         4,
+         "UP"
+        ]
+       ]
+      }
+     ],
+     [
+      {
+       "w": 100,
+       "traps": []
+      },
+      {
+       "w": 5,
+       "traps": [
+        [
+         "trap_213_dqore",
+         5,
+         7,
+         "UP"
+        ],
+        [
+         "trap_213_dqore",
+         5,
+         3,
+         "UP"
+        ],
+        [
+         "trap_213_dqore",
+         9,
+         7,
+         "UP"
+        ],
+        [
+         "trap_213_dqore",
+         9,
+         3,
+         "UP"
+        ]
+       ]
+      },
+      {
+       "w": 5,
+       "traps": [
+        [
+         "trap_213_dqore",
+         6,
+         5,
+         "UP"
+        ],
+        [
+         "trap_213_dqore",
+         8,
+         5,
+         "UP"
+        ]
+       ]
+      }
+     ],
+     [
+      {
+       "w": 100,
+       "traps": []
+      },
+      {
+       "w": 3,
+       "traps": [
+        [
+         "trap_214_dqballis",
+         3,
+         10,
+         "DOWN"
+        ],
+        [
+         "trap_214_dqballis",
+         5,
+         10,
+         "DOWN"
+        ],
+        [
+         "trap_214_dqballis",
+         7,
+         10,
+         "DOWN"
+        ],
+        [
+         "trap_214_dqballis",
+         9,
+         10,
+         "DOWN"
+        ],
+        [
+         "trap_214_dqballis",
+         11,
+         10,
+         "DOWN"
+        ]
+       ]
+      },
+      {
+       "w": 3,
+       "traps": [
+        [
+         "trap_214_dqballis",
+         0,
+         6,
+         "RIGHT"
+        ],
+        [
+         "trap_214_dqballis",
+         0,
+         5,
+         "RIGHT"
+        ],
+        [
+         "trap_214_dqballis",
+         0,
+         4,
+         "RIGHT"
+        ],
+        [
+         "trap_214_dqballis",
+         14,
+         6,
+         "LEFT"
+        ],
+        [
+         "trap_214_dqballis",
+         14,
+         5,
+         "LEFT"
+        ],
+        [
+         "trap_214_dqballis",
+         14,
+         4,
+         "LEFT"
+        ]
+       ]
+      }
+     ]
+    ]
+   },
+   {
+    "id": "act1enemyduel_02b",
+    "groups": [
+     [
+      {
+       "w": 100,
+       "traps": []
+      },
+      {
+       "w": 8,
+       "traps": [
+        [
+         "trap_163_foolcrate",
+         7,
+         9,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         8,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         7,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         3,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         2,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         1,
+         "UP"
+        ]
+       ]
+      },
+      {
+       "w": 8,
+       "traps": [
+        [
+         "trap_163_foolcrate",
+         7,
+         6,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         5,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         4,
+         "UP"
+        ]
+       ]
+      },
+      {
+       "w": 8,
+       "traps": [
+        [
+         "trap_163_foolcrate",
+         7,
+         1,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         2,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         3,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         8,
+         1,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         6,
+         9,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         7,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         8,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         9,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         5,
+         6,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         5,
+         5,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         5,
+         4,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         9,
+         6,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         9,
+         5,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         9,
+         4,
+         "UP"
+        ]
+       ]
+      }
+     ],
+     [
+      {
+       "w": 100,
+       "traps": []
+      },
+      {
+       "w": 5,
+       "traps": [
+        [
+         "trap_213_dqore",
+         5,
+         7,
+         "UP"
+        ],
+        [
+         "trap_213_dqore",
+         5,
+         3,
+         "UP"
+        ],
+        [
+         "trap_213_dqore",
+         9,
+         7,
+         "UP"
+        ],
+        [
+         "trap_213_dqore",
+         9,
+         3,
+         "UP"
+        ]
+       ]
+      },
+      {
+       "w": 5,
+       "traps": [
+        [
+         "trap_213_dqore",
+         6,
+         5,
+         "UP"
+        ],
+        [
+         "trap_213_dqore",
+         8,
+         5,
+         "UP"
+        ]
+       ]
+      }
+     ],
+     [
+      {
+       "w": 100,
+       "traps": []
+      },
+      {
+       "w": 3,
+       "traps": [
+        [
+         "trap_214_dqballis",
+         3,
+         10,
+         "DOWN"
+        ],
+        [
+         "trap_214_dqballis",
+         5,
+         10,
+         "DOWN"
+        ],
+        [
+         "trap_214_dqballis",
+         7,
+         10,
+         "DOWN"
+        ],
+        [
+         "trap_214_dqballis",
+         9,
+         10,
+         "DOWN"
+        ],
+        [
+         "trap_214_dqballis",
+         11,
+         10,
+         "DOWN"
+        ]
+       ]
+      },
+      {
+       "w": 3,
+       "traps": [
+        [
+         "trap_214_dqballis",
+         0,
+         6,
+         "RIGHT"
+        ],
+        [
+         "trap_214_dqballis",
+         0,
+         5,
+         "RIGHT"
+        ],
+        [
+         "trap_214_dqballis",
+         0,
+         4,
+         "RIGHT"
+        ],
+        [
+         "trap_214_dqballis",
+         14,
+         6,
+         "LEFT"
+        ],
+        [
+         "trap_214_dqballis",
+         14,
+         5,
+         "LEFT"
+        ],
+        [
+         "trap_214_dqballis",
+         14,
+         4,
+         "LEFT"
+        ]
+       ]
+      },
+      {
+       "w": 3,
+       "traps": [
+        [
+         "trap_215_dqcrsbow",
+         4,
+         10,
+         "DOWN"
+        ],
+        [
+         "trap_215_dqcrsbow",
+         6,
+         10,
+         "DOWN"
+        ],
+        [
+         "trap_215_dqcrsbow",
+         8,
+         10,
+         "DOWN"
+        ],
+        [
+         "trap_215_dqcrsbow",
+         10,
+         10,
+         "DOWN"
+        ]
+       ]
+      },
+      {
+       "w": 3,
+       "traps": [
+        [
+         "trap_215_dqcrsbow",
+         0,
+         7,
+         "RIGHT"
+        ],
+        [
+         "trap_215_dqcrsbow",
+         0,
+         3,
+         "RIGHT"
+        ],
+        [
+         "trap_215_dqcrsbow",
+         14,
+         7,
+         "LEFT"
+        ],
+        [
+         "trap_215_dqcrsbow",
+         14,
+         3,
+         "LEFT"
+        ]
+       ]
+      }
+     ],
+     [
+      {
+       "w": 100,
+       "traps": []
+      },
+      {
+       "w": 5,
+       "traps": [
+        [
+         "trap_216_dqelec",
+         4,
+         9,
+         "UP"
+        ],
+        [
+         "trap_216_dqelec",
+         4,
+         7,
+         "UP"
+        ],
+        [
+         "trap_216_dqelec",
+         4,
+         3,
+         "UP"
+        ],
+        [
+         "trap_216_dqelec",
+         4,
+         1,
+         "UP"
+        ],
+        [
+         "trap_216_dqelec",
+         10,
+         9,
+         "UP"
+        ],
+        [
+         "trap_216_dqelec",
+         10,
+         7,
+         "UP"
+        ],
+        [
+         "trap_216_dqelec",
+         10,
+         3,
+         "UP"
+        ],
+        [
+         "trap_216_dqelec",
+         10,
+         1,
+         "UP"
+        ]
+       ]
+      },
+      {
+       "w": 5,
+       "traps": [
+        [
+         "trap_216_dqelec",
+         4,
+         6,
+         "UP"
+        ],
+        [
+         "trap_216_dqelec",
+         4,
+         4,
+         "UP"
+        ],
+        [
+         "trap_216_dqelec",
+         10,
+         6,
+         "UP"
+        ],
+        [
+         "trap_216_dqelec",
+         10,
+         4,
+         "UP"
+        ]
+       ]
+      }
+     ]
+    ]
+   }
+  ],
+  "act2enemyduel": [
+   {
+    "id": "act2enemyduel_01a",
+    "groups": [
+     [
+      {
+       "w": 100,
+       "traps": []
+      },
+      {
+       "w": 6,
+       "traps": [
+        [
+         "trap_163_foolcrate",
+         5,
+         7,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         6,
+         7,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         7,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         8,
+         7,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         9,
+         7,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         5,
+         3,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         6,
+         3,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         3,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         8,
+         3,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         9,
+         3,
+         "UP"
+        ]
+       ]
+      },
+      {
+       "w": 8,
+       "traps": [
+        [
+         "trap_163_foolcrate",
+         5,
+         5,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         6,
+         5,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         5,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         8,
+         5,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         9,
+         5,
+         "UP"
+        ]
+       ]
+      }
+     ],
+     [
+      {
+       "w": 100,
+       "traps": []
+      },
+      {
+       "w": 1,
+       "traps": [
+        [
+         "trap_214_dqballis",
+         5,
+         10,
+         "DOWN"
+        ],
+        [
+         "trap_214_dqballis",
+         7,
+         10,
+         "DOWN"
+        ],
+        [
+         "trap_214_dqballis",
+         9,
+         10,
+         "DOWN"
+        ]
+       ]
+      },
+      {
+       "w": 5,
+       "traps": [
+        [
+         "trap_214_dqballis",
+         0,
+         6,
+         "RIGHT"
+        ],
+        [
+         "trap_214_dqballis",
+         0,
+         5,
+         "RIGHT"
+        ],
+        [
+         "trap_214_dqballis",
+         0,
+         4,
+         "RIGHT"
+        ],
+        [
+         "trap_214_dqballis",
+         14,
+         6,
+         "LEFT"
+        ],
+        [
+         "trap_214_dqballis",
+         14,
+         5,
+         "LEFT"
+        ],
+        [
+         "trap_214_dqballis",
+         14,
+         4,
+         "LEFT"
+        ]
+       ]
+      },
+      {
+       "w": 6,
+       "traps": [
+        [
+         "trap_215_dqcrsbow",
+         0,
+         6,
+         "RIGHT"
+        ],
+        [
+         "trap_215_dqcrsbow",
+         14,
+         4,
+         "LEFT"
+        ]
+       ]
+      },
+      {
+       "w": 8,
+       "traps": [
+        [
+         "trap_215_dqcrsbow",
+         3,
+         10,
+         "DOWN"
+        ],
+        [
+         "trap_215_dqcrsbow",
+         11,
+         10,
+         "DOWN"
+        ]
+       ]
+      }
+     ]
+    ]
+   },
+   {
+    "id": "act2enemyduel_01b",
+    "groups": [
+     [
+      {
+       "w": 100,
+       "traps": []
+      },
+      {
+       "w": 5,
+       "traps": [
+        [
+         "trap_163_foolcrate",
+         5,
+         7,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         5,
+         6,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         5,
+         5,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         5,
+         3,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         9,
+         3,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         9,
+         4,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         9,
+         5,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         9,
+         7,
+         "UP"
+        ]
+       ]
+      },
+      {
+       "w": 5,
+       "traps": [
+        [
+         "trap_163_foolcrate",
+         5,
+         7,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         5,
+         5,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         5,
+         4,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         5,
+         3,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         9,
+         3,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         9,
+         5,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         9,
+         6,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         9,
+         7,
+         "UP"
+        ]
+       ]
+      },
+      {
+       "w": 5,
+       "traps": [
+        [
+         "trap_163_foolcrate",
+         5,
+         7,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         6,
+         7,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         7,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         8,
+         7,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         9,
+         7,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         5,
+         3,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         6,
+         3,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         3,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         8,
+         3,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         9,
+         3,
+         "UP"
+        ]
+       ]
+      },
+      {
+       "w": 3,
+       "traps": [
+        [
+         "trap_213_dqore",
+         5,
+         7,
+         "UP"
+        ],
+        [
+         "trap_213_dqore",
+         9,
+         3,
+         "UP"
+        ]
+       ]
+      },
+      {
+       "w": 3,
+       "traps": [
+        [
+         "trap_213_dqore",
+         5,
+         3,
+         "UP"
+        ],
+        [
+         "trap_213_dqore",
+         9,
+         7,
+         "UP"
+        ]
+       ]
+      },
+      {
+       "w": 3,
+       "traps": [
+        [
+         "trap_213_dqore",
+         7,
+         8,
+         "UP"
+        ],
+        [
+         "trap_213_dqore",
+         7,
+         2,
+         "UP"
+        ],
+        [
+         "trap_213_dqore",
+         7,
+         5,
+         "UP"
+        ]
+       ]
+      },
+      {
+       "w": 5,
+       "traps": [
+        [
+         "trap_216_dqelec",
+         5,
+         8,
+         "UP"
+        ],
+        [
+         "trap_216_dqelec",
+         4,
+         6,
+         "UP"
+        ],
+        [
+         "trap_216_dqelec",
+         4,
+         4,
+         "UP"
+        ],
+        [
+         "trap_216_dqelec",
+         5,
+         2,
+         "UP"
+        ],
+        [
+         "trap_216_dqelec",
+         9,
+         8,
+         "UP"
+        ],
+        [
+         "trap_216_dqelec",
+         10,
+         6,
+         "UP"
+        ],
+        [
+         "trap_216_dqelec",
+         10,
+         4,
+         "UP"
+        ],
+        [
+         "trap_216_dqelec",
+         9,
+         2,
+         "UP"
+        ]
+       ]
+      },
+      {
+       "w": 3,
+       "traps": [
+        [
+         "trap_216_dqelec",
+         6,
+         7,
+         "UP"
+        ],
+        [
+         "trap_216_dqelec",
+         8,
+         7,
+         "UP"
+        ],
+        [
+         "trap_216_dqelec",
+         7,
+         9,
+         "UP"
+        ],
+        [
+         "trap_216_dqelec",
+         6,
+         3,
+         "UP"
+        ],
+        [
+         "trap_216_dqelec",
+         8,
+         3,
+         "UP"
+        ],
+        [
+         "trap_216_dqelec",
+         7,
+         1,
+         "UP"
+        ]
+       ]
+      }
+     ],
+     [
+      {
+       "w": 100,
+       "traps": []
+      },
+      {
+       "w": 5,
+       "traps": [
+        [
+         "trap_215_dqcrsbow",
+         3,
+         10,
+         "DOWN"
+        ],
+        [
+         "trap_215_dqcrsbow",
+         4,
+         10,
+         "DOWN"
+        ],
+        [
+         "trap_215_dqcrsbow",
+         10,
+         10,
+         "DOWN"
+        ],
+        [
+         "trap_215_dqcrsbow",
+         11,
+         10,
+         "DOWN"
+        ]
+       ]
+      },
+      {
+       "w": 5,
+       "traps": [
+        [
+         "trap_215_dqcrsbow",
+         0,
+         7,
+         "RIGHT"
+        ],
+        [
+         "trap_215_dqcrsbow",
+         0,
+         6,
+         "RIGHT"
+        ],
+        [
+         "trap_215_dqcrsbow",
+         0,
+         5,
+         "RIGHT"
+        ],
+        [
+         "trap_215_dqcrsbow",
+         14,
+         5,
+         "LEFT"
+        ],
+        [
+         "trap_215_dqcrsbow",
+         14,
+         4,
+         "LEFT"
+        ],
+        [
+         "trap_215_dqcrsbow",
+         14,
+         3,
+         "LEFT"
+        ]
+       ]
+      },
+      {
+       "w": 1,
+       "traps": [
+        [
+         "trap_214_dqballis",
+         0,
+         7,
+         "RIGHT"
+        ],
+        [
+         "trap_214_dqballis",
+         0,
+         6,
+         "RIGHT"
+        ],
+        [
+         "trap_214_dqballis",
+         0,
+         5,
+         "RIGHT"
+        ],
+        [
+         "trap_214_dqballis",
+         0,
+         4,
+         "RIGHT"
+        ],
+        [
+         "trap_214_dqballis",
+         0,
+         3,
+         "RIGHT"
+        ],
+        [
+         "trap_214_dqballis",
+         14,
+         7,
+         "LEFT"
+        ],
+        [
+         "trap_214_dqballis",
+         14,
+         6,
+         "LEFT"
+        ],
+        [
+         "trap_214_dqballis",
+         14,
+         5,
+         "LEFT"
+        ],
+        [
+         "trap_214_dqballis",
+         14,
+         4,
+         "LEFT"
+        ],
+        [
+         "trap_214_dqballis",
+         14,
+         3,
+         "LEFT"
+        ]
+       ]
+      },
+      {
+       "w": 5,
+       "traps": [
+        [
+         "trap_214_dqballis",
+         5,
+         10,
+         "DOWN"
+        ],
+        [
+         "trap_214_dqballis",
+         6,
+         10,
+         "DOWN"
+        ],
+        [
+         "trap_214_dqballis",
+         7,
+         10,
+         "DOWN"
+        ],
+        [
+         "trap_214_dqballis",
+         8,
+         10,
+         "DOWN"
+        ],
+        [
+         "trap_214_dqballis",
+         9,
+         10,
+         "DOWN"
+        ]
+       ]
+      }
+     ]
+    ]
+   }
+  ],
+  "act3enemyduel": [
+   {
+    "id": "act3enemyduel_01a",
+    "groups": [
+     [
+      {
+       "w": 150,
+       "traps": []
+      },
+      {
+       "w": 5,
+       "traps": [
+        [
+         "trap_163_foolcrate",
+         5,
+         7,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         5,
+         6,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         5,
+         4,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         9,
+         7,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         5,
+         3,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         9,
+         6,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         9,
+         4,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         9,
+         3,
+         "UP"
+        ]
+       ]
+      },
+      {
+       "w": 5,
+       "traps": [
+        [
+         "trap_163_foolcrate",
+         6,
+         5,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         7,
+         5,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         8,
+         5,
+         "UP"
+        ]
+       ]
+      }
+     ]
+    ]
+   },
+   {
+    "id": "act3enemyduel_01b",
+    "groups": [
+     [
+      {
+       "w": 200,
+       "traps": []
+      },
+      {
+       "w": 5,
+       "traps": [
+        [
+         "trap_163_foolcrate",
+         6,
+         6,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         6,
+         5,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         6,
+         4,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         8,
+         6,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         8,
+         5,
+         "UP"
+        ],
+        [
+         "trap_163_foolcrate",
+         8,
+         4,
+         "UP"
+        ]
+       ]
+      },
+      {
+       "w": 5,
+       "traps": [
+        [
+         "trap_213_dqore",
+         7,
+         5,
+         "UP"
+        ]
+       ]
+      }
+     ],
+     [
+      {
+       "w": 150,
+       "traps": []
+      },
+      {
+       "w": 5,
+       "traps": [
+        [
+         "trap_214_dqballis",
+         0,
+         7,
+         "RIGHT"
+        ],
+        [
+         "trap_214_dqballis",
+         0,
+         6,
+         "RIGHT"
+        ],
+        [
+         "trap_214_dqballis",
+         0,
+         4,
+         "RIGHT"
+        ],
+        [
+         "trap_214_dqballis",
+         0,
+         3,
+         "RIGHT"
+        ],
+        [
+         "trap_214_dqballis",
+         14,
+         7,
+         "LEFT"
+        ],
+        [
+         "trap_214_dqballis",
+         14,
+         6,
+         "LEFT"
+        ],
+        [
+         "trap_214_dqballis",
+         14,
+         5,
+         "LEFT"
+        ],
+        [
+         "trap_214_dqballis",
+         14,
+         4,
+         "LEFT"
+        ],
+        [
+         "trap_214_dqballis",
+         14,
+         3,
+         "LEFT"
+        ]
+       ]
+      }
+     ]
+    ]
+   }
+  ]
+ },
+ "traps": {
+  "trap_163_foolcrate": {
+   "name": "障碍物",
+   "hp": 5000,
+   "atk": 0,
+   "range": "0-1",
+   "skill": {
+    "id": "sktok_crate",
+    "name": "阻挡路线",
+    "desc": "设置障碍，改变敌人的行进路线\n如果障碍阻挡了敌人，敌人会破坏此障碍",
+    "bb": {},
+    "range": null,
+    "sp": {
+     "type": 8,
+     "init": 0,
+     "cost": 0
+    }
+   }
+  },
+  "trap_213_dqore": {
+   "name": "源石祭坛",
+   "hp": 100,
+   "atk": 0,
+   "range": "x-1",
+   "skill": {
+    "id": "sktok_dqore",
+    "name": "脉冲波",
+    "desc": "向四周喷发脉冲波，对周围所有我方与敌方单位造成500真实伤害。并使特殊敌人获得强化。",
+    "bb": {
+     "value": 500
+    },
+    "range": "x-1",
+    "sp": {
+     "type": "INCREASE_WITH_TIME",
+     "init": 0,
+     "cost": 7
+    }
+   }
+  },
+  "trap_214_dqballis": {
+   "name": "弩炮",
+   "hp": 100,
+   "atk": 100,
+   "range": null,
+   "skill": {
+    "id": "sktok_dqballis",
+    "name": "发射弩箭",
+    "desc": "向前方射出一支弩箭，对碰到的第一个单位造成物理伤害",
+    "bb": {
+     "atk_scale": 1
+    },
+    "range": "1-1",
+    "sp": {
+     "type": "INCREASE_WITH_TIME",
+     "init": 0,
+     "cost": 5
+    }
+   }
+  },
+  "trap_215_dqcrsbow": {
+   "name": "解雇者清债程序",
+   "hp": 100,
+   "atk": 100,
+   "range": null,
+   "skill": {
+    "id": "sktok_dqcrsbow",
+    "name": "清债程序",
+    "desc": "向前方连续射出3颗子弹，每颗子弹对碰到的第一个单位造成物理伤害",
+    "bb": {
+     "atk_scale": 1
+    },
+    "range": "1-1",
+    "sp": {
+     "type": "INCREASE_WITH_TIME",
+     "init": 0,
+     "cost": 5
+    }
+   }
+  },
+  "trap_216_dqelec": {
+   "name": "梅什科线圈",
+   "hp": 100,
+   "atk": 0,
+   "range": "x-2",
+   "skill": {
+    "id": "sktok_dqelec",
+    "name": "通电！",
+    "desc": "激活：每2.3秒激发电流对经过的敌人造成250点法术伤害，并使其停顿1.5秒",
+    "bb": {
+     "interval": 2.3,
+     "attack@value": 250,
+     "attack@sluggish": 1.5
+    },
+    "range": "x-2",
+    "sp": {
+     "type": 8,
+     "init": 0,
+     "cost": 0
+    }
+   }
+  }
+ }
 }

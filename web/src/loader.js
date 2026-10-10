@@ -49,7 +49,7 @@
   }
   progress(0);
   load().then((pack) => {
-    globalThis.DUEL = pack.ui; globalThis.FIGHTERS = pack.fighters; globalThis.AUDIO = pack.audio; globalThis.FXTEX = pack.fx;
+    globalThis.DUEL = pack.ui; globalThis.FIGHTERS = pack.fighters; globalThis.AUDIO = pack.audio; globalThis.FXTEX = pack.fx; globalThis.TRAP_MESH = pack.traps || {};
     // the enemy models: fetched one by one when a battle needs them (arena.js loadFighter)
     globalThis.MODEL_FILES = pack.models || {};
     removeEventListener('resize', fit);

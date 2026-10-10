@@ -442,9 +442,10 @@ async function stGameOnline() {
     // 竞猜对决: past round 5 nobody holds a shield (the instance does the same; its next snapshot says so)
     if (stand) standShields(players, r);
     const lineups = m.lineups.map((s) => s.map(([k, n]) => ({ f: byKey(k), n })));
-    G.log.push({ r, seed: m.seed, lineups: lineups.map((x) => x.map((g) => `${g.f.name}×${g.n}`).join(' + ')), cost: lineups.map(sideScore), len: 0 });
+    const traps = Array.isArray(m.traps) ? m.traps : [];
+    G.log.push({ r, seed: m.seed, lineups: lineups.map((x) => x.map((g) => `${g.f.name}×${g.n}`).join(' + ')), traps, cost: lineups.map(sideScore), len: 0 });
     // the battle's seed comes as the bets close (a debug match sends it now): the line-up stands on a stand-in world
-    setupRound(lineups, m.seed ?? null);
+    setupRound(lineups, m.seed ?? null, traps);
     G.serverResult = null; G.battleAt = 0; G.battleSeed = null; G.battleSalt = null;
     await betPhase(r, rd, lineups, null, { betMs: m.betMs, secretMs: m.secretMs, at: m._at });
     if (Number.isInteger(G.battleSeed)) {

@@ -69,7 +69,11 @@ const REPORT = (() => {
     const rounds = v(() => G.log, []);
     if (rounds.length) {
       out.push('**回合记录**（阵容与种子，可重放战斗）', '```');
-      for (const r of rounds) out.push(`第 ${r.r} 轮  种子 ${r.seed ?? '?'}  ${r.lineups.join('  VS  ')}${r.w !== undefined ? `  → ${r.w === 'draw' ? '平局' : r.w ? '右胜' : '左胜'}` : ''}`);
+      for (const r of rounds) {
+        out.push(`第 ${r.r} 轮  种子 ${r.seed ?? '?'}  ${r.lineups.join('  VS  ')}${r.w !== undefined ? `  → ${r.w === 'draw' ? '平局' : r.w ? '右胜' : '左胜'}` : ''}`);
+        // the field's traps (makeTraps): key, the level's column and row, the direction
+        if (r.traps && r.traps.length) out.push(`  装置 ${JSON.stringify(r.traps)}`);
+      }
       out.push('```');
     }
     out.push('**最近的记录**', '```', ...trail.slice(-60), '```');

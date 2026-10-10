@@ -48,7 +48,7 @@
 消息（JSON over WebSocket）：
 
 - 大厅：`hello`（带浏览器标识 `cid`，32 位十六进制，存在页面的 localStorage）/ `welcome`（带会话 `key`）、`resume`（断线后用 `key` 取回会话，失败时回 `resume.fail`）、`queue`（`mode`：`multiOperationMatch` 或 `multiStandMatch`，各自排队）/ `cancel`、`room.*`（`room.create` 的 `mode`：`multiOperationRoom` 或 `multiStandRoom`，人数上限随模式）、`avatar`、`matched`、`ping` / `pong`。
-- 比赛：`hello`、`phase`、`round`（阵容 + 种子承诺 `commit` + 押注时长 `betMs` + 暗选时长 `secretMs`）、`bets`、`secret`（进入暗选）、`battle`（全部选择 + 种子 `seed` 与盐 `salt`）、`result`、`finish`、`ready` / `watched` / `bet` / `leave`、`emoji`（客户端发 `{ pic }`，服务端转发 `{ id, pic }`）、`ping` / `pong`。
+- 比赛：`hello`、`phase`、`round`（阵容 + 场地装置 `traps`（`[装置, 列, 行, 方向]`，与阵容一起由阵容种子抽取）+ 种子承诺 `commit` + 押注时长 `betMs` + 暗选时长 `secretMs`）、`bets`、`secret`（进入暗选）、`battle`（全部选择 + 种子 `seed` 与盐 `salt`）、`result`、`finish`、`ready` / `watched` / `bet` / `leave`、`emoji`（客户端发 `{ pic }`，服务端转发 `{ id, pic }`）、`ping` / `pong`。
   - 公平性：`round` 不带种子，只带 `commit = sha256("<seed>:<salt>")`；押注结束时 `battle` 公布 `seed` 和 `salt`，页面核对后再用真种子重建场地（押注期间阵容摆在替身世界里，开战时单位滑到真实位置）。阵容来自另一个独立的种子。暗选时段内的 `bets` 只发给选择者本人。
   - 限流：每个座位的消息是容量 20、每秒补 10 的令牌桶，超出的丢弃，累计丢弃超过 200 条时断开（关闭码 4008）；每轮最多改选 12 次（之后回「本轮改选次数过多」）。
   - 调试模式（`DUEL_DEBUG=1` 或 `launch.mjs --debug`）：`round` 照旧带 `seed` 和 `salt`，`hello` 带 `debug: true`，页面在左上角显示「调试模式 · 本场种子提前公开」（网址带 `?debug` 的页面不显示，供录制）。只用于录制。

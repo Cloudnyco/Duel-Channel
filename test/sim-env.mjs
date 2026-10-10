@@ -12,8 +12,9 @@ export function loadSim() {
   vm.createContext(ctx);
   vm.runInContext(load('shared/sim.js') + `
 ;globalThis.SIM = { makeLineups, predict, npcPick, npcEmote, settleOne, mulberry32, sideScore, makeWorld, simStep, zoneAt, zoneRect,
-  outsideZone, POOL, DCFG, ENV, DT, BATTLE_MAX, EMOJI_PICS, isStand, STAND, standRow, standSeat, standShields, npcStandPick, settleStand,
-  standLeave, standOver, standRanks, npcInformed, hurt, strike, disable, tileX, tileY, AW, roundTable, pickRound, FIGHTERS_ALL: FIGHTERS, ENEMIES, spawnUnit, elem, chill, addBuff, unitCost };`, ctx);
+  outsideZone, POOL, DCFG, ENV, DT, BATTLE_MAX, EMOJI_PICS, EMOJI_BASIC, EMOJI_THEMES, isStand, STAND, standRow, standSeat, standShields, npcStandPick, settleStand,
+  standLeave, standOver, standRanks, npcInformed, hurt, strike, disable, tileX, tileY, AW, roundTable, pickRound, FIGHTERS_ALL: FIGHTERS, ENEMIES, spawnUnit, elem, chill, addBuff, unitCost,
+  makeTraps, makeTrap, steer, navField, clearLine, TRAP_DATA, STAGES, AH };`, ctx);
   return ctx.SIM;
 }
 // every version of a mode's rounds (the three events'), by round then event (default: the 礼物对决 match)

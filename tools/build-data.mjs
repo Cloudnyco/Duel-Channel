@@ -8,18 +8,22 @@
 //     npcs          the 28 viewers (the same in every event) with the latest event's ids; their pick tables merged
 //     env           the level's rules (the multiplayer stage's runes) of all three, merged, and the safe zone
 //                   (data/sources/env_025_act1enemyduel.json, the env every event uses)
+//     stages        each event's two battle stages (the modes' stageIds, <act>_0Na / _0Nb): the field traps a round
+//                   draws (the stage's predefined traps and its waves' random groups, sim.js makeTraps)
+//     traps         those traps' own data (character_table, skill_table): HP, ATK, the skill's numbers and text
 //     the rest      modes, constants, texts, emoticon themes of the latest event (place names left out of the texts)
 //   data/fighters.json           every duel enemy of the events: stats, duel score (numOfExtraDrops) and the extra cost of
 //                                each further unit of the type (data/sources/prts-extra-cost.json, from PRTS), talents,
 //                                skills (enemy_database, at the level the latest event's stage uses: 绿藤城 runs seven
 //                                enemies at level 1), the original enemy's handbook abilities and damage type, the model's
 //                                drawn scale and attack clip (hit frame); 协同 groups and death spawns
-//   assets/models/<orig>.json    an original enemy's model: { icon, spine: { skel, atlas, pages, pma, anims } } (base64;
+//   assets/models/<orig>.json    an original enemy's model: { icon (its portrait, as WebP: tools/lib/webp.mjs), spine: { skel, atlas, pages, pma, anims } } (base64;
 //                                every duel enemy is drawn as its original, originalEnemyId)
 //
 // Sources (downloaded once into .cache/sources/, tools/lib/fetch.mjs):
 //   Kengxxiao/ArknightsGameData   zh_CN/gamedata: excel/activity_table.json, excel/enemy_handbook_table.json,
-//                                 excel/display_meta_table.json, excel/range_table.json, levels/enemydata/enemy_database.json,
+//                                 excel/display_meta_table.json, excel/range_table.json, excel/character_table.json,
+//                                 excel/skill_table.json, levels/enemydata/enemy_database.json,
 //                                 levels/activities/<act>/level_<stage>.json
 //   isHarryh/Ark-Models           models_data.json and models_enemies/<key>/ (the enemies' Spine models)
 //   yuanyan3060/ArknightsGameResource   enemy/<id>.png (portraits)
@@ -31,6 +35,7 @@ import { fileURLToPath } from 'node:url';
 import { REPOS, getFile, getJson } from './lib/fetch.mjs';
 import { parseSkel, resolveRoles, normaliseAtlas, pngSize } from './lib/spine-meta.mjs';
 import { MODEL_SCALE_BY_PREFAB, MODEL_STRETCH_Y_BY_PREFAB, MIRRORED_PREFABS } from './lib/model-scales.mjs';
+import { pngToWebp } from './lib/webp.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
@@ -42,8 +47,8 @@ const json = (...p) => JSON.parse(readFileSync(join(...p), 'utf8'));
 const write = (p, o, pretty = true) => { mkdirSync(dirname(p), { recursive: true }); writeFileSync(p, (pretty ? JSON.stringify(o, null, 1) : JSON.stringify(o)) + (pretty ? '\n' : '')); };
 
 console.log('game data …');
-const [activity, handbook, meta, enemyDb, rangeTable] = await Promise.all([gd('excel/activity_table.json'), gd('excel/enemy_handbook_table.json'),
-  gd('excel/display_meta_table.json'), gd('levels/enemydata/enemy_database.json'), gd('excel/range_table.json')]);
+const [activity, handbook, meta, enemyDb, rangeTable, charTable, skillTable] = await Promise.all([gd('excel/activity_table.json'), gd('excel/enemy_handbook_table.json'),
+  gd('excel/display_meta_table.json'), gd('levels/enemydata/enemy_database.json'), gd('excel/range_table.json'), gd('excel/character_table.json'), gd('excel/skill_table.json')]);
 const dbAll = Object.fromEntries(enemyDb.enemies.map((x) => [x.Key, x.Value]));
 // an enemy at a level: enemy_database keeps a level above 0 as overrides of level 0 — the fields it defines, its talents,
 // skills and SP when it gives them
@@ -63,16 +68,40 @@ const zone = json(ROOT, 'data', 'sources', 'env_025_act1enemyduel.json');
 // the pools the rounds draw from (roundData enemyPoolLeft / Right) → the weight's short name
 const POOLS = { poolNormal: 'normal', poolSmallEnemy: 'small', poolBoss: 'boss', poolMusic: 'music', poolNoSurpriseEnemy: 'nosurprise', poolGiantBoss: 'giant', poolAntiGiantBoss: 'antigiant' };
 const bbOf = (r) => Object.fromEntries((r ? r.blackboard : []).map((b) => [b.key, b.valueStr ?? b.value]));
-const events = [], allEnemies = new Map(), levelOf = {};
+// A stage's field traps: its predefined traps (hidden until a wave action activates them) and the actions that do it,
+// in random groups — per group one pack is drawn by the weight on the pack's first action (an action without a key is
+// the pack of none), and a pack's traps come together, in the order they are placed. → [[{ w, traps: [[key, column,
+// row, direction], …] }, …], …] (the level's column / row: the field is columns 1 … 13, rows 1 … 9; the border 0 / 14, 0 / 10)
+function stageTraps(lv) {
+  const tok = new Map((lv.predefines && lv.predefines.tokenInsts || []).map((t) => [t.alias, t]));
+  const groups = new Map(), packs = new Map();
+  let n = 0;
+  for (const w of lv.waves) for (const fr of w.fragments) for (const a of fr.actions) {
+    if (a.actionType !== 'ACTIVATE_PREDEFINED') continue;
+    const g = a.randomSpawnGroupKey || (a.randomSpawnGroupPackKey ? null : `always${n}`), pk = a.randomSpawnGroupPackKey || `none${n++}`;
+    if (g && !packs.has(pk)) { const p = { w: g.startsWith('always') ? 1 : a.weight, traps: [] }; packs.set(pk, p); if (!groups.has(g)) groups.set(g, []); groups.get(g).push(p); }
+    const t = a.key && tok.get(a.key), p = packs.get(pk);
+    if (t && p) p.traps.push([t.inst.characterKey, t.position.col, t.position.row, t.direction]);
+  }
+  return [...groups.values()].filter((ps) => ps.some((p) => p.traps.length));
+}
+const events = [], allEnemies = new Map(), levelOf = {}, stages = {}, trapKeys = new Set();
 for (const id of ACTS) {
   const cfg = activity.activity.ENEMY_DUEL[id], act = activity.basicInfo[id];
-  // the multiplayer modes' stage (its level carries the runes; the solo stage has the same ones)
-  const stage = cfg.modeData.multiOperationMatch.stageIds[0];
-  const level = await gd(`levels/activities/${id}/level_${stage}.json`);
+  // the multiplayer modes' two stages (every mode lists the same two; the runes, options and map are the same in both,
+  // the traps and the enemy levels are not; how the game picks one is not in the data: a round draws one, sim.js)
+  const stageIds = cfg.modeData.multiOperationMatch.stageIds;
+  const levels = await Promise.all(stageIds.map((s) => gd(`levels/activities/${id}/level_${s}.json`)));
+  const level = levels[0];
+  stages[id] = stageIds.map((s, i) => ({ id: s, groups: stageTraps(levels[i]) }));
+  for (const st of stages[id]) for (const g of st.groups) for (const p of g) for (const t of p.traps) trapKeys.add(t[0]);
   const runes = level.runes || [], rune = (key) => runes.find((r) => r.key === key);
   const mul = bbOf(rune('enemy_attribute_mul')), envr = bbOf(rune('env_system_new'));
   // the enemy levels the stage uses (a later event's win: 绿藤城's balance changes)
-  for (const r of level.enemyDbRefs || []) if (r.useDb) levelOf[r.id] = r.level || 0;
+  // (either of its stages: an enemy at level 1 in one of them is at level 1)
+  const lv = {};
+  for (const l of levels) for (const r of l.enemyDbRefs || []) if (r.useDb) lv[r.id] = Math.max(lv[r.id] || 0, r.level || 0);
+  Object.assign(levelOf, lv);
   const verify = runes.filter((r) => r.key === 'env_gbuff_new_with_verify').map(bbOf);
   const listOf = (b) => String(b.enemy || '').split('|').filter(Boolean);
   const env = {
@@ -121,6 +150,14 @@ for (const ev of events) for (const [nid, t] of Object.entries(ev.cfg.npcSelecto
 const env = { ...events.reduce((o, e) => ({ ...o, ...Object.fromEntries(Object.entries(e.env).filter(([, v]) => v != null)) }), {}), statusResist: [...new Set(events.flatMap((e) => e.env.statusResist))], surprise: [...new Set(events.flatMap((e) => e.env.surprise))],
   globalBuffs: [...new Set(events.flatMap((e) => e.env.globalBuffs))] };
 const consts = Object.fromEntries(Object.entries(L.constData).map(([k, v]) => [k, typeof v === 'string' ? v.replace(city, '') : v]));
+// a field trap's data: name, HP, ATK, its skill (name, text with its numbers filled in, blackboard, SP) and range
+const richText = (t, bb) => String(t || '').replace(/\{([^}:]+)(?::[^}]*)?\}/g, (m, k) => (k in bb ? String(bb[k]) : m)).replace(/<[@$][^>]*>|<\/>/g, '').replace(/\\n/g, '\n');
+function trapOf(key) {
+  const c = charTable[key], a = c.phases[0].attributesKeyFrames[0].data, s = c.skills && c.skills[0] && skillTable[c.skills[0].skillId], l = s && s.levels[0];
+  const bb = l ? Object.fromEntries(l.blackboard.map((b) => [b.key, b.valueStr ?? b.value])) : {};
+  return { name: c.name, hp: a.maxHp, atk: a.atk, range: c.phases[0].rangeId,
+    skill: l ? { id: c.skills[0].skillId, name: l.name, desc: richText(l.description, bb), bb, range: l.rangeId, sp: { type: l.spData.spType, init: l.spData.initSp, cost: l.spData.spCost } } : null };
+}
 const duelcfg = {
   act: { id: 'enemyduel', name: '争锋频道', events: events.map((e) => ({ id: e.id, name: e.act.name, start: e.act.startTime, end: e.act.endTime })) },
   modes: L.modeData, rounds, npcs: L.npcData, npcSelector,
@@ -129,12 +166,17 @@ const duelcfg = {
   roster: [...allEnemies.keys()], pools,
   // the range shapes the duel enemies' skills name (range_table: x-1 the diamond of radius 2, x-4 the 3 × 3 square, x-5
   // the cross of five): [column, row] offsets from the centre tile
-  ranges: Object.fromEntries(['x-1', 'x-4', 'x-5'].map((id) => [id, rangeTable[id].grids.map((g) => [g.col, g.row])])),
-  // the emoji panel's themes (enabledEmoticonThemeIdList): each theme's pictures in their sortId order
-  emoticons: L.enabledEmoticonThemeIdList.filter((t) => emo.emoticonThemeDataDict[t]).map((t) => ({ id: t, pics: emo.emoticonThemeDataDict[t].map((e) => emo.emojiDataDict[e]).sort((a, b) => a.sortId - b.sortId).map((e) => e.picId) })),
+  // (x-2: the 5 × 5 square without its corners, the 梅什科线圈's)
+  ranges: Object.fromEntries(['x-1', 'x-2', 'x-4', 'x-5'].map((id) => [id, rangeTable[id].grids.map((g) => [g.col, g.row])])),
+  // the emoji panel's themes (enabledEmoticonThemeIdList): each theme's pictures for the duel's battle (the theme's
+  // emojis of type ENEMYDUEL_BATTLE), in their sortId order
+  emoticons: L.enabledEmoticonThemeIdList.filter((t) => emo.emoticonThemeDataDict[t]).map((t) => ({ id: t,
+    pics: emo.emoticonThemeDataDict[t].map((e) => emo.emojiDataDict[e]).filter((e) => e && e.type === 'ENEMYDUEL_BATTLE').sort((a, b) => a.sortId - b.sortId).map((e) => e.picId) }))
+    .filter((t) => t.pics.length),
+  stages, traps: Object.fromEntries([...trapKeys].sort().map((k) => [k, trapOf(k)])),
 };
 write(join(ROOT, 'data', 'duelcfg.json'), duelcfg);
-console.log(`  merged: ${duelcfg.roster.length} enemies (${Object.values(pools).filter((w) => Object.keys(w).length).length} drawn), ${Object.keys(rounds).length} rounds, ${duelcfg.emoticons.length} emoji themes`);
+console.log(`  merged: ${duelcfg.roster.length} enemies (${Object.values(pools).filter((w) => Object.keys(w).length).length} drawn), ${Object.keys(rounds).length} rounds, ${duelcfg.emoticons.length} emoji themes, ${Object.keys(duelcfg.traps).length} field traps`);
 
 // ---- the models ---------------------------------------------------------------------------------------------------------
 console.log('models …');
@@ -165,7 +207,7 @@ await Promise.all(origs.map(async (orig) => {
   // the portrait: its own, else its handbook entry's or its base form's
   let icon = null;
   for (const id of [orig, orig.replace(/_\d+$/, '')]) { icon = await getFile(REPOS.icons, `enemy/${id}.png`, { optional: true }); if (icon) break; }
-  write(join(modelDir, `${orig}.json`), { icon: icon ? b64(icon) : null, spine: { skel: b64(skel), atlas, pages: Object.fromEntries(pageNames.map((n, i) => [n, b64(pngs[i])])), pma: true, anims } }, false);
+  write(join(modelDir, `${orig}.json`), { icon: icon ? b64(await pngToWebp(icon)) : null, spine: { skel: b64(skel), atlas, pages: Object.fromEntries(pageNames.map((n, i) => [n, b64(pngs[i])])), pma: true, anims } }, false);
   // the attack clip the arena plays and its first strike (OnAttack), for the sim's hit timing
   const a = anims.attack, dur = a && a.via !== 'idle' ? info.durations[a.loop] : null, hit = a && info.hits[a.loop] ? info.hits[a.loop][0] : null;
   looks[orig] = { attackAnim: dur > 0 ? { clip: a.loop, dur, hit: hit != null ? Math.min(dur, hit) : dur / 2 } : null };

@@ -945,6 +945,66 @@
   "power": 912
  },
  {
+  "key": "enemy_5052_dqsbr",
+  "orig": "enemy_2043_smsbr",
+  "model": "enemy_2043_smsbr",
+  "tag": "tag_single",
+  "name": "奔跑吧！躯壳！",
+  "desc": "受到伤害后移动速度会提升，所以它可以替我去参加运动会吗？",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 4000,
+  "atk": 400,
+  "def": 200,
+  "res": 0,
+  "bat": 1.5,
+  "aspd": 100,
+  "ms": 1,
+  "range": 0.8,
+  "mass": 1,
+  "regen": 0,
+  "score": 5,
+  "scoreAdd": 0,
+  "level": 1,
+  "tags": [
+   "collapsal"
+  ],
+  "group": null,
+  "deathSpawn": null,
+  "talents": {
+   "SpeedUp.move_speed": 3,
+   "SpeedUp.duration": 2,
+   "SpeedUp.cooldown": 5
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "染污躯壳",
+  "abilities": [
+   {
+    "text": "受到伤害后移动速度短暂大幅提升",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.167,
+   "hit": 0.533
+  },
+  "power": 1033
+ },
+ {
   "key": "enemy_15038_dqhtbw",
   "orig": "enemy_1340_bthtbw",
   "model": "enemy_1340_bthtbw",
@@ -1173,66 +1233,6 @@
    "hit": 0.5
   },
   "power": 589
- },
- {
-  "key": "enemy_5052_dqsbr",
-  "orig": "enemy_2043_smsbr",
-  "model": "enemy_2043_smsbr",
-  "tag": "tag_single",
-  "name": "奔跑吧！躯壳！",
-  "desc": "受到伤害后移动速度会提升，所以它可以替我去参加运动会吗？",
-  "rank": "NORMAL",
-  "levelType": "NORMAL",
-  "way": "MELEE",
-  "fly": false,
-  "dmg": "phys",
-  "hp": 4000,
-  "atk": 400,
-  "def": 200,
-  "res": 0,
-  "bat": 1.5,
-  "aspd": 100,
-  "ms": 1,
-  "range": 0.8,
-  "mass": 1,
-  "regen": 0,
-  "score": 6,
-  "scoreAdd": 0,
-  "level": 0,
-  "tags": [
-   "collapsal"
-  ],
-  "group": null,
-  "deathSpawn": null,
-  "talents": {
-   "SpeedUp.move_speed": 3,
-   "SpeedUp.duration": 2,
-   "SpeedUp.cooldown": 5
-  },
-  "skills": [],
-  "skillData": {},
-  "spData": null,
-  "immune": {
-   "stun": false,
-   "frozen": false,
-   "silence": false
-  },
-  "origName": "染污躯壳",
-  "abilities": [
-   {
-    "text": "受到伤害后移动速度短暂大幅提升",
-    "title": false
-   }
-  ],
-  "scale": 1,
-  "scaleY": 1,
-  "mirrorX": false,
-  "attackAnim": {
-   "clip": "Attack",
-   "dur": 1.167,
-   "hit": 0.533
-  },
-  "power": 1033
  },
  {
   "key": "enemy_15051_dqxjl",
@@ -1629,62 +1629,6 @@
   "power": 2062
  },
  {
-  "key": "enemy_15030_dqsgpr",
-  "orig": "enemy_1153_dsexcu_2",
-  "model": "enemy_1153_dsexcu_2",
-  "tag": "tag_single",
-  "name": "标枪恐鱼",
-  "desc": "没有了海水的阻力，扎人更疼了。",
-  "rank": "ELITE",
-  "levelType": "ELITE",
-  "way": "RANGED",
-  "fly": false,
-  "dmg": "phys",
-  "hp": 12500,
-  "atk": 700,
-  "def": 240,
-  "res": 20,
-  "bat": 3.5,
-  "aspd": 100,
-  "ms": 0.75,
-  "range": 1.7,
-  "mass": 3,
-  "regen": 0,
-  "score": 8,
-  "scoreAdd": 0.5,
-  "level": 0,
-  "tags": [
-   "seamonster"
-  ],
-  "group": null,
-  "deathSpawn": null,
-  "talents": {},
-  "skills": [],
-  "skillData": {},
-  "spData": null,
-  "immune": {
-   "stun": false,
-   "frozen": false,
-   "silence": true
-  },
-  "origName": "富营养的穿刺者",
-  "abilities": [
-   {
-    "text": "优先攻击小范围内当前生命比例最低的目标",
-    "title": false
-   }
-  ],
-  "scale": 1,
-  "scaleY": 1,
-  "mirrorX": false,
-  "attackAnim": {
-   "clip": "Attack",
-   "dur": 1.333,
-   "hit": 0.6
-  },
-  "power": 1699
- },
- {
   "key": "enemy_15041_dqgrg",
   "orig": "enemy_1191_krgrg_2",
   "model": "enemy_1191_krgrg_2",
@@ -1896,6 +1840,62 @@
    "hit": 0.5
   },
   "power": 775
+ },
+ {
+  "key": "enemy_15030_dqsgpr",
+  "orig": "enemy_1153_dsexcu_2",
+  "model": "enemy_1153_dsexcu_2",
+  "tag": "tag_single",
+  "name": "标枪恐鱼",
+  "desc": "没有了海水的阻力，扎人更疼了。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 10000,
+  "atk": 800,
+  "def": 200,
+  "res": 20,
+  "bat": 3.5,
+  "aspd": 100,
+  "ms": 0.75,
+  "range": 2.1,
+  "mass": 3,
+  "regen": 0,
+  "score": 9,
+  "scoreAdd": 0.5,
+  "level": 1,
+  "tags": [
+   "seamonster"
+  ],
+  "group": null,
+  "deathSpawn": null,
+  "talents": {},
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "富营养的穿刺者",
+  "abilities": [
+   {
+    "text": "优先攻击小范围内当前生命比例最低的目标",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.333,
+   "hit": 0.6
+  },
+  "power": 1586
  },
  {
   "key": "enemy_15054_dqprpn",

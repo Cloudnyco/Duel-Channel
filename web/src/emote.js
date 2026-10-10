@@ -1,7 +1,9 @@
 // ---- emoji (表情): the top bar's switch and emoji panel, and the barrage of falling emojis -------------------------------
 // The official system (the battle prefabs' EnemyDuelEmoticon* components, display_meta_table's emoticon theme): the top
 // bar of the bets and the battle carries a switch (已开启 / 已屏蔽: hides the barrage and disables sending) and the
-// button that opens the emoji panel — one theme (emticon_duel_basic), its 12 emojis in a 4-column grid. A sent emoji
+// button that opens the emoji panel — a page per theme (EMOJI_THEMES: the duel's own 12, then four of 6), each in a
+// 4-column grid of 12 slots (EmoticonSimpleThemeItemView: _maxSlotCount 12, the empty ones shown), turned by a swipe or
+// the page marks below (ScrollViewMoveToughPager: 0.36 s; the pages 50 px apart, the content's layout). A sent emoji
 // falls through the screen in one of 9 lanes: from above the top edge (0.3–0.7 of the width, scale 0.8) to below the
 // bottom one (0.05–0.95, scale 1.1) in 3.2 s along the prefab's eased curve, the sender's own on a glow. A lane is
 // chosen by a weight that comes back over 15 s after its last emoji. One emoji per consts.chatCd (1 s).
@@ -16,8 +18,8 @@ const EMO = (() => {
     [0.6000925898551941, 0.37336647510528564, 0.9329995512962341, 0.9329995512962341, 1 / 3, 0.5853633880615234, 3],
     [1, 1, 2.0876753330230713, 2.0876753330230713, 0.40037378668785095, 0, 3]];
   const WEIGHT = [[0, 0, 0, 0, 1 / 3, 1 / 3, 0], [0.6000000238418579, 0, 0, 2.500000238418579, 1 / 3, 1 / 3, 0], [1, 1, 2.500000238418579, 1, 1 / 3, 1 / 3, 0]];
-  // the theme page's GridLayoutGroup: 4 columns of 93.3 px cells, 7.5 px apart
-  const CELL = 93.33334350585938, GAP = 7.5, COLS = 4;
+  // the theme page's GridLayoutGroup: 4 columns of 93.3 px cells, 7.5 px apart; a page's 12 slots; the pager
+  const CELL = 93.33334350585938, GAP = 7.5, COLS = 4, SLOTS = 12, PAGE_W = 396.2333068847656, PAGE_GAP = 50, TURN = 0.36;
   // a Unity AnimationCurve between two keys is a cubic Bézier in (time, value) with its control points a third of the
   // way along the tangents, or at the keys' own weights: solve for the time, read the value
   function curveAt(keys, t) {
@@ -36,7 +38,7 @@ const EMO = (() => {
   }
   const mix = (p, q, k) => p.map((v, i) => v + (q[i] - v) * k);
 
-  let on = true, layer = null, items = [], lanes = [], clock = 0, cdUntil = 0, bars = [], spawned = 0;
+  let on = true, layer = null, items = [], lanes = [], clock = 0, cdUntil = 0, bars = [], spawned = 0, pagers = [];
   try { on = localStorage.getItem('duel.barrage') !== '0'; } catch (e) {}
   const ready = () => on && clock >= cdUntil;
 
@@ -50,7 +52,7 @@ const EMO = (() => {
   }
   function end() {
     if (layer && !layer.dead) layer.close();
-    layer = null; items = []; bars = [];
+    layer = null; items = []; bars = []; pagers = [];
   }
   // a lane: random by weight among those rested long enough, else the one rested longest
   function lane() {
@@ -77,6 +79,12 @@ const EMO = (() => {
   }
   function tick(dt) {
     clock += dt;
+    for (const pg of pagers) if (pg.anim) {
+      pg.anim.t = Math.min(TURN, pg.anim.t + dt);
+      const k = 1 - Math.pow(1 - pg.anim.t / TURN, 3);
+      pg.content.rt.pos[0] = pg.anim.from + (pg.anim.to - pg.anim.from) * k;
+      if (pg.anim.t >= TURN) pg.anim = null;
+    }
     for (const x of items) { x.t += dt; place(x); }
     if (items.some((x) => x.t >= DURATION)) items = items.filter((x) => { if (x.t < DURATION) return true; removeNode(x.it); return false; });
     // the emoji button greys out while sending is not possible (switched off, or within the cooldown)
@@ -133,20 +141,60 @@ const EMO = (() => {
       if (!on) { for (const x of items) removeNode(x.it); items = []; show(false); }
     }, top);
   }
+  // a page mark (the pager's dot_content has no template of its own: the atlas's emoji_select_dot, 22 × 5)
+  const DOT = { name: 'dot', active: true, rt: { amin: [0.5, 0.5], amax: [0.5, 0.5], pos: [0, 0], size: [22, 5], pivot: [0.5, 0.5], scale: [1, 1], rotz: 0, lz: 0 },
+    comps: { img: { kind: 'atlas', sprite: 'emoji_select_dot', color: [1, 1, 1, 1], mesh: 0, slice: [0, 0, 1, 1], ref: 'act1duelenemy_battle_ui/emoji_select_dot' },
+      le: { ignore: 0, min: [22, 5], pref: [22, 5], flex: [-1, -1] } }, children: [] };
   function buildPanel(scr, pick, close) {
     const panel = instantiate(scr, scr.root, 'panel_emoji');
     panel.active = false;
-    const content = scr.one('scroll_pager/viewport/content', panel), page = content && instantiate(scr, content, 'emoji_theme_item');
-    if (page) {
-      EMOJI_PICS.forEach((pic, i) => {
-        const it = instantiate(scr, page, 'emoji_item');
+    const content = scr.one('scroll_pager/viewport/content', panel), dotsAt = scr.one('scroll_pager/dot_content', panel), view = scr.one('scroll_pager/viewport', panel);
+    if (!content) return panel;
+    const pg = { content, cur: 0, anim: null, dots: [], dragged: false };
+    EMOJI_THEMES.forEach((th) => {
+      const page = instantiate(scr, content, 'emoji_theme_item');
+      for (let i = 0; i < SLOTS; i++) {
+        const pic = th.pics[i], it = instantiate(scr, page, 'emoji_item');
         it.rt = { amin: [0, 1], amax: [0, 1], pivot: [0.5, 0.5], size: [CELL, CELL], scale: [1, 1], rotz: 0,
           pos: [(i % COLS) * (CELL + GAP) + CELL / 2, -(Math.floor(i / COLS) * (CELL + GAP) + CELL / 2)] };
-        scr.show('panel_empty', false, it);
+        scr.show('panel_empty', !pic, it); scr.show('panel_content', !!pic, it);
+        if (!pic) continue;
         setImage(scr.one('emoji_icon', it), FXTEX[pic], 'contain');
-        scr.tap('panel_content/hotspot', () => { play(it, 'emoji_click_anim'); pick(pic); }, it);
-      });
+        scr.tap('panel_content/hotspot', () => { if (pg.dragged) return; play(it, 'emoji_click_anim'); pick(pic); }, it);
+      }
+    });
+    const go = (i) => {
+      pg.cur = clamp(i, 0, EMOJI_THEMES.length - 1);
+      pg.anim = { from: content.rt.pos[0], to: -pg.cur * (PAGE_W + PAGE_GAP), t: 0 };
+      pg.dots.forEach((d, k) => { d.alpha = k === pg.cur ? 1 : 0.3; });
+    };
+    if (dotsAt && EMOJI_THEMES.length > 1) {
+      if (!D.screens.__emojiDot) D.screens.__emojiDot = DOT;
+      EMOJI_THEMES.forEach((th, k) => { const d = instantiate(scr, dotsAt, '__emojiDot'); d.alpha = k ? 0.3 : 1; scr.tap(d.path, () => go(k)); pg.dots.push(d); });
     }
+    // a swipe across the pages: follows the finger, then turns a page (past 60 px) or springs back
+    if (view && view.el) {
+      // (the viewport takes the pointer itself: a swipe may start on an empty slot)
+      view.el.style.pointerEvents = 'auto'; view.el.style.touchAction = 'none';
+      let drag = null;
+      view.el.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, base: content.rt.pos[0], id: e.pointerId }; pg.dragged = false; });
+      view.el.addEventListener('pointermove', (e) => {
+        if (!drag || e.pointerId !== drag.id) return;
+        const dx = (e.clientX - drag.x) / stageK;
+        if (Math.abs(dx) > 8) { pg.dragged = true; pg.anim = null; content.rt.pos[0] = drag.base + dx; }
+      });
+      const up = (e) => {
+        if (!drag || e.pointerId !== drag.id) return;
+        const dx = (e.clientX - drag.x) / stageK;
+        drag = null;
+        if (pg.dragged) go(pg.cur + (dx < -60 ? 1 : dx > 60 ? -1 : 0));
+        // a click that ends a swipe is not a pick
+        setTimeout(() => { pg.dragged = false; }, 0);
+      };
+      view.el.addEventListener('pointerup', up); view.el.addEventListener('pointercancel', up);
+      view.el.addEventListener('wheel', (e) => { const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY; if (Math.abs(d) > 4 && !pg.anim) go(pg.cur + (d > 0 ? 1 : -1)); e.preventDefault(); }, { passive: false });
+    }
+    pagers.push(pg);
     // the panel's full-screen backdrop (btn_raycast, switched on by the opening clip): a tap outside closes it
     scr.tap('btn_raycast', close, panel);
     return panel;

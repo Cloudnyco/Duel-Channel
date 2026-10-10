@@ -24,6 +24,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@jsquash/png": "^3.1.1",
+    "@jsquash/webp": "^1.5.0",
     "eslint": "^10.12.0",
     "globals": "^17.13.0",
     "pixi-spine": "^4.0.6",

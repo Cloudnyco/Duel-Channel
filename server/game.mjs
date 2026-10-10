@@ -23,7 +23,7 @@ const ctx = {
 vm.createContext(ctx);
 vm.runInContext(load('shared/sim.js') + `
 ;globalThis.SIM = { makeLineups, predict, npcPick, npcEmote, settleOne, mulberry32, pickWeighted, POOL, DCFG, EMOJI_PICS,
-  isStand, STAND, standRow, standSeat, standShields, npcStandPick, npcInformed, settleStand, standLeave, standOver, standRanks, roundTable, pickRound };`, ctx);
+  isStand, STAND, standRow, standSeat, standShields, npcStandPick, npcInformed, settleStand, standLeave, standOver, standRanks, roundTable, pickRound, makeTraps };`, ctx);
 export const SIM = ctx.SIM;
 const C = SIM.DCFG.consts;
 
@@ -216,14 +216,15 @@ export class Match {
     const T = this.T, stand = this.stand;
     this.round = rd; this.r = r;
     if (stand) SIM.standShields(this.players, r);
-    // the line-ups and the battle each from a seed of their own (crypto), the battle's committed to now, shown later
+    // the line-ups (and the field's traps) and the battle each from a seed of their own (crypto), the battle's committed
+    // to now, shown later
     const lineupSeed = randomInt(2 ** 31), seed = randomInt(2 ** 31), salt = randomBytes(16).toString('hex');
-    const lineups = SIM.makeLineups(rd, SIM.mulberry32(lineupSeed ^ 0x5bd1e995));
-    const pred = SIM.predict(lineups, seed);
+    const lrng = SIM.mulberry32(lineupSeed ^ 0x5bd1e995), lineups = SIM.makeLineups(rd, lrng), traps = SIM.makeTraps(rd, lrng);
+    const pred = SIM.predict(lineups, seed, traps);
     for (const p of this.players) { p.choice = null; p.watched = false; p.betN = 0; }
     this.phase = 'bet'; this.secret = false; this.seen = null;
     const secretMs = Math.min(T.bet, env('DUEL_SECRET_MS', ((stand ? C.modeStandSelectTimeLast : C.modeOperationSelectTimeLast) || 7) * 1000)), openMs = T.bet - secretMs;
-    this.bcast({ t: 'round', r, roundId: rd.roundId, lineups: lineups.map((s) => s.map((g) => [g.f.key, g.n])), commit: commitOf(seed, salt), betMs: T.bet, secretMs,
+    this.bcast({ t: 'round', r, roundId: rd.roundId, lineups: lineups.map((s) => s.map((g) => [g.f.key, g.n])), traps, commit: commitOf(seed, salt), betMs: T.bet, secretMs,
       ...(DEBUG ? { seed, salt } : {}) });
     // the NPC viewers: the FOLLOW_* ones (priority > 0) see the supporters as everyone could when the window turned
     // secret; the informed ones (their pick uses the outcome) decide in the secret window, the rest while picks show

@@ -9,7 +9,7 @@ import { loadSim, matchRounds, digest } from './sim-env.mjs';
 const SIM = loadSim();
 const rounds = matchRounds(SIM);
 const byKey = (k) => SIM.POOL.find((f) => f.key === k);
-const run = (L, seed) => { const W = SIM.makeWorld(L, seed, false); while (!W.done) SIM.simStep(W); return W; };
+const run = (L, seed, traps) => { const W = SIM.makeWorld(L, seed, false, traps); while (!W.done) SIM.simStep(W); return W; };
 
 test('a battle is deterministic for its line-ups and seed', () => {
   const L = SIM.makeLineups(rounds[5], SIM.mulberry32(1234));
@@ -24,7 +24,7 @@ test('the golden battles replay identically (rules or numbers changed? run tools
     const L = SIM.makeLineups(rd, SIM.mulberry32(c.seed ^ 0x5bd1e995));
     // (compared as JSON: arrays made inside the sim's VM context have another Array prototype)
     assert.equal(JSON.stringify(L.map((s) => s.map((g) => [g.f.key, g.n]))), JSON.stringify(c.lineups), `line-ups of round ${c.round} seed ${c.seed}`);
-    const W = run(L, c.seed);
+    const W = run(L, c.seed, c.traps);
     assert.equal(W.result, c.winner, `winner, round ${c.round} seed ${c.seed}`);
     assert.equal(W.n, c.steps, `end step, round ${c.round} seed ${c.seed}`);
     assert.equal(createHash('sha256').update(digest(W)).digest('hex').slice(0, 16), c.hash, `final state, round ${c.round} seed ${c.seed}`);
@@ -80,15 +80,18 @@ test('the level\'s runes are applied: ATK × 1.5, max HP × 0.5', () => {
 });
 
 test('emojis: the battle theme\'s 12 pictures; NPC reactions only use them and fit the moment', () => {
-  assert.equal(SIM.EMOJI_PICS.length, 12);
-  assert.equal(SIM.EMOJI_PICS[0], 'pic_left'); assert.equal(SIM.EMOJI_PICS[1], 'pic_right');
+  // five themes: the duel's basic one (12) first, then the four others (6 each)
+  assert.deepEqual(SIM.EMOJI_THEMES.map((t) => t.pics.length), [12, 6, 6, 6, 6]);
+  assert.equal(SIM.EMOJI_THEMES[0].id, 'emticon_duel_basic');
+  assert.equal(SIM.EMOJI_BASIC[0], 'pic_left'); assert.equal(SIM.EMOJI_BASIC[1], 'pic_right');
+  assert.equal(SIM.EMOJI_PICS.length, 36);
   const rnd = SIM.mulberry32(7), seen = new Set();
   for (let i = 0; i < 4000; i++) {
     const left = SIM.npcEmote('bet', { side: 0, kind: 'normal' }, null, rnd), right = SIM.npcEmote('bet', { side: 1, kind: 'all' }, null, rnd);
     assert.ok(left === null || left === 'pic_left'); assert.ok(right === null || right === 'pic_right');
     for (const [m, ch, ok] of [['battle', null, null], ['result', { side: 0, kind: 'normal' }, true], ['result', { side: 0, kind: 'normal' }, false], ['result', { skip: true }, null]]) {
       const pic = SIM.npcEmote(m, ch, ok, rnd);
-      if (pic) { assert.ok(SIM.EMOJI_PICS.includes(pic), pic); seen.add(pic); }
+      if (pic) { assert.ok(SIM.EMOJI_BASIC.includes(pic), pic); seen.add(pic); }
       if (m === 'result' && ok === true) assert.ok(!['pic_sad', 'pic_wronged', 'pic_clown'].includes(pic));
       if (m === 'result' && ok === false) assert.ok(!['pic_happy', 'pic_busk'].includes(pic));
     }
