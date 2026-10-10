@@ -29,6 +29,8 @@ const DT = 1 / 30, HZ = 30, BATTLE_MAX = DCFG.consts.battlePhaseTimeMax || 200;
 // (before this, 48 % of back-to-back attacks, every one of the 3.5 / 4 / 7 s attackers). The game counts in fixed point
 // (PRTS), where a whole number of steps is exact; so a countdown within EPS of zero has run out.
 const EPS = 1e-9;
+// collision: the distance two ground units keep, and how far a unit can be shoved in a step (0.6 tile a second)
+const BODY = 0.5, SHOVE = 0.6 * DT;
 const ZONE_FIRST = Math.round((ENV.zoneFirst ?? 60) * HZ), ZONE_EVERY = Math.round((ENV.zoneEvery ?? 20) * HZ);
 const ZONES = ENV.zones || [[4, 3], [3, 2], [2, 1], [1, 0]], ZC = ENV.zoneCentre || [7, 5];
 // the safe zone at step n: -1 before the first, else the index into ZONES (half-extents in tiles around the centre tile)
@@ -94,11 +96,11 @@ function makeWorld(lineups, seed, visual) {
     const flat = [];
     // a 协同 group enters whole with its head (data/fighters.json group)
     for (const g of groups) for (let i = 0; i < g.n; i++) { flat.push(g.f); for (const k of g.f.group || []) flat.push(FIGHTER[k]); }
-    // 巨型 leaders stand in the start column (GIANTS); the 惊喜 enemies may wait off the field (SURPRISE)
+    // 巨型 leaders stand at the giants' spawn point (GIANTS); the 惊喜 enemies may wait off the field (SURPRISE)
     const giants = flat.filter((f) => GIANT.has(f.key)), rest = flat.filter((f) => !GIANT.has(f.key));
     const sur = rest.filter((f) => SURPRISE.has(f.key)), hold = SR && sur.length > 0 && sur.length < rest.length && sur.length <= rest.length * SR.teamRatio;
     const field = hold ? rest.filter((f) => !SURPRISE.has(f.key)) : rest;
-    for (const f of giants) W.units.push(makeUnit(f, side, side === 0 ? 0.5 : AW - 0.5, AH / 2, W));
+    for (const f of giants) W.units.push(makeUnit(f, side, side === 0 ? GIANT_AT[0] : AW - GIANT_AT[0], GIANT_AT[1], W));
     field.forEach((f, i) => {
       const lane = i % AH, layer = Math.floor(i / AH);
       const y = lane + 0.5 + (W.rng() - 0.5) * 0.3;
@@ -159,8 +161,19 @@ const after = (W, t, run) => W.timers.push({ t, run });
 const live = (v) => !v.dead && !v.rebornT;
 const foesOf = (W, u) => W.units.filter((v) => live(v) && v.side !== u.side);
 const alliesOf = (W, u) => W.units.filter((v) => live(v) && v.side === u.side && v !== u);
-// the distance from u to v's body: a giant fills the start column it stands in, top to bottom
-const gap = (u, v) => (v.giant ? Math.max(0, Math.abs(u.x - v.x) - 0.5) : dist(v.x - u.x, v.y - u.y));
+// a giant's body (GIANTS): the rectangle it occupies, { x0, x1, y0, y1 } in field units
+function boxOf(v) {
+  const B = GIANT_BOX[v.f.key], cx = v.x + (v.side ? -B.dx : B.dx), cy = v.y + B.dy;
+  return { x0: cx - B.w / 2, x1: cx + B.w / 2, y0: cy - B.h / 2, y1: cy + B.h / 2 };
+}
+// the point of v's body nearest to u (a giant: the nearest point of its rectangle; anyone else: itself)
+function aimAt(u, v) {
+  if (!v.giant) return [v.x, v.y];
+  const b = boxOf(v);
+  return [clamp(u.x, b.x0, b.x1), clamp(u.y, b.y0, b.y1)];
+}
+// the distance from u to v's body
+const gap = (u, v) => { if (!v.giant) return dist(v.x - u.x, v.y - u.y); const [ax, ay] = aimAt(u, v); return dist(ax - u.x, ay - u.y); };
 // the target: an enemy in reach, highest 嘲讽等级 first, then the nearest (PRTS: 优先攻击嘲讽等级最高 > 距离自身最近 /
 // 仇恨值最高 — the duel's data gives no aggro but the 嘲讽等级 ±1 of some enemies, so both read as this); none in reach:
 // the nearest, to walk to
@@ -270,6 +283,11 @@ function strike(W, b, dmg, src, kind) {
   if (b.bDr) dmg *= 1 - b.bDr;
   // 勇敢的壳 / 荒原刺背兽: the weak point in front, damage from behind reduced; 石头脑袋 the other way round
   if (b.weak && src) { const front = (src.x - b.x) * b.facing > 0; if (front !== b.weak.front) dmg *= 1 - b.weak.dr; }
+  // 岁相: from a source in the columns of its body, above or below it, damage × 50 % (Bristleback; PRTS)
+  if (b.giant && src && b.f.talents['Bristleback.damage_resistance']) {
+    const B = boxOf(b);
+    if (src.x >= B.x0 && src.x <= B.x1 && (src.y < B.y0 || src.y > B.y1)) dmg *= 1 - b.f.talents['Bristleback.damage_resistance'];
+  }
   if (b.barrier > 0 && (!b.barrierArts || kind === 'arts')) {
     const a = Math.min(b.barrier, dmg);
     b.barrier -= a; dmg -= a;
@@ -935,20 +953,27 @@ defEnemy('15092_dqudg', {
   },
 });
 // ---- GIANTS: 绿藤城's leaders (PRTS 争锋频道/选手信息/领袖) ---------------------------------------------------------------
-// 岁相 and “萨米的意志” are 巨型单位 that only come on the left: here they stand in the start column, filling it top to
-// bottom (anyone next to the column is next to them), never move, and reach the whole field. The others walk like
-// anyone: the 协同 groups enter whole (data/fighters.json group), 侠客三人行 (玉双剑) with 枣大刀 and 炭长矛, 并驾骑士 with
-// 凋零骑士, 调停的意志 (凯尔希) with Mon2tr. What only matters past the battle's 200 s (岁相 / 萨米 wreck the stage after
-// 540 / 600 s) is left out, so are 岁相's 上下 damage reduction (its field has no above and below) and the
+// 岁相 and “萨米的意志” are 巨型单位 that only come on the left. The client spawns a giant at one point of its own
+// (EnemyDuelWaveManager.m_giantEnemySpawnPosition, not in the data); recordings of the event show 岁相 inside the field
+// right of the red gate, its body over the back rows. Here: the middle row, the third tile right of the gate (GIANT_AT).
+// A giant occupies a rectangle around that point, as PRTS gives its body (GIANT_BOX): 岁相 3.95 × 4.95 tiles, 0.5 left
+// and 2 up (toward the back) of it; 萨米 2.95 × 2.95, 1 up. Nobody walks into that body; it is fought from its edges. A
+// giant never moves and reaches the whole field. The others walk like anyone: the 协同 groups enter whole
+// (data/fighters.json group), 侠客三人行 (玉双剑) with 枣大刀 and 炭长矛, 并驾骑士 with 凋零骑士, 调停的意志 (凯尔希) with
+// Mon2tr. What only matters past the battle's 200 s (岁相 / 萨米 wreck the stage after 540 / 600 s) is left out, so is the
 // 开局偷刀 the event's notes call a fault.
 const GIANT = new Set(['enemy_15068_dqsui', 'enemy_15069_dqdeer']);
+const GIANT_AT = [3.5, AH / 2];
+const GIANT_BOX = { enemy_15068_dqsui: { w: 3.95, h: 4.95, dx: -0.5, dy: -2 }, enemy_15069_dqdeer: { w: 2.95, h: 2.95, dx: 0, dy: -1 } };
 // 岁相: two targets at once, physical, an attack every 3.267 s whatever its attack speed.
 //   远山惊雷 (ThunderS3, init 10, every 30 s): the (up to) 3 enemies nearest it each get a 21 s field of thunder on their
 //     tile's cross of 5, ATK × 20 % arts every 1.5 s on everyone in it.
 //   天坠 (PowerSlashS3, init 5, every 18 s): the nearest enemy: ATK × 120 % physical twice, then for 15 s ATK × 25 % arts
 //     a second, the share +25 % after every third.
-//   十方吐纳 (DragonBreath, init 30, every 30 s): 7 s of dragon's breath down every row, ATK × 50 % arts and 50 % physical
-//     a second on everyone, double on each row's first (leftmost) enemy (the tick, once a second, is not given).
+//   十方吐纳 (DragonBreath, init 30, every 30 s): 7 s of dragon's breath along the rows of its body, everything right of
+//     it: ATK × 50 % arts and 50 % physical a second, double on each row's first (leftmost) enemy (the tick, once a
+//     second, is not given).
+//   From a source in the columns of its body but above or below it, damage × 50 % (Bristleback, PRTS).
 defEnemy('15068_dqsui', {
   init(u, T, SK) { u.fixedIv = 3.267; u.ranged = false; clocks(u, SK, ['ThunderS3', 'PowerSlashS3', 'DragonBreath']); },
   attack(W, u, tg, a) { a.tgts = enemiesInReach(W, u, tg, 2); a.o.phys = true; },
@@ -958,9 +983,14 @@ defEnemy('15068_dqsui', {
       u.clk.DragonBreath = SK.DragonBreath.cd;
       const S = SK.DragonBreath.bb;
       chan(W, u, { key: 'DragonBreath', dur: S.anim_duration, every: 1, tick: () => {
+        const B = boxOf(u), r0 = tileY(B.y0 + 0.01), r1 = tileY(B.y1 - 0.01), inBreath = (v) => tileY(v.y) >= r0 && tileY(v.y) <= r1 && v.x > B.x1;
         const first = new Set();
-        for (let r = 0; r < AH; r++) { const row = foesOf(W, u).filter((v) => tileY(v.y) === r).sort((p, q) => p.x - q.x); if (row.length) first.add(row[0]); }
-        for (const v of foesOf(W, u)) { const k = first.has(v) ? 2 : 1; hit(W, u, v, S.atk_scale * k, { arts: true, noTalent: true }); hit(W, u, v, S.atk_scale_ex * S.atk_scale * k, { phys: true, noTalent: true }); }
+        for (let r = r0; r <= r1; r++) { const row = foesOf(W, u).filter((v) => inBreath(v) && tileY(v.y) === r).sort((p, q) => p.x - q.x); if (row.length) first.add(row[0]); }
+        for (const v of foesOf(W, u)) {
+          if (!inBreath(v)) continue;
+          const k = first.has(v) ? 2 : 1;
+          hit(W, u, v, S.atk_scale * k, { arts: true, noTalent: true }); hit(W, u, v, S.atk_scale_ex * S.atk_scale * k, { phys: true, noTalent: true });
+        }
         W.events.push(['breath', u]);
       } });
       return;
@@ -1244,14 +1274,14 @@ function simStep(W) {
     const tg = u.target;
     u.cd -= DT;
     if (!tg) { u.state = 'idle'; continue; }
-    const dx = tg.x - u.x, dy = tg.giant ? 0 : tg.y - u.y, d = gap(u, tg);
+    const [ax, ay] = aimAt(u, tg), dx = ax - u.x, dy = ay - u.y, d = gap(u, tg);
     if (Math.abs(dx) > 0.05) u.facing = dx > 0 ? 1 : -1;
     const gate = tileX(u.x) === 0 || tileX(u.x) === AW - 1;    // the start / end tiles give no move speed
     if (u.charge > 0) { u.state = 'idle'; continue; }          // 溶血骇惧's wind-up: no move, no attack
     const still = u.hold > 0 || u.root > 0 || u.giant;         // behind the barrier, rooted, a giant: no move
     if (d > u.reach && still) u.state = 'idle';
     else if (d > u.reach) {
-      const rush = u.rushT > 0 ? 1 + u.f.skillData.Rush.bb.move_speed : 1, dd = tg.giant ? Math.abs(dx) : d;
+      const rush = u.rushT > 0 ? 1 + u.f.skillData.Rush.bb.move_speed : 1, dd = d;
       const step = Math.min(d - u.reach * 0.9, u.speed * (1 + u.bMs) * u.bMsMul * (u.outside && !gate ? ENV.ringMove : 1) * rush * DT);
       if (dd > 0) { u.x += dx / dd * step; u.y += dy / dd * step; }
       u.state = 'move';
@@ -1274,11 +1304,36 @@ function simStep(W) {
       if (a.again) u.cd = 0;
     } else if (u.state === 'move') u.state = 'idle';
   }
-  // separation (ground units only; a giant does not budge)
-  const ground0 = W.units.filter((u) => !u.dead && !u.rebornT && !u.f.fly && !u.giant);
-  for (let i = 0; i < ground0.length; i++) for (let j = i + 1; j < ground0.length; j++) {
-    const a = ground0[i], b = ground0[j], dx = b.x - a.x, dy = b.y - a.y, d = dist(dx, dy) || 0.01;
-    if (d < 0.5) { const push = (0.5 - d) * 0.5, nx = dx / d, ny = dy / d; a.x -= nx * push; a.y -= ny * push; b.x += nx * push; b.y += ny * push; }
+  // collision (蜜果城 on, PRTS: 单位之间将会存在碰撞体积，敌对双方甚至是友军之间可能会互相将对方挤开): ground units
+  // closer than BODY shove each other apart, half the overlap a step, the lighter (massLevel) giving way more; a unit is
+  // shoved at most SHOVE a step (0.6 tile a second), and never onto a start / end column (the gates) it has left. Flying
+  // units and the giants do not take part.
+  const body = W.units.filter((u) => !u.dead && !u.rebornT && !u.f.fly && !u.giant);
+  for (const u of body) { u.sx = 0; u.sy = 0; }
+  for (let i = 0; i < body.length; i++) for (let j = i + 1; j < body.length; j++) {
+    const a = body[i], b = body[j], dx = b.x - a.x, dy = b.y - a.y, d = dist(dx, dy);
+    if (d >= BODY) continue;
+    // two on the very same spot part along the lane
+    const nx = d > 1e-6 ? dx / d : 0, ny = d > 1e-6 ? dy / d : (j - i) % 2 ? 1 : -1;
+    const push = (BODY - d) * 0.5, ma = a.f.mass + 1, mb = b.f.mass + 1, wa = mb / (ma + mb), wb = ma / (ma + mb);
+    a.sx -= nx * push * wa; a.sy -= ny * push * wa; b.sx += nx * push * wb; b.sy += ny * push * wb;
+  }
+  for (const u of body) {
+    const m = dist(u.sx, u.sy);
+    if (!(m > 0)) continue;
+    const k = Math.min(1, SHOVE / m), gate = tileX(u.x) === 0 || tileX(u.x) === AW - 1;
+    u.x += u.sx * k; u.y += u.sy * k;
+    if (!gate) u.x = clamp(u.x, 1, AW - 1 - 1e-6);
+  }
+  // nobody stands inside a giant: one who got in is set on the nearest edge of its body
+  for (const g of W.units) {
+    if (!g.giant || g.dead) continue;
+    const B = boxOf(g);
+    for (const u of body) {
+      if (u.x <= B.x0 || u.x >= B.x1 || u.y <= B.y0 || u.y >= B.y1) continue;
+      const l = u.x - B.x0, r = B.x1 - u.x, t = u.y - B.y0, d = B.y1 - u.y, m = Math.min(l, r, t, d);
+      if (m === r) u.x = B.x1 + 1e-6; else if (m === l) u.x = B.x0 - 1e-6; else if (m === t) u.y = B.y0 - 1e-6; else u.y = B.y1 + 1e-6;
+    }
   }
   for (const u of W.units) { u.x = clamp(u.x, 0.1, AW - 0.1); u.y = clamp(u.y, 0.1, AH - 0.1); }
   // shots

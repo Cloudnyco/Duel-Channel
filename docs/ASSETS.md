@@ -72,6 +72,7 @@ Ark-Models 有 4 个原型只登记了名字、没有文件，用最接近的模
   - `T_starting_*` / `T_ending_*` / `flow_242` / `mask_*` / `kuangre_01` / `star_*` / `ray_13` / `bingkuai_02` / `xuehua_02` 来自战斗特效包（出入口、安全区边界线、buff）；
   - `map_ground.png` / `map_forbid.png` / `map_hlight.png` 是公共地图图集里地面、禁区地块和高台灯的裁切；
   - `img_dissolve_01.png` 是转场的方块噪声；
+  - `sprite_enemy_boss_avatar_bg.png`、`sprite_enemy_boss_hp_bg.png`、`sprite_bar_glow.png`、`sprite_white_slider_fill.png`、`sprite_enemy_boss_hud_large.png` 和 `boss_avatar_enemy_1526_sfsui.png`（岁相的纹章）来自战斗界面公共包（`arts/ui/[uc]battlecommon.ab`），是巨型首领面板 `panel_enemy_boss_info`（`battle/[pack]common.ab`）用的贴图；
   - `pic_*.png` 是对战表情主题（`ui/emoticon/theme/[uc]emticon_duel_basic.ab`）的 12 个表情。
 - `audio/m_nobetnolife.ogg`：默认 BGM（塞壬唱片），没有时页面不播放音乐，可以在设置里换曲。
 - `fonts/`：见本页开头。

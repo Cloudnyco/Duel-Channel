@@ -22,8 +22,8 @@
    ]
   ],
   "winner": 0,
-  "steps": 748,
-  "hash": "8dce28f56d5874cb"
+  "steps": 747,
+  "hash": "b34eb4bd086f422b"
  },
  {
   "round": 1,
@@ -48,8 +48,8 @@
    ]
   ],
   "winner": 1,
-  "steps": 1493,
-  "hash": "22d89ff1caff4a0f"
+  "steps": 1492,
+  "hash": "8f1ef1550410b05e"
  },
  {
   "round": 1,
@@ -78,8 +78,8 @@
    ]
   ],
   "winner": 1,
-  "steps": 1052,
-  "hash": "505188199af14e0a"
+  "steps": 1143,
+  "hash": "f43f3b07ed2d5dbe"
  },
  {
   "round": 2,
@@ -100,8 +100,8 @@
    ]
   ],
   "winner": 0,
-  "steps": 1934,
-  "hash": "60c9faa5de6c22d2"
+  "steps": 1376,
+  "hash": "53b491fedc9d54c2"
  },
  {
   "round": 2,
@@ -126,8 +126,8 @@
    ]
   ],
   "winner": 0,
-  "steps": 1192,
-  "hash": "17d30a9750bd0659"
+  "steps": 1185,
+  "hash": "9347347546b17d07"
  },
  {
   "round": 2,
@@ -147,9 +147,9 @@
     ]
    ]
   ],
-  "winner": 0,
-  "steps": 923,
-  "hash": "6b171424473d9e3c"
+  "winner": "draw",
+  "steps": 863,
+  "hash": "ee77031fe38b6da4"
  },
  {
   "round": 3,
@@ -174,8 +174,8 @@
    ]
   ],
   "winner": 1,
-  "steps": 1857,
-  "hash": "cc9f05eac239fdf9"
+  "steps": 1835,
+  "hash": "b634e1ac260e545f"
  },
  {
   "round": 3,
@@ -200,8 +200,8 @@
    ]
   ],
   "winner": 0,
-  "steps": 1162,
-  "hash": "916d3e6b09365b42"
+  "steps": 1140,
+  "hash": "367cb9bc1b4b192c"
  },
  {
   "round": 3,
@@ -226,8 +226,8 @@
    ]
   ],
   "winner": 1,
-  "steps": 2039,
-  "hash": "33674d87436e42bb"
+  "steps": 2083,
+  "hash": "237b6a4f33817e8d"
  },
  {
   "round": 4,
@@ -256,8 +256,8 @@
    ]
   ],
   "winner": 0,
-  "steps": 1487,
-  "hash": "8c887aa77da547a1"
+  "steps": 1632,
+  "hash": "51eec0a15d94f522"
  },
  {
   "round": 4,
@@ -290,8 +290,8 @@
    ]
   ],
   "winner": 1,
-  "steps": 1731,
-  "hash": "b513902c5aac0211"
+  "steps": 1719,
+  "hash": "b282d48ad75b7462"
  },
  {
   "round": 4,
@@ -328,8 +328,8 @@
    ]
   ],
   "winner": 0,
-  "steps": 1899,
-  "hash": "f015c8a65664fc0b"
+  "steps": 1941,
+  "hash": "71c5944b2618aeb9"
  },
  {
   "round": 5,
@@ -354,8 +354,8 @@
    ]
   ],
   "winner": 1,
-  "steps": 664,
-  "hash": "1e2684765f88b278"
+  "steps": 525,
+  "hash": "5223068b6333fda5"
  },
  {
   "round": 5,
@@ -389,7 +389,7 @@
   ],
   "winner": 1,
   "steps": 2708,
-  "hash": "bba562227da20c4d"
+  "hash": "61fdd65b5e331f97"
  },
  {
   "round": 5,
@@ -417,9 +417,9 @@
     ]
    ]
   ],
-  "winner": 1,
-  "steps": 2407,
-  "hash": "4046b7800e7782f9"
+  "winner": 0,
+  "steps": 2550,
+  "hash": "79aeefb9c2fe8603"
  },
  {
   "round": 6,
@@ -452,8 +452,8 @@
    ]
   ],
   "winner": 0,
-  "steps": 2417,
-  "hash": "c2114fd8ab3930f0"
+  "steps": 2286,
+  "hash": "b2846cf531776fb0"
  },
  {
   "round": 6,
@@ -486,8 +486,8 @@
    ]
   ],
   "winner": 0,
-  "steps": 1054,
-  "hash": "9a61b079b739cd49"
+  "steps": 1101,
+  "hash": "b1f65e84e6c699a2"
  },
  {
   "round": 6,
@@ -524,8 +524,8 @@
    ]
   ],
   "winner": 1,
-  "steps": 1206,
-  "hash": "9bbcbcda80ed1c5b"
+  "steps": 1155,
+  "hash": "a8589a2c76e89bf3"
  },
  {
   "round": 7,
@@ -557,9 +557,9 @@
     ]
    ]
   ],
-  "winner": 0,
-  "steps": 3022,
-  "hash": "a3b8187e8d800e12"
+  "winner": 1,
+  "steps": 2756,
+  "hash": "153c042ef9dc9781"
  },
  {
   "round": 7,
@@ -596,8 +596,8 @@
    ]
   ],
   "winner": 1,
-  "steps": 2057,
-  "hash": "c977b7df3b919000"
+  "steps": 3450,
+  "hash": "51e492827a3c96c3"
  },
  {
   "round": 7,
@@ -634,8 +634,8 @@
    ]
   ],
   "winner": 0,
-  "steps": 2423,
-  "hash": "436626fc052a24ec"
+  "steps": 2084,
+  "hash": "484d990732b2b2f0"
  },
  {
   "round": 8,
@@ -672,8 +672,8 @@
    ]
   ],
   "winner": 1,
-  "steps": 2550,
-  "hash": "eec964e78964ee87"
+  "steps": 1909,
+  "hash": "9a1d204eeb9a68f8"
  },
  {
   "round": 8,
@@ -710,8 +710,8 @@
    ]
   ],
   "winner": 0,
-  "steps": 2140,
-  "hash": "430d985ab0fa9898"
+  "steps": 2081,
+  "hash": "4abe26e61416a3c8"
  },
  {
   "round": 8,
@@ -748,8 +748,8 @@
    ]
   ],
   "winner": 1,
-  "steps": 2490,
-  "hash": "69cfa9aac236bf21"
+  "steps": 2400,
+  "hash": "256d2b673a4a3d2d"
  },
  {
   "round": 9,
@@ -778,8 +778,8 @@
    ]
   ],
   "winner": 1,
-  "steps": 2160,
-  "hash": "57d68d9feb7cc233"
+  "steps": 2158,
+  "hash": "22d8619e636d2b68"
  },
  {
   "round": 9,
@@ -820,8 +820,8 @@
    ]
   ],
   "winner": 0,
-  "steps": 2151,
-  "hash": "6b3f660dc2553380"
+  "steps": 2077,
+  "hash": "070d35525a1653c3"
  },
  {
   "round": 9,
@@ -850,8 +850,8 @@
    ]
   ],
   "winner": 1,
-  "steps": 1737,
-  "hash": "da0a1ee352dff3f0"
+  "steps": 1344,
+  "hash": "f5d441a6e5a1f548"
  },
  {
   "round": 10,
@@ -895,9 +895,9 @@
     ]
    ]
   ],
-  "winner": 1,
-  "steps": 2970,
-  "hash": "6fead0e5a34e7c02"
+  "winner": 0,
+  "steps": 2874,
+  "hash": "b5ee3e812cd67d94"
  },
  {
   "round": 10,
@@ -941,9 +941,9 @@
     ]
    ]
   ],
-  "winner": 0,
-  "steps": 1986,
-  "hash": "150b3a47deb2408e"
+  "winner": 1,
+  "steps": 1848,
+  "hash": "c65cb936b96357b6"
  },
  {
   "round": 10,
@@ -983,9 +983,9 @@
     ]
    ]
   ],
-  "winner": 0,
-  "steps": 3675,
-  "hash": "53210a417e6391f6"
+  "winner": 1,
+  "steps": 2927,
+  "hash": "a78ef53ba70bda5b"
  },
  {
   "round": 1,
@@ -1010,8 +1010,8 @@
    ]
   ],
   "winner": 0,
-  "steps": 817,
-  "hash": "1d34d16a95750334"
+  "steps": 906,
+  "hash": "2571b473179fdf8c"
  },
  {
   "round": 1,
@@ -1036,8 +1036,8 @@
    ]
   ],
   "winner": 0,
-  "steps": 1190,
-  "hash": "bffbbe3f159adb81"
+  "steps": 1191,
+  "hash": "73c9617c395c3dbd"
  },
  {
   "round": 1,
@@ -1062,8 +1062,8 @@
    ]
   ],
   "winner": 1,
-  "steps": 1452,
-  "hash": "fc1e6551e0fdf0a7"
+  "steps": 1477,
+  "hash": "6db235ffd6b29aea"
  },
  {
   "round": 2,
@@ -1088,8 +1088,8 @@
    ]
   ],
   "winner": 1,
-  "steps": 1536,
-  "hash": "9723028e20188c6a"
+  "steps": 1493,
+  "hash": "e085f81ff30a5876"
  },
  {
   "round": 2,
@@ -1118,8 +1118,8 @@
    ]
   ],
   "winner": 1,
-  "steps": 753,
-  "hash": "dd740da510b1e5e3"
+  "steps": 684,
+  "hash": "854307ab316ca2fb"
  },
  {
   "round": 2,
@@ -1148,8 +1148,8 @@
    ]
   ],
   "winner": 1,
-  "steps": 2063,
-  "hash": "22581abad7dcf326"
+  "steps": 2114,
+  "hash": "7627a34a04648996"
  },
  {
   "round": 3,
@@ -1174,8 +1174,8 @@
    ]
   ],
   "winner": 1,
-  "steps": 1563,
-  "hash": "c32d98c0392d3de1"
+  "steps": 951,
+  "hash": "fc3beb5b07384de8"
  },
  {
   "round": 3,
@@ -1200,8 +1200,8 @@
    ]
   ],
   "winner": 1,
-  "steps": 1439,
-  "hash": "67f1f0717c383834"
+  "steps": 1529,
+  "hash": "40ec6b694994684a"
  },
  {
   "round": 3,
@@ -1226,8 +1226,8 @@
    ]
   ],
   "winner": 0,
-  "steps": 1643,
-  "hash": "735fc58c1989d1d3"
+  "steps": 1625,
+  "hash": "c2a6ce4a3374d1e5"
  },
  {
   "round": 4,
@@ -1260,7 +1260,7 @@
    ]
   ],
   "winner": 0,
-  "steps": 2006,
-  "hash": "d9e924630f409007"
+  "steps": 2039,
+  "hash": "9458e5dad4b4a484"
  }
 ]

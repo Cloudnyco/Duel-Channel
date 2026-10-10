@@ -157,12 +157,37 @@ test('高敏感积藏者 splits below half HP (once; the copy at the same HP sha
   SIM.hurt(W, all[1], all[1].hp * 0.5); SIM.simStep(W); assert.equal(of(W, 'enemy_15048_dqdivi').length, 2);
 });
 
-test('巨型 (岁相, “萨米的意志”): in the start column, never moving, reaching the whole field; a melee enemy fights it from the column\'s edge', () => {
+test('巨型 (岁相, “萨米的意志”): at the giants’ spawn point, in a body PRTS gives; never moving, reaching the whole field; fought from its edges', () => {
   const W = world([['enemy_15068_dqsui']], [[SAKAZ]]), [sui, v] = W.units;
   v.hp = v.maxHp = 1e9;
-  assert.equal(sui.giant, true); assert.equal(sui.x, 0.5);
-  steps(W, 32);
-  assert.equal(sui.x, 0.5);
-  assert.ok(v.x < 1.0 + 0.8 + 0.05, String(v.x));
+  assert.equal(sui.giant, true); assert.equal(sui.x, 3.5); assert.equal(sui.y, 4.5);
+  // the body: 3.95 × 4.95, 0.5 left and 2 up (toward the back) of its point
+  const inBody = (u) => u.x > 1.025 && u.x < 4.975 && u.y > 0.025 && u.y < 4.975;
+  for (let i = 0; i < 32 * 30; i++) { SIM.simStep(W); assert.ok(!inBody(v), `${v.x}, ${v.y}`); }
+  assert.equal(sui.x, 3.5);
   assert.ok(sui.hp < sui.maxHp, 'the melee enemy reached it');
+  // damage from a source in its columns, above or below its body: × 50 %; from the side: whole
+  const hp = sui.hp; v.x = 3; v.y = 6.5; SIM.strike(W, sui, 1000, v, 'phys'); assert.equal(hp - sui.hp, 500);
+  const hp2 = sui.hp; v.x = 7; v.y = 2; SIM.strike(W, sui, 1000, v, 'phys'); assert.equal(hp2 - sui.hp, 1000);
+  // 萨米's body: 2.95 × 2.95, 1 up
+  const S = world([['enemy_15069_dqdeer']], [[SAKAZ]]), [deer, w] = S.units;
+  w.hp = w.maxHp = 1e9;
+  for (let i = 0; i < 32 * 30; i++) { SIM.simStep(S); assert.ok(!(w.x > 2.025 && w.x < 4.975 && w.y > 2.025 && w.y < 4.975), `${w.x}, ${w.y}`); }
+  assert.equal(deer.x, 3.5);
+});
+
+test('collision: a crowd parts softly (at most 0.6 tile a second) and never shoves a unit back onto a gate it has left', () => {
+  const W = world([[SAKAZ, 10]], [['enemy_5034_dqield']]);
+  const crowd = W.units.filter((u) => u.side === 0);
+  for (const u of crowd) { u.x = 1.05; u.y = 4.5; u.passive = true; u.speed = 0; }
+  dummy(W.units.find((u) => u.side === 1), 12.5, 0.5);
+  for (let i = 0; i < 90; i++) {
+    const before = crowd.map((u) => [u.x, u.y]);
+    SIM.simStep(W);
+    crowd.forEach((u, k) => {
+      assert.ok(u.x >= 1, `x ${u.x}`);
+      assert.ok(Math.hypot(u.x - before[k][0], u.y - before[k][1]) <= 0.6 * SIM.DT + 1e-12);
+    });
+  }
+  assert.ok(Math.max(...crowd.map((u) => u.y)) - Math.min(...crowd.map((u) => u.y)) > 1, 'they spread out');
 });

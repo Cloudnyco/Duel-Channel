@@ -43,5 +43,11 @@
   "pic_shock": "pic_shock.png",
   "pic_pray": "pic_pray.png",
   "pic_busk": "pic_busk.png",
-  "dissolve": "img_dissolve_01.png"
+  "dissolve": "img_dissolve_01.png",
+  "bossBand": "sprite_enemy_boss_avatar_bg.png",
+  "bossSui": "boss_avatar_enemy_1526_sfsui.png",
+  "bossSmall": "sprite_enemy_boss_hud_large.png",
+  "bossHpBg": "sprite_enemy_boss_hp_bg.png",
+  "bossGlow": "sprite_bar_glow.png",
+  "bossFill": "sprite_white_slider_fill.png"
 }

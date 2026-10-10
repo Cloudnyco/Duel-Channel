@@ -364,6 +364,7 @@ const FX = {
 };
 // a unit's chest on screen
 function chest(u, f = 0.55) {
+  if (u.giant) { const b = boxOf(u), [gx, gy, gk] = proj((b.x0 + b.x1) / 2, (b.y0 + b.y1) / 2); return [gx, gy - 30 * gk, gk]; }
   const [sx, sy, k] = proj(u.x, u.y), s = FLOOR.T * k / 320 * (u.f.scale || 1);
   return [sx, sy - (u.headH || 120) * s * f - u.hover * FLOOR.T * k * 0.6, k];
 }
@@ -526,11 +527,55 @@ function drawGround(W) {
   }
 }
 
+// The giant boss panel: the client's panel_enemy_boss_info (UIEnemyGiantBossInfoPanel, battle/[pack]common.ab) — a
+// giant's HP is not the bar under a unit but this banner at the top of the screen: the enemy's emblem in front of a
+// hatched band (sprite_enemy_boss_avatar_bg 744 × 155, emblem frame 140 × 120, both × 1.5), and across it the long bar
+// (hp_slider 798 × 10: a dark track, the 9-slice frame sprite_enemy_boss_hp_bg, the fill in (1, 0.17, 0.17) α 0.8, the
+// white trail of the HP just lost α 0.7, the red glow sprite_bar_glow flashing on a hit). Anchored top, 50 down, a band
+// 200 high; the reference canvas is 1920 × 1080, here × 2 / 3. The emblem is the enemy's own (the client has 岁相's,
+// enemy_1526_sfsui); one without falls back to the panel's small boss mark (sprite_enemy_boss_hud_large).
+const BOSS_R = 1280 / 1920, BOSS_CY = (50 + 100) * BOSS_R, BOSS_EMBLEM = { enemy_15068_dqsui: 'bossSui' };
+function makeBossPanel() {
+  const c = new PIXI.Container(), R = BOSS_R, cx = 640;
+  const band = new PIXI.Sprite(tex('bossBand')); band.anchor.set(0.5); band.position.set(cx, BOSS_CY + 14 * R - 21.3 * 1.5 * R); band.scale.set(1.5 * R);
+  const emblem = new PIXI.Sprite(tex('bossSui')); emblem.anchor.set(0.5); emblem.position.set(cx, BOSS_CY + 14 * R);
+  const W = 798 * R, H = 10 * R, y = BOSS_CY - 15 * R, x0 = cx - W / 2;
+  const glow = new PIXI.NineSlicePlane(tex('bossGlow'), 18, 12, 18, 12); glow.width = 818; glow.height = 31; glow.scale.set(R); glow.position.set(cx - 818 * R / 2, y - 31 * R / 2); glow.tint = 0xff0000; glow.alpha = 0;
+  const track = new PIXI.Graphics(); track.beginFill(0x000000, 0.39); track.drawRect(cx - 800 * R / 2, y - 12 * R / 2, 800 * R, 12 * R); track.endFill();
+  const frame = new PIXI.NineSlicePlane(tex('bossHpBg'), 11, 10, 11, 10); frame.width = 816; frame.height = 28; frame.scale.set(R); frame.position.set(cx - 816 * R / 2, y - 28 * R / 2); frame.alpha = 0.39;
+  const fill = new PIXI.Graphics(), trail = new PIXI.Graphics();
+  c.addChild(band, emblem, glow, track, frame, trail, fill);
+  c.visible = false; c.alpha = 0;
+  arena.air.addChild(c);
+  return { c, emblem, glow, fill, trail, x0, y, W, H, unit: null, ghost: 1, hold: 0, hit: 0, last: 1 };
+}
+function bossPanel(W, dt) {
+  const P = arena.boss || (arena.boss = makeBossPanel());
+  const g = W && W.units.find((u) => u.giant && !u.dead);
+  if (!g) { P.c.alpha = Math.max(0, P.c.alpha - dt * 3); P.c.visible = P.c.alpha > 0; P.unit = null; return; }
+  if (P.unit !== g) {
+    P.unit = g; P.ghost = 1; P.hold = 0; P.hit = 0; P.last = 1;
+    const own = BOSS_EMBLEM[g.f.key];
+    P.emblem.texture = tex(own || 'bossSmall');
+    P.emblem.scale.set(own ? 140 * 1.5 * BOSS_R / P.emblem.texture.width : 1.5 * BOSS_R);
+    P.emblem.y = BOSS_CY + (own ? 14 : -3.4) * BOSS_R;
+  }
+  P.c.visible = true; P.c.alpha = Math.min(1, P.c.alpha + dt * 3);
+  const r = clamp(g.hp / g.maxHp, 0, 1);
+  if (r < P.last - 1e-4) { P.hold = 0.35; P.hit = 0.3; }
+  P.last = r;
+  if (P.hold > 0) P.hold -= dt; else P.ghost = Math.max(r, P.ghost - dt * 0.9);
+  P.fill.clear(); P.fill.beginFill(0xff2b2b, 0.8); P.fill.drawRect(P.x0, P.y - P.H / 2, P.W * r, P.H); P.fill.endFill();
+  P.trail.clear(); if (P.ghost > r) { P.trail.beginFill(0xffffff, 0.7); P.trail.drawRect(P.x0 + P.W * r, P.y - P.H / 2, P.W * (P.ghost - r), P.H); P.trail.endFill(); }
+  P.hit = Math.max(0, P.hit - dt); P.glow.alpha = 0.78 * P.hit / 0.3;
+}
+
 // ---- the visible arena: the sim's world (sim.js) with Spine views --------------------------------------------------------
 function setupRound(lineups, seed) {
   clearArena();
   arena.W = makeWorld(lineups, seed, true);
-  for (const u of arena.W.units) attachView(u);
+  // a giant makes its entrance as the line-up comes on
+  for (const u of arena.W.units) attachView(u, u.giant);
   arena.acc = 0; arena.ff = 1; arena.running = false;
   // 竞猜对决 has no last round: the round alone
   const stand = typeof G !== 'undefined' && G.mode && G.mode.key === 'stand';
@@ -542,6 +587,7 @@ function clearArena() {
   if (arena.W) { for (const u of arena.W.units) if (u.view) u.view.destroy({ children: true }); for (const s of arena.W.shots) if (s.g) s.g.destroy({ children: true }); }
   FX.clear();
   arena.groundG.clear();
+  if (arena.boss) { arena.boss.c.visible = false; arena.boss.c.alpha = 0; arena.boss.unit = null; }
   arena.W = null; arena.running = false;
   arena.flashT = 0;
   drawRing(0);
@@ -551,7 +597,9 @@ function startBattle() {
   if (arena.W) for (const u of arena.W.units) fxSpawn(u);
   return new Promise((res) => { arena.onEnd = res; });
 }
-function attachView(u) {
+// enter: the unit comes on now (a giant with the line-up, a summon or a drop-in in the battle) — its entrance clip
+// (Start), or a giant without one fades in
+function attachView(u, enter) {
   if (u.view) return;
   u.view = new PIXI.Container();
   u.shadow = new PIXI.Sprite(tex('glow')); u.shadow.anchor.set(0.5); u.shadow.tint = 0x000000; u.shadow.alpha = 0.6;
@@ -568,7 +616,9 @@ function attachView(u) {
     const top = (data.y || 0) + (data.height || 0);
     u.headH = top > 20 ? top : 0;
     u.view.addChild(u.bar);
-    anim(u, u.dead ? 'die' : 'idle', true);
+    const A = u.f.anims, entrance = enter && A.deploy && A.deploy !== A.idle && sk.spineData.findAnimation(A.deploy);
+    anim(u, u.dead ? 'die' : entrance ? 'deploy' : 'idle', true);
+    if (enter && u.giant && !entrance) u.fadeIn = 0;
   }).catch((e) => console.warn('fighter', u.f.key, e));
 }
 function anim(u, kind, force) {
@@ -582,14 +632,13 @@ function anim(u, kind, force) {
   else if (kind === 'attack') { name = A.attack && A.attack.loop; loop = false; }
   else if (kind === 'skill') { name = A.skill && A.skill.loop; loop = false; if (!has(form(name))) name = A.attack && A.attack.loop; }
   else if (kind === 'die' || kind === 'reborn') { name = A.die; loop = false; }
+  else if (kind === 'deploy') { name = A.deploy; loop = false; }
   name = form(name);
   if (!has(name)) name = has(form(A.idle)) ? form(A.idle) : u.sk.spineData.animations[0].name;
   u.mode = kind;
   const e = u.sk.state.setAnimation(0, name, loop);
-  if (kind === 'attack' || kind === 'skill') {
-    e.timeScale = Math.max(1, (e.animation.duration || 1) / Math.max(0.2, u.attackIv || 1));
-    u.sk.state.addAnimation(0, has(form(A.idle)) ? form(A.idle) : name, true, 0);
-  }
+  if (kind === 'attack' || kind === 'skill') e.timeScale = Math.max(1, (e.animation.duration || 1) / Math.max(0.2, u.attackIv || 1));
+  if (kind === 'attack' || kind === 'skill' || kind === 'deploy') u.sk.state.addAnimation(0, has(form(A.idle)) ? form(A.idle) : name, true, 0);
 }
 function renderUnit(u, dt) {
   // a fallen unit that has faded out (alpha 0 from 1.17 s): nothing left to draw — its view hidden, its skeleton no
@@ -605,20 +654,23 @@ function renderUnit(u, dt) {
     else if (u.mode === 'reborn') anim(u, 'idle', true);
     else if (u.skillSeq !== u.seenSkill || u.wantSkill) { u.seenSkill = u.skillSeq; u.seenAttack = u.attackSeq; u.wantSkill = false; anim(u, 'skill', true); }
     else if (u.attackSeq !== u.seenAttack) { u.seenAttack = u.attackSeq; anim(u, 'attack', true); }
-    else if (u.state === 'move' && u.mode !== 'move' && (u.mode !== 'attack' || u.sk.state.tracks[0]?.isComplete?.())) anim(u, 'move');
+    else if (u.state === 'move' && u.mode !== 'move' && ((u.mode !== 'attack' && u.mode !== 'deploy') || u.sk.state.tracks[0]?.isComplete?.())) anim(u, 'move');
     else if (u.state === 'idle' && u.mode === 'move') anim(u, 'idle');
     u.sk.scale.set(s * u.facing * (u.f.mirrorX ? -1 : 1), s * (u.f.scaleY || 1));
     u.sk.y = -u.hover * FLOOR.T * k * 0.6;
     u.sk.update(u.stun > 0 ? 0 : dt);
+    if (u.fadeIn !== undefined && u.fadeIn < 1) { u.fadeIn = Math.min(1, u.fadeIn + dt / 1.2); u.view.alpha = u.fadeIn; }
     if (!u.headH) u.headH = Math.max(40, -u.sk.getLocalBounds().y);
     if (u.flash > 0) u.flash -= dt;
-    u.sk.tint = u.flash > 0 ? 0xffc4b8 : u.stun > 0 && u.stunKind === 'frozen' ? 0xb8dcf0 : u.fear ? 0xd88aa8 : u.cold > 0 ? 0xcfe6ff
+    // (a giant takes hits all the time: no hit flash, it would stay tinted)
+    u.sk.tint = u.flash > 0 && !u.giant ? 0xffc4b8 : u.stun > 0 && u.stunKind === 'frozen' ? 0xb8dcf0 : u.fear ? 0xd88aa8 : u.cold > 0 ? 0xcfe6ff
       : u.invT > 0 && Math.sin(arena.t * 18) > 0 ? 0xfff0b0 : 0xffffff;
     if (u.dead) { u.deadT = (u.deadT || 0) + dt; u.view.alpha = clamp(1.4 - u.deadT * 1.2, 0, 1); }
   }
-  // a soft shadow under the feet
+  // a soft shadow under the feet (not under a giant: its point is not where it stands)
   const sw = 30 * k * clamp(u.f.scale || 1, 0.7, 1.7);
   u.shadow.scale.set(sw * 2.2 / 256, sw * 0.9 / 256);
+  u.shadow.visible = !u.giant;
   if (u.sk) unitHud(u, dt, k, s);
 }
 // the safe zone (env_025_act1enemyduel): the tiles outside glow amber; its edge is the client's boundary line
@@ -722,7 +774,7 @@ function unitHud(u, dt, k, s) {
   if (ratio < u.lastRatio - 1e-4) u.ghostHold = 0.35;
   u.lastRatio = ratio;
   const show = !u.dead && u.rebornT <= 0;
-  u.bar.visible = show;
+  u.bar.visible = show && !u.giant;
   if (show) {
     if (Math.abs(ratio - u.lastHpDrawn) > 0.002 || Math.abs(u.ghost - (u.lastGhost || 0)) > 0.003 || u.barW !== w) {
       u.lastHpDrawn = ratio; u.lastGhost = u.ghost; u.barW = w;
@@ -836,7 +888,7 @@ function arenaFrame(dt) {
       if (kind === 'hit') { if (!busy && u.view) fxHit(u, a); if (u.view) u.flash = 0.1; }
       else if (kind === 'die') fxDie(u);
       else if (kind === 'gone') fxGone(u);
-      else if (kind === 'spawn') { attachView(u); fxSpawn(u); if (u.dropped && !u.dropShown) { u.dropShown = true; fxDrop(u); } }
+      else if (kind === 'spawn') { attachView(u, true); fxSpawn(u); if (u.dropped && !u.dropShown) { u.dropShown = true; fxDrop(u); } }
       else if (kind === 'chan' || kind === 'liberty' || kind === 'swap' || kind === 'unload') { if (u.view) u.wantSkill = true; }
       else if (kind === 'spin') { if (!busy) fxWhirl(u, u.f.key === 'enemy_15070_dqhlgy' ? 1.2 : 1); }
       else if (kind === 'area') { if (!busy) fxArea(u, a); }
@@ -868,6 +920,7 @@ function arenaFrame(dt) {
   if (W) {
     drawGround(W);
     for (const u of W.units) if (u.view) renderUnit(u, adt);
+    bossPanel(W, dt);
     // projectiles: physical — a white-yellow streak; arts — a violet orb; both leave a short trail
     for (const s of W.shots) {
       const arts = s.src.f.dmg === 'arts', [sx, sy] = proj(s.x, s.y);

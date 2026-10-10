@@ -584,7 +584,7 @@ function enemyInfo(g) {
   // the duel's own ways onto the field (sim.js): a 协同 group, a 惊喜 drop-in, a 巨型 leader
   if (f.group) lines.push(`<color=#f3d23a>协同</color> 与${f.group.map((k) => FIGHTER[k].name).join('、')}一同出场，只占一个兵种`);
   if (SURPRISE.has(f.key)) lines.push(`<color=#f3d23a>奇袭</color> 有队友掩护时不随队入场，比赛中空降到对手身后`);
-  if (GIANT.has(f.key)) lines.push(`<color=#f3d23a>巨型</color> 占据左侧起点列，不移动，攻击遍及全场`);
+  if (GIANT.has(f.key)) lines.push(`<color=#f3d23a>巨型</color> 站在红门右侧、占据多格，不移动，攻击遍及全场`);
   const ab = f.abilities || [];
   if (ab.length) {
     lines.push(`<color=#f3d23a>能力</color>${f.origName && f.origName !== f.name ? dim(`（图鉴原型：${f.origName}）`) : ''}`);
