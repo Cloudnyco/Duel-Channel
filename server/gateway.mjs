@@ -250,6 +250,9 @@ const server = http.createServer((req, res) => {
   // the asset pack: only names the build writes; the hash in the name makes it immutable
   const pk = /^\/pack\/(duel-pack\.[0-9a-f]{16}\.json)$/.exec(u.pathname);
   if (pk) { sendFile(req, res, join(PUBLIC, 'pack', pk[1]), 'application/json; charset=utf-8', 'public, max-age=31536000, immutable'); return; }
+  // an enemy model, named after its content likewise
+  const md = /^\/models\/(enemy_[0-9a-z_]+\.[0-9a-f]{16}\.json)$/.exec(u.pathname);
+  if (md) { sendFile(req, res, join(PUBLIC, 'models', md[1]), 'application/json; charset=utf-8', 'public, max-age=31536000, immutable'); return; }
   if (u.pathname === '/report' && req.method === 'POST') { takeReport(req, res); return; }
   if (u.pathname === '/favicon.ico') { res.writeHead(204); res.end(); return; }
   // a liveness probe for containers and CI: the gateway answers, and how many instances it can reach

@@ -19,17 +19,29 @@ const COL = { yellow: 0xf6e033, spot: 0xffe68a, phys: 0xfff0b8, arts: 0xb98cff, 
 let arenaApp = null, arena = null;
 const spineData = new Map();
 const b64bytes = (s) => { const bin = atob(s), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u; };
+// an enemy's model (its original's: f.model, shared by its versions): inlined in the single-file page (MODELS), else
+// fetched from the server when a battle first needs it (MODEL_FILES: models/<model>.<hash>.json, cached for good)
+async function modelOf(f) {
+  if (typeof MODELS !== 'undefined' && MODELS[f.model]) return MODELS[f.model];
+  const url = typeof MODEL_FILES !== 'undefined' && MODEL_FILES[f.model];
+  if (!url) throw new Error(`no model for ${f.key}`);
+  for (let i = 0; ; i++) {
+    try { const r = await fetch(url); if (!r.ok) throw new Error(`${r.status} ${url}`); return await r.json(); } catch (e) { if (i >= 2) throw e; await new Promise((res) => setTimeout(res, 800 * (i + 1))); }
+  }
+}
 function loadFighter(f) {
-  if (spineData.has(f.key)) return spineData.get(f.key);
+  if (spineData.has(f.model)) return spineData.get(f.model);
   const p = (async () => {
-    const url = `vfs/f_${f.key}.skel`;
-    VFS[url] = b64bytes(f.spine.skel);
-    const mode = f.spine.pma ? PIXI.ALPHA_MODES.PMA : PIXI.ALPHA_MODES.UNPACK;
-    const atlas = new PIXI.spine.TextureAtlas(f.spine.atlas, (name, cb) => cb(PIXI.BaseTexture.from('data:image/png;base64,' + (f.spine.pages[name] || Object.values(f.spine.pages)[0]), { alphaMode: mode })));
+    const spine = await modelOf(f), url = `vfs/m_${f.model}.skel`;
+    VFS[url] = b64bytes(spine.skel);
+    const mode = spine.pma ? PIXI.ALPHA_MODES.PMA : PIXI.ALPHA_MODES.UNPACK;
+    const atlas = new PIXI.spine.TextureAtlas(spine.atlas, (name, cb) => cb(PIXI.BaseTexture.from('data:image/png;base64,' + (spine.pages[name] || Object.values(spine.pages)[0]), { alphaMode: mode })));
     const res = await PIXI.Assets.load({ src: url, data: { spineAtlas: atlas } });
     return res.spineData;
   })();
-  spineData.set(f.key, p);
+  // a failed fetch is tried again by the next battle that needs the model
+  p.catch(() => spineData.delete(f.model));
+  spineData.set(f.model, p);
   return p;
 }
 const iconUri = (f) => (f && f.icon ? 'data:image/png;base64,' + f.icon : '');
@@ -470,7 +482,7 @@ function attachView(u) {
 }
 function anim(u, kind, force) {
   if (!u.sk || (u.mode === kind && !force)) return;
-  const A = u.f.spine.anims, has = (n) => n && u.sk.spineData.findAnimation(n);
+  const A = u.f.anims, has = (n) => n && u.sk.spineData.findAnimation(n);
   // a unit with two forms (C1_* / C2_*): the second after its reborn
   const form = (n) => (n && u.enhanced && /^C1_/.test(n) && has('C2_' + n.slice(3)) ? 'C2_' + n.slice(3) : n);
   let name = null, loop = true;
@@ -810,7 +822,7 @@ class MiniShow {
       const sk = new PIXI.spine.Spine(d); sk.autoUpdate = false;
       const s = 0.5 * (fs[i].scale || 1);
       sk.scale.set(s * (i ? -1 : 1), s); sk.position.set(this.W / 2 + (i ? 1 : -1) * Math.min(150, this.W / 6), 285);
-      sk.state.setAnimation(0, fs[i].spine.anims.idle, true);
+      sk.state.setAnimation(0, fs[i].anims.idle, true);
       this.c.addChild(sk);
       return { sk, f: fs[i] };
     });
@@ -822,7 +834,7 @@ class MiniShow {
     const beat = Math.floor(this.t / 1.3);
     if (beat !== this.beat && this.pair.length) {
       this.beat = beat;
-      const p = this.pair[beat % 2], A = p.f.spine.anims;
+      const p = this.pair[beat % 2], A = p.f.anims;
       if (A.attack && A.attack.loop && p.sk.spineData.findAnimation(A.attack.loop)) { p.sk.state.setAnimation(0, A.attack.loop, false); p.sk.state.addAnimation(0, A.idle, true, 0); }
     }
     for (const p of this.pair) p.sk.update(dt);

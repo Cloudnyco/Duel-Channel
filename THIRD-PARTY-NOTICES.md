@@ -14,6 +14,11 @@ Fonts:
 - **Noto Sans SC** and **Arvo** are loaded at run time from Google Fonts (SIL Open Font License 1.1); they are not in this repository.
 - **Bender** (Jovanny Lemonad; Oleg Zhuravlev, Ivan Gladkikh) and **Novecento wide** (Jan Tonellato / Synthview) are free fonts under their authors' terms. They are not in this repository: the build fetches them from [TimWangZi/The-font-of-Arknights](https://github.com/TimWangZi/The-font-of-Arknights) into `assets/fonts/` (git-ignored) and inlines them into the built page.
 
-Data:
+Code:
+
+- `tools/lib/spine-meta.mjs` (Spine skeleton reading, animation-role resolution) and `tools/lib/model-scales.mjs` (the enemy models' drawn scales, measured over the game client) are adapted from [Stronghold Protocol](https://github.com/sganggs/Stronghold-Protocol) (`tools/assets/skel.mjs`, `tools/assets/anim-roles.mjs`, `tools/build-data.mjs`), © its contributors, GPL-3.0-or-later. They are combined into this AGPL-3.0-or-later project as section 13 of the GNU GPL v3 permits; those files keep the GPL's terms for their own parts.
+
+Data and models:
 
 - `data/*.json` are generated from [ArknightsGameData](https://github.com/Kengxxiao/ArknightsGameData) (game data © Hypergryph; see NOTICE.md §2).
+- `assets/models/` holds enemy Spine models from [isHarryh/Ark-Models](https://github.com/isHarryh/Ark-Models) and portraits from [yuanyan3060/ArknightsGameResource](https://github.com/yuanyan3060/ArknightsGameResource) (game art © Hypergryph; see NOTICE.md §2).

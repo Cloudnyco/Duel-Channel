@@ -13,7 +13,7 @@ for (let i = 0; i < 40; i++) {
   const L = SIM.makeLineups(rd, SIM.mulberry32(seed ^ 0x5bd1e995));
   const W = SIM.makeWorld(L, seed, false);
   while (!W.done) SIM.simStep(W);
-  cases.push({ round: rd.round, seed, lineups: L.map((s) => s.map((g) => [g.f.key, g.n])), winner: W.result, steps: W.n,
+  cases.push({ round: rd.round, roundId: rd.roundId, seed, lineups: L.map((s) => s.map((g) => [g.f.key, g.n])), winner: W.result, steps: W.n,
     hash: createHash('sha256').update(digest(W)).digest('hex').slice(0, 16) });
 }
 writeFileSync(new URL('../test/fixtures/golden.json', import.meta.url), JSON.stringify(cases, null, 1) + '\n');

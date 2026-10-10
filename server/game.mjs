@@ -16,7 +16,7 @@ const ctx = {
 vm.createContext(ctx);
 vm.runInContext(load('shared/sim.js') + `
 ;globalThis.SIM = { makeLineups, predict, npcPick, npcEmote, settleOne, mulberry32, pickWeighted, POOL, DCFG, EMOJI_PICS,
-  isStand, STAND, standRow, standSeat, standShields, npcStandPick, settleStand, standLeave, standOver, standRanks };`, ctx);
+  isStand, STAND, standRow, standSeat, standShields, npcStandPick, settleStand, standLeave, standOver, standRanks, roundTable, pickRound };`, ctx);
 export const SIM = ctx.SIM;
 const C = SIM.DCFG.consts;
 
@@ -39,7 +39,8 @@ export class Match {
     this.id = id; this.mode = mode; this.log = log; this.onError = onError; this.done = false; this.round = null; this.r = 0; this.phase = 'wait'; this.later = new Set();
     this.hist = []; this.seq = 0; this.roundFrom = 0;
     this.stand = SIM.isStand(mode); this.T = timings(this.stand);
-    this.rounds = Object.values(SIM.DCFG.rounds).filter((r) => r.modeId === mode).sort((a, b) => a.round - b.round);
+    // the rounds in turn, each the three events' versions of it (one drawn when it comes)
+    this.rounds = SIM.roundTable(mode);
     const max = (SIM.DCFG.modes[mode] || {}).maxPlayer || 8;
     const used = new Set(humans.map((h) => h.avatar));
     // NPC portraits: unused ones first (30 seats outnumber the roster: then any)
@@ -170,7 +171,7 @@ export class Match {
       for (let r = 1; r <= total; r++) {
         if (!this.anyHumanHere()) { this.log(`match ${this.id}: no one left, closing`); break; }
         if (this.stand ? SIM.standOver(this.players) : this.players.filter((p) => !p.out).length <= 1) break;
-        await this.playRound(this.stand ? SIM.standRow(this.rounds, r) : this.rounds[r - 1], r);
+        await this.playRound(SIM.pickRound(this.stand ? SIM.standRow(this.rounds, r) : this.rounds[r - 1], Math.random), r);
       }
       this.phase = 'finish';
       const fin = this.snapshot();

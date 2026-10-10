@@ -20,7 +20,7 @@ test('the golden battles replay identically (rules or numbers changed? run tools
   const cases = JSON.parse(readFileSync(new URL('./fixtures/golden.json', import.meta.url), 'utf8'));
   assert.ok(cases.length >= 20);
   for (const c of cases) {
-    const rd = rounds.find((r) => r.round === c.round);
+    const rd = SIM.DCFG.rounds[c.roundId];
     const L = SIM.makeLineups(rd, SIM.mulberry32(c.seed ^ 0x5bd1e995));
     // (compared as JSON: arrays made inside the sim's VM context have another Array prototype)
     assert.equal(JSON.stringify(L.map((s) => s.map((g) => [g.f.key, g.n]))), JSON.stringify(c.lineups), `line-ups of round ${c.round} seed ${c.seed}`);
@@ -86,16 +86,25 @@ test('emojis: the battle theme\'s 12 pictures; NPC reactions only use them and f
   assert.ok(seen.size >= 8, [...seen].join());
 });
 
-test('竞猜对决: up to 30 seats; round 5 sets small enemies against one 领袖; the table\'s last row repeats', () => {
+test("竞猜对决: up to 30 seats; every round in the three events' versions; 青草城's round 5: small enemies against one 领袖", () => {
   assert.equal(SIM.isStand('multiStandMatch'), true); assert.equal(SIM.isStand('multiStandRoom'), true); assert.equal(SIM.isStand('multiOperationMatch'), false);
   assert.equal(SIM.DCFG.modes.multiStandMatch.maxPlayer, 30); assert.equal(SIM.DCFG.modes.multiStandRoom.maxPlayer, 30);
   assert.deepEqual({ ...SIM.STAND }, { shieldTurn: 5, cap: 60, npcMaxRight: 3 });
-  const st = matchRounds(SIM, 'multiStandMatch');
+  // the three events' versions of every round; a match draws one each round
+  const st = SIM.roundTable('multiStandMatch');
   assert.equal(st.length, 10);
-  assert.equal(SIM.standRow(st, 1).round, 1); assert.equal(SIM.standRow(st, 10).round, 10); assert.equal(SIM.standRow(st, 37).round, 10);
+  for (const v of st) assert.equal(JSON.stringify(v.map((r) => r.act)), JSON.stringify(['act1enemyduel', 'act2enemyduel', 'act3enemyduel']));
+  assert.equal(SIM.standRow(st, 1)[0].round, 1); assert.equal(SIM.standRow(st, 10)[0].round, 10); assert.equal(SIM.standRow(st, 37)[0].round, 10);
+  const seen = new Set(), rnd = SIM.mulberry32(3);
+  for (let i = 0; i < 60; i++) seen.add(SIM.pickRound(st[4], rnd).act);
+  assert.equal(seen.size, 3);
+  // 青草城's round 5: small enemies against one kind from the 领袖 pool (merged: 绿藤城 also puts strong common enemies in
+  // it); a 领袖 (300, over the target) stands alone
+  const r5 = st[4].find((r) => r.act === 'act1enemyduel');
   for (let i = 0; i < 40; i++) {
-    const [left, right] = SIM.makeLineups(st[4], SIM.mulberry32(i + 1));
-    assert.equal(right.length, 1); assert.equal(right[0].n, 1); assert.ok(right[0].f.pool.boss > 0, right[0].f.key);
+    const [left, right] = SIM.makeLineups(r5, SIM.mulberry32(i + 1));
+    assert.equal(right.length, 1); assert.ok(right[0].f.pool.boss > 0, right[0].f.key);
+    if (right[0].f.score >= 300) assert.equal(right[0].n, 1);
     assert.ok(left.every((g) => g.f.pool.small > 0)); assert.ok(Math.abs(SIM.sideScore(left) - 175) <= 75);
   }
 });

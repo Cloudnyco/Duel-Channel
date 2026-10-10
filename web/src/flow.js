@@ -24,7 +24,8 @@ const byOrder = (a, b) => a.innerSortId - b.innerSortId;
 const MODES_MATCH = Object.values(DCFG.modes).filter((m) => !m.isRoom).sort(byOrder).map((m) => modeOf(m.modeId));
 const MODES_ROOM = Object.values(DCFG.modes).filter((m) => m.isRoom).sort(byOrder).map((m) => modeOf(m.modeId));
 const MODES = [...MODES_MATCH, ...MODES_ROOM];
-const roundsOf = (mode) => Object.values(DCFG.rounds).filter((r) => r.modeId === mode.id).sort((a, b) => a.round - b.round);
+// a mode's rounds in turn, each the three events' versions of it (sim.js roundTable)
+const roundsOf = (mode) => roundTable(mode.id);
 const isSolo = () => G.mode.id === 'soloOperation';
 let ME_NAME = '博士', ME_TAG = '#' + (1000 + Math.floor(Math.random() * 9000));
 let players = [], me = null;
@@ -520,8 +521,8 @@ async function stLoading(ctx) {
   await wipe(async () => { if (ctx.pending) { ctx.pending(); ctx.pending = null; } scr = new Screen('enemy_duel_ui_battle_start_panel', { z: 30 }); }, '进入直播间');
   scr.text('panel_text/text_stage_name', `${G.mode.name} · ${C.matchTabText || '直播主赛场'}`);
   playLoops(scr);
-  const pre = Promise.all(POOL.map((f) => loadFighter(f).catch(() => null)));
-  await Promise.all([wait(2.2), pre]);
+  // the models load when a round's line-up is drawn (the bet window gives them time); here only the screen's own pace
+  await wait(2.2);
   if (G.online) {
     NET.match.send({ t: 'ready' });
     const m = await NET.match.next(['round', 'finish']);
@@ -984,7 +985,7 @@ async function stGame() {
   if (stand) standRankAll();
   for (let r = 1; r <= total && !left; r++) {
     if (stand && standOver(players)) break;
-    const rd = stand ? standRow(rounds, r) : rounds[r - 1];
+    const rd = pickRound(stand ? standRow(rounds, r) : rounds[r - 1], Math.random);
     G.round = r;
     if (stand) standShields(players, r);
     const seed = (Math.random() * 2 ** 31) | 0;

@@ -26,7 +26,7 @@ Copyright (C) 2026 Duel Channel contributors
 《明日方舟》及「争锋频道」相关的全部**名称、角色、美术、Spine 模型、界面图、动画、特效贴图、音乐音效、文本与游戏数据**，版权归上海鹰角网络科技有限公司及其授权方所有。具体包括：
 
 - 素材包（`assets/**`，从游戏客户端导出，收录在仓库中）以及由它构建出的页面（`public/`）；
-- 由官方数据表生成的 `data/duelcfg.json`、`data/fighters.json`，从客户端环境预制体读取的 `data/sources/*.json`，以及由这些数据计算出的 `test/fixtures/golden.json`；
+- 由官方数据表生成的 `data/duelcfg.json`、`data/fighters.json`（争锋频道三期：青草城、蜜果城、绿藤城），从客户端环境预制体读取的 `data/sources/*.json`，以及由这些数据计算出的 `test/fixtures/golden.json`；
 - `docs/img/` 中的截图；
 - `docs/` 中引用的 PRTS 等社区页面的文字（按其来源的许可，PRTS 文本为 CC BY-NC-SA）。
 

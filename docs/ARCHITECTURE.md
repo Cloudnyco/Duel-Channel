@@ -5,7 +5,7 @@
 `tools/build-page.mjs` 用模板 `web/index.src.html`、各脚本、数据和素材包构建两种页面：
 
 - `public/duel-flow.html`：素材包内联的单文件，以 `file://` 打开时是单机模式；
-- `public/index.html` + `public/pack/duel-pack.<哈希>.json`：网关提供的版本。页面只含代码，`src/loader.js` 在开始页上显示进度并下载素材包（按内容哈希命名，可长期缓存），下完再启动游戏。
+- `public/index.html` + `public/pack/duel-pack.<哈希>.json`：网关提供的版本。页面只含代码，`src/loader.js` 在开始页上显示进度并下载素材包（按内容哈希命名，可长期缓存），下完再启动游戏。敌人模型（`public/models/<原型>.<哈希>.json`）不在素材包里：`arena.js` 的 `loadFighter` 在某轮阵容抽出时才下载（押注时间里完成），同一原型的各版本共用。单文件页面内联全部模型。
 
 游戏代码在 `duelMain()` 里运行，它读取素材包的全局数据（`DUEL`、`FIGHTERS`、`AUDIO`、`FXTEX`）。脚本是**经典脚本**，按下面的顺序拼进同一个函数体，共享顶层名字：
 

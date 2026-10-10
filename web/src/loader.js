@@ -50,6 +50,8 @@
   progress(0);
   load().then((pack) => {
     globalThis.DUEL = pack.ui; globalThis.FIGHTERS = pack.fighters; globalThis.AUDIO = pack.audio; globalThis.FXTEX = pack.fx;
+    // the enemy models: fetched one by one when a battle needs them (arena.js loadFighter)
+    globalThis.MODEL_FILES = pack.models || {};
     removeEventListener('resize', fit);
     if (skel) { skel.classList.remove('loading'); bars.forEach((b) => b.style.removeProperty('--fill')); }
     status.removeAttribute('aria-busy'); go.removeAttribute('aria-busy');

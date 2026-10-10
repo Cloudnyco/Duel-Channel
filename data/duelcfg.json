@@ -1,9 +1,27 @@
 {
  "act": {
-  "id": "act1enemyduel",
-  "name": "争锋频道：青草城",
-  "start": 1745674200,
-  "end": 1746993599
+  "id": "enemyduel",
+  "name": "争锋频道",
+  "events": [
+   {
+    "id": "act1enemyduel",
+    "name": "争锋频道：青草城",
+    "start": 1745674200,
+    "end": 1746993599
+   },
+   {
+    "id": "act2enemyduel",
+    "name": "争锋频道：蜜果城",
+    "start": 1756368000,
+    "end": 1757534399
+   },
+   {
+    "id": "act3enemyduel",
+    "name": "争锋频道：绿藤城",
+    "start": 1777123800,
+    "end": 1778270399
+   }
+  ]
  },
  "modes": {
   "soloOperation": {
@@ -12,8 +30,8 @@
    "isRoom": false,
    "modeType": "OPERATION",
    "stageIds": [
-    "act1enemyduel_01a",
-    "act1enemyduel_01b"
+    "act3enemyduel_01a",
+    "act3enemyduel_01b"
    ],
    "pageId": 1,
    "innerSortId": 3,
@@ -22,8 +40,8 @@
    "modeEnName": "WIN BIG MASTERCLASS",
    "maxPlayer": 8,
    "preposedMode": null,
-   "startTs": 1745674200,
-   "endTs": 1746993599,
+   "startTs": 1777123800,
+   "endTs": 1778270399,
    "entryPicId": "pic_soloOperation_1",
    "titlePics": [
     "pic_soloOperation_1",
@@ -32,7 +50,7 @@
    ],
    "modeTarget": "你只想一边观赛一边自娱自乐。",
    "modeDesc": "投入？还是观望？\n通过选择来最大化自己持有的礼物数量。",
-   "modeRecordDesc": "礼物优胜",
+   "modeRecordDesc": "最高礼物赢取",
    "extraTag": false,
    "modeAvatarPicId": "pic_soloOperation",
    "modeAvatarName": "GOOD GUESS GAMING",
@@ -45,8 +63,8 @@
    "isRoom": false,
    "modeType": "OPERATION",
    "stageIds": [
-    "act1enemyduel_02a",
-    "act1enemyduel_02b"
+    "act3enemyduel_01a",
+    "act3enemyduel_01b"
    ],
    "pageId": 1,
    "innerSortId": 2,
@@ -55,8 +73,8 @@
    "modeEnName": "ULTIMATE GIFT CRASH",
    "maxPlayer": 8,
    "preposedMode": "soloOperation",
-   "startTs": 1745674200,
-   "endTs": 1746993599,
+   "startTs": 1777123800,
+   "endTs": 1778270399,
    "entryPicId": "pic_operation_1",
    "titlePics": [
     "pic_operation_1",
@@ -65,10 +83,10 @@
    ],
    "modeTarget": "赢得更多礼物，争取更优排名。",
    "modeDesc": "投入？还是观望？\n每回合选取不同策略来最大化自己持有的礼物数量。",
-   "modeRecordDesc": "礼物优胜",
+   "modeRecordDesc": "最高礼物赢取",
    "extraTag": true,
    "modeAvatarPicId": "pic_operation",
-   "modeAvatarName": "GGUGC_OFFICIAL",
+   "modeAvatarName": "IVUGC_OFFICIAL",
    "modeAvatarText": "200K SUBSCRIBERS",
    "hasUnlockToast": true
   },
@@ -78,8 +96,8 @@
    "isRoom": false,
    "modeType": "STAND",
    "stageIds": [
-    "act1enemyduel_02a",
-    "act1enemyduel_02b"
+    "act3enemyduel_01a",
+    "act3enemyduel_01b"
    ],
    "pageId": 1,
    "innerSortId": 1,
@@ -88,8 +106,8 @@
    "modeEnName": "FAILED GUESSES: FINAL KNOCKOUT",
    "maxPlayer": 30,
    "preposedMode": "soloOperation",
-   "startTs": 1745674200,
-   "endTs": 1746993599,
+   "startTs": 1777123800,
+   "endTs": 1778270399,
    "entryPicId": "pic_stand_1",
    "titlePics": [
     "pic_stand_1",
@@ -98,7 +116,7 @@
    ],
    "modeTarget": "选择，选择，直至笑到最后。",
    "modeDesc": "每回合选择胜利队伍才能不被淘汰。\n仅提供有限试错，请慎重选择！",
-   "modeRecordDesc": "竞猜优胜",
+   "modeRecordDesc": "最佳竞猜排名",
    "extraTag": true,
    "modeAvatarPicId": "pic_stand",
    "modeAvatarName": "LASTSTANDING CHANNEL",
@@ -111,8 +129,8 @@
    "isRoom": true,
    "modeType": "OPERATION",
    "stageIds": [
-    "act1enemyduel_02a",
-    "act1enemyduel_02b"
+    "act3enemyduel_01a",
+    "act3enemyduel_01b"
    ],
    "pageId": 2,
    "innerSortId": 2,
@@ -121,8 +139,8 @@
    "modeEnName": "ULTIMATE GIFT CRASH",
    "maxPlayer": 8,
    "preposedMode": "soloOperation",
-   "startTs": 1745674200,
-   "endTs": 1746993599,
+   "startTs": 1777123800,
+   "endTs": 1778270399,
    "entryPicId": "pic_operation_1",
    "titlePics": [
     "pic_operation_1",
@@ -134,7 +152,7 @@
    "modeRecordDesc": null,
    "extraTag": false,
    "modeAvatarPicId": "pic_operation",
-   "modeAvatarName": "GGUGC_OFFICIAL",
+   "modeAvatarName": "IVUGC_OFFICIAL",
    "modeAvatarText": "200K SUBSCRIBERS",
    "hasUnlockToast": true
   },
@@ -144,8 +162,8 @@
    "isRoom": true,
    "modeType": "STAND",
    "stageIds": [
-    "act1enemyduel_02a",
-    "act1enemyduel_02b"
+    "act3enemyduel_01a",
+    "act3enemyduel_01b"
    ],
    "pageId": 2,
    "innerSortId": 1,
@@ -154,8 +172,8 @@
    "modeEnName": "FAILED GUESSES: FINAL KNOCKOUT",
    "maxPlayer": 30,
    "preposedMode": "soloOperation",
-   "startTs": 1745674200,
-   "endTs": 1746993599,
+   "startTs": 1777123800,
+   "endTs": 1778270399,
    "entryPicId": "pic_stand_1",
    "titlePics": [
     "pic_stand_1",
@@ -173,8 +191,8 @@
   }
  },
  "rounds": {
-  "solo_r01": {
-   "roundId": "solo_r01",
+  "solo_r01@act1enemyduel": {
+   "roundId": "solo_r01@act1enemyduel",
    "modeId": "soloOperation",
    "guessTime": 0,
    "round": 1,
@@ -189,10 +207,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "solo_r02": {
-   "roundId": "solo_r02",
+  "solo_r02@act1enemyduel": {
+   "roundId": "solo_r02@act1enemyduel",
    "modeId": "soloOperation",
    "guessTime": 0,
    "round": 2,
@@ -207,10 +226,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "solo_r03": {
-   "roundId": "solo_r03",
+  "solo_r03@act1enemyduel": {
+   "roundId": "solo_r03@act1enemyduel",
    "modeId": "soloOperation",
    "guessTime": 0,
    "round": 3,
@@ -225,10 +245,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "solo_r04": {
-   "roundId": "solo_r04",
+  "solo_r04@act1enemyduel": {
+   "roundId": "solo_r04@act1enemyduel",
    "modeId": "soloOperation",
    "guessTime": 0,
    "round": 4,
@@ -243,10 +264,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "solo_r05": {
-   "roundId": "solo_r05",
+  "solo_r05@act1enemyduel": {
+   "roundId": "solo_r05@act1enemyduel",
    "modeId": "soloOperation",
    "guessTime": 0,
    "round": 5,
@@ -261,10 +283,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "solo_r06": {
-   "roundId": "solo_r06",
+  "solo_r06@act1enemyduel": {
+   "roundId": "solo_r06@act1enemyduel",
    "modeId": "soloOperation",
    "guessTime": 0,
    "round": 6,
@@ -279,10 +302,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": true
+   "canAllIn": true,
+   "act": "act1enemyduel"
   },
-  "solo_r07": {
-   "roundId": "solo_r07",
+  "solo_r07@act1enemyduel": {
+   "roundId": "solo_r07@act1enemyduel",
    "modeId": "soloOperation",
    "guessTime": 0,
    "round": 7,
@@ -297,10 +321,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": true
+   "canAllIn": true,
+   "act": "act1enemyduel"
   },
-  "solo_r08": {
-   "roundId": "solo_r08",
+  "solo_r08@act1enemyduel": {
+   "roundId": "solo_r08@act1enemyduel",
    "modeId": "soloOperation",
    "guessTime": 0,
    "round": 8,
@@ -315,10 +340,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": true
+   "canAllIn": true,
+   "act": "act1enemyduel"
   },
-  "solo_r09": {
-   "roundId": "solo_r09",
+  "solo_r09@act1enemyduel": {
+   "roundId": "solo_r09@act1enemyduel",
    "modeId": "soloOperation",
    "guessTime": 0,
    "round": 9,
@@ -333,10 +359,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": true
+   "canAllIn": true,
+   "act": "act1enemyduel"
   },
-  "solo_r10": {
-   "roundId": "solo_r10",
+  "solo_r10@act1enemyduel": {
+   "roundId": "solo_r10@act1enemyduel",
    "modeId": "soloOperation",
    "guessTime": 0,
    "round": 10,
@@ -351,10 +378,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": true
+   "canAllIn": true,
+   "act": "act1enemyduel"
   },
-  "multi_op_m_r01": {
-   "roundId": "multi_op_m_r01",
+  "multi_op_m_r01@act1enemyduel": {
+   "roundId": "multi_op_m_r01@act1enemyduel",
    "modeId": "multiOperationMatch",
    "guessTime": 0,
    "round": 1,
@@ -369,10 +397,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "multi_op_m_r02": {
-   "roundId": "multi_op_m_r02",
+  "multi_op_m_r02@act1enemyduel": {
+   "roundId": "multi_op_m_r02@act1enemyduel",
    "modeId": "multiOperationMatch",
    "guessTime": 0,
    "round": 2,
@@ -387,10 +416,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "multi_op_m_r03": {
-   "roundId": "multi_op_m_r03",
+  "multi_op_m_r03@act1enemyduel": {
+   "roundId": "multi_op_m_r03@act1enemyduel",
    "modeId": "multiOperationMatch",
    "guessTime": 0,
    "round": 3,
@@ -405,10 +435,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "multi_op_m_r04": {
-   "roundId": "multi_op_m_r04",
+  "multi_op_m_r04@act1enemyduel": {
+   "roundId": "multi_op_m_r04@act1enemyduel",
    "modeId": "multiOperationMatch",
    "guessTime": 0,
    "round": 4,
@@ -423,10 +454,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "multi_op_m_r05": {
-   "roundId": "multi_op_m_r05",
+  "multi_op_m_r05@act1enemyduel": {
+   "roundId": "multi_op_m_r05@act1enemyduel",
    "modeId": "multiOperationMatch",
    "guessTime": 0,
    "round": 5,
@@ -441,10 +473,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "multi_op_m_r06": {
-   "roundId": "multi_op_m_r06",
+  "multi_op_m_r06@act1enemyduel": {
+   "roundId": "multi_op_m_r06@act1enemyduel",
    "modeId": "multiOperationMatch",
    "guessTime": 0,
    "round": 6,
@@ -459,10 +492,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": true
+   "canAllIn": true,
+   "act": "act1enemyduel"
   },
-  "multi_op_m_r07": {
-   "roundId": "multi_op_m_r07",
+  "multi_op_m_r07@act1enemyduel": {
+   "roundId": "multi_op_m_r07@act1enemyduel",
    "modeId": "multiOperationMatch",
    "guessTime": 0,
    "round": 7,
@@ -477,10 +511,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": true
+   "canAllIn": true,
+   "act": "act1enemyduel"
   },
-  "multi_op_m_r08": {
-   "roundId": "multi_op_m_r08",
+  "multi_op_m_r08@act1enemyduel": {
+   "roundId": "multi_op_m_r08@act1enemyduel",
    "modeId": "multiOperationMatch",
    "guessTime": 0,
    "round": 8,
@@ -495,10 +530,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": true
+   "canAllIn": true,
+   "act": "act1enemyduel"
   },
-  "multi_op_m_r09": {
-   "roundId": "multi_op_m_r09",
+  "multi_op_m_r09@act1enemyduel": {
+   "roundId": "multi_op_m_r09@act1enemyduel",
    "modeId": "multiOperationMatch",
    "guessTime": 0,
    "round": 9,
@@ -513,10 +549,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": true
+   "canAllIn": true,
+   "act": "act1enemyduel"
   },
-  "multi_op_m_r10": {
-   "roundId": "multi_op_m_r10",
+  "multi_op_m_r10@act1enemyduel": {
+   "roundId": "multi_op_m_r10@act1enemyduel",
    "modeId": "multiOperationMatch",
    "guessTime": 0,
    "round": 10,
@@ -531,10 +568,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": true
+   "canAllIn": true,
+   "act": "act1enemyduel"
   },
-  "multi_op_r_r01": {
-   "roundId": "multi_op_r_r01",
+  "multi_op_r_r01@act1enemyduel": {
+   "roundId": "multi_op_r_r01@act1enemyduel",
    "modeId": "multiOperationRoom",
    "guessTime": 0,
    "round": 1,
@@ -549,10 +587,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "multi_op_r_r02": {
-   "roundId": "multi_op_r_r02",
+  "multi_op_r_r02@act1enemyduel": {
+   "roundId": "multi_op_r_r02@act1enemyduel",
    "modeId": "multiOperationRoom",
    "guessTime": 0,
    "round": 2,
@@ -567,10 +606,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "multi_op_r_r03": {
-   "roundId": "multi_op_r_r03",
+  "multi_op_r_r03@act1enemyduel": {
+   "roundId": "multi_op_r_r03@act1enemyduel",
    "modeId": "multiOperationRoom",
    "guessTime": 0,
    "round": 3,
@@ -585,10 +625,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "multi_op_r_r04": {
-   "roundId": "multi_op_r_r04",
+  "multi_op_r_r04@act1enemyduel": {
+   "roundId": "multi_op_r_r04@act1enemyduel",
    "modeId": "multiOperationRoom",
    "guessTime": 0,
    "round": 4,
@@ -603,10 +644,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "multi_op_r_r05": {
-   "roundId": "multi_op_r_r05",
+  "multi_op_r_r05@act1enemyduel": {
+   "roundId": "multi_op_r_r05@act1enemyduel",
    "modeId": "multiOperationRoom",
    "guessTime": 0,
    "round": 5,
@@ -621,10 +663,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "multi_op_r_r06": {
-   "roundId": "multi_op_r_r06",
+  "multi_op_r_r06@act1enemyduel": {
+   "roundId": "multi_op_r_r06@act1enemyduel",
    "modeId": "multiOperationRoom",
    "guessTime": 0,
    "round": 6,
@@ -639,10 +682,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": true
+   "canAllIn": true,
+   "act": "act1enemyduel"
   },
-  "multi_op_r_r07": {
-   "roundId": "multi_op_r_r07",
+  "multi_op_r_r07@act1enemyduel": {
+   "roundId": "multi_op_r_r07@act1enemyduel",
    "modeId": "multiOperationRoom",
    "guessTime": 0,
    "round": 7,
@@ -657,10 +701,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": true
+   "canAllIn": true,
+   "act": "act1enemyduel"
   },
-  "multi_op_r_r08": {
-   "roundId": "multi_op_r_r08",
+  "multi_op_r_r08@act1enemyduel": {
+   "roundId": "multi_op_r_r08@act1enemyduel",
    "modeId": "multiOperationRoom",
    "guessTime": 0,
    "round": 8,
@@ -675,10 +720,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": true
+   "canAllIn": true,
+   "act": "act1enemyduel"
   },
-  "multi_op_r_r09": {
-   "roundId": "multi_op_r_r09",
+  "multi_op_r_r09@act1enemyduel": {
+   "roundId": "multi_op_r_r09@act1enemyduel",
    "modeId": "multiOperationRoom",
    "guessTime": 0,
    "round": 9,
@@ -693,10 +739,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": true
+   "canAllIn": true,
+   "act": "act1enemyduel"
   },
-  "multi_op_r_r10": {
-   "roundId": "multi_op_r_r10",
+  "multi_op_r_r10@act1enemyduel": {
+   "roundId": "multi_op_r_r10@act1enemyduel",
    "modeId": "multiOperationRoom",
    "guessTime": 0,
    "round": 10,
@@ -711,10 +758,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": true,
-   "canAllIn": true
+   "canAllIn": true,
+   "act": "act1enemyduel"
   },
-  "multi_st_m_r01": {
-   "roundId": "multi_st_m_r01",
+  "multi_st_m_r01@act1enemyduel": {
+   "roundId": "multi_st_m_r01@act1enemyduel",
    "modeId": "multiStandMatch",
    "guessTime": 0,
    "round": 1,
@@ -729,10 +777,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": false,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "multi_st_m_r02": {
-   "roundId": "multi_st_m_r02",
+  "multi_st_m_r02@act1enemyduel": {
+   "roundId": "multi_st_m_r02@act1enemyduel",
    "modeId": "multiStandMatch",
    "guessTime": 0,
    "round": 2,
@@ -747,10 +796,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": false,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "multi_st_m_r03": {
-   "roundId": "multi_st_m_r03",
+  "multi_st_m_r03@act1enemyduel": {
+   "roundId": "multi_st_m_r03@act1enemyduel",
    "modeId": "multiStandMatch",
    "guessTime": 0,
    "round": 3,
@@ -765,10 +815,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": false,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "multi_st_m_r04": {
-   "roundId": "multi_st_m_r04",
+  "multi_st_m_r04@act1enemyduel": {
+   "roundId": "multi_st_m_r04@act1enemyduel",
    "modeId": "multiStandMatch",
    "guessTime": 0,
    "round": 4,
@@ -783,10 +834,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": false,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "multi_st_m_r05": {
-   "roundId": "multi_st_m_r05",
+  "multi_st_m_r05@act1enemyduel": {
+   "roundId": "multi_st_m_r05@act1enemyduel",
    "modeId": "multiStandMatch",
    "guessTime": 0,
    "round": 5,
@@ -801,10 +853,11 @@
    "enemyPoolLeft": "poolSmallEnemy",
    "enemyPoolRight": "poolBoss",
    "canSkip": false,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "multi_st_m_r06": {
-   "roundId": "multi_st_m_r06",
+  "multi_st_m_r06@act1enemyduel": {
+   "roundId": "multi_st_m_r06@act1enemyduel",
    "modeId": "multiStandMatch",
    "guessTime": 0,
    "round": 6,
@@ -819,10 +872,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": false,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "multi_st_m_r07": {
-   "roundId": "multi_st_m_r07",
+  "multi_st_m_r07@act1enemyduel": {
+   "roundId": "multi_st_m_r07@act1enemyduel",
    "modeId": "multiStandMatch",
    "guessTime": 0,
    "round": 7,
@@ -837,10 +891,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": false,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "multi_st_m_r08": {
-   "roundId": "multi_st_m_r08",
+  "multi_st_m_r08@act1enemyduel": {
+   "roundId": "multi_st_m_r08@act1enemyduel",
    "modeId": "multiStandMatch",
    "guessTime": 0,
    "round": 8,
@@ -855,10 +910,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": false,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "multi_st_m_r09": {
-   "roundId": "multi_st_m_r09",
+  "multi_st_m_r09@act1enemyduel": {
+   "roundId": "multi_st_m_r09@act1enemyduel",
    "modeId": "multiStandMatch",
    "guessTime": 0,
    "round": 9,
@@ -873,10 +929,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": false,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "multi_st_m_r10": {
-   "roundId": "multi_st_m_r10",
+  "multi_st_m_r10@act1enemyduel": {
+   "roundId": "multi_st_m_r10@act1enemyduel",
    "modeId": "multiStandMatch",
    "guessTime": 0,
    "round": 10,
@@ -891,10 +948,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": false,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "multi_st_r_r01": {
-   "roundId": "multi_st_r_r01",
+  "multi_st_r_r01@act1enemyduel": {
+   "roundId": "multi_st_r_r01@act1enemyduel",
    "modeId": "multiStandRoom",
    "guessTime": 0,
    "round": 1,
@@ -909,10 +967,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": false,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "multi_st_r_r02": {
-   "roundId": "multi_st_r_r02",
+  "multi_st_r_r02@act1enemyduel": {
+   "roundId": "multi_st_r_r02@act1enemyduel",
    "modeId": "multiStandRoom",
    "guessTime": 0,
    "round": 2,
@@ -927,10 +986,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": false,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "multi_st_r_r03": {
-   "roundId": "multi_st_r_r03",
+  "multi_st_r_r03@act1enemyduel": {
+   "roundId": "multi_st_r_r03@act1enemyduel",
    "modeId": "multiStandRoom",
    "guessTime": 0,
    "round": 3,
@@ -945,10 +1005,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": false,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "multi_st_r_r04": {
-   "roundId": "multi_st_r_r04",
+  "multi_st_r_r04@act1enemyduel": {
+   "roundId": "multi_st_r_r04@act1enemyduel",
    "modeId": "multiStandRoom",
    "guessTime": 0,
    "round": 4,
@@ -963,10 +1024,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": false,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "multi_st_r_r05": {
-   "roundId": "multi_st_r_r05",
+  "multi_st_r_r05@act1enemyduel": {
+   "roundId": "multi_st_r_r05@act1enemyduel",
    "modeId": "multiStandRoom",
    "guessTime": 0,
    "round": 5,
@@ -981,10 +1043,11 @@
    "enemyPoolLeft": "poolSmallEnemy",
    "enemyPoolRight": "poolBoss",
    "canSkip": false,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "multi_st_r_r06": {
-   "roundId": "multi_st_r_r06",
+  "multi_st_r_r06@act1enemyduel": {
+   "roundId": "multi_st_r_r06@act1enemyduel",
    "modeId": "multiStandRoom",
    "guessTime": 0,
    "round": 6,
@@ -999,10 +1062,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": false,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "multi_st_r_r07": {
-   "roundId": "multi_st_r_r07",
+  "multi_st_r_r07@act1enemyduel": {
+   "roundId": "multi_st_r_r07@act1enemyduel",
    "modeId": "multiStandRoom",
    "guessTime": 0,
    "round": 7,
@@ -1017,10 +1081,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": false,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "multi_st_r_r08": {
-   "roundId": "multi_st_r_r08",
+  "multi_st_r_r08@act1enemyduel": {
+   "roundId": "multi_st_r_r08@act1enemyduel",
    "modeId": "multiStandRoom",
    "guessTime": 0,
    "round": 8,
@@ -1035,10 +1100,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": false,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "multi_st_r_r09": {
-   "roundId": "multi_st_r_r09",
+  "multi_st_r_r09@act1enemyduel": {
+   "roundId": "multi_st_r_r09@act1enemyduel",
    "modeId": "multiStandRoom",
    "guessTime": 0,
    "round": 9,
@@ -1053,10 +1119,11 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": false,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
   },
-  "multi_st_r_r10": {
-   "roundId": "multi_st_r_r10",
+  "multi_st_r_r10@act1enemyduel": {
+   "roundId": "multi_st_r_r10@act1enemyduel",
    "modeId": "multiStandRoom",
    "guessTime": 0,
    "round": 10,
@@ -1071,13 +1138,1914 @@
    "enemyPoolLeft": "poolNormal",
    "enemyPoolRight": "poolNormal",
    "canSkip": false,
-   "canAllIn": false
+   "canAllIn": false,
+   "act": "act1enemyduel"
+  },
+  "solo_r01@act2enemyduel": {
+   "roundId": "solo_r01@act2enemyduel",
+   "modeId": "soloOperation",
+   "guessTime": 0,
+   "round": 1,
+   "enemyPredefined": false,
+   "roundScore": 2000,
+   "enemyScore": 60,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 2,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 2,
+   "enemyPoolLeft": "poolNoSurpriseEnemy",
+   "enemyPoolRight": "poolNoSurpriseEnemy",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "solo_r02@act2enemyduel": {
+   "roundId": "solo_r02@act2enemyduel",
+   "modeId": "soloOperation",
+   "guessTime": 0,
+   "round": 2,
+   "enemyPredefined": false,
+   "roundScore": 2400,
+   "enemyScore": 80,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 2,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 2,
+   "enemyPoolLeft": "poolNoSurpriseEnemy",
+   "enemyPoolRight": "poolNoSurpriseEnemy",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "solo_r03@act2enemyduel": {
+   "roundId": "solo_r03@act2enemyduel",
+   "modeId": "soloOperation",
+   "guessTime": 0,
+   "round": 3,
+   "enemyPredefined": false,
+   "roundScore": 3000,
+   "enemyScore": 100,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNoSurpriseEnemy",
+   "enemyPoolRight": "poolNoSurpriseEnemy",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "solo_r04@act2enemyduel": {
+   "roundId": "solo_r04@act2enemyduel",
+   "modeId": "soloOperation",
+   "guessTime": 0,
+   "round": 4,
+   "enemyPredefined": false,
+   "roundScore": 4000,
+   "enemyScore": 120,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "solo_r05@act2enemyduel": {
+   "roundId": "solo_r05@act2enemyduel",
+   "modeId": "soloOperation",
+   "guessTime": 0,
+   "round": 5,
+   "enemyPredefined": false,
+   "roundScore": 5500,
+   "enemyScore": 140,
+   "enemyScoreRandom": 20,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "solo_r06@act2enemyduel": {
+   "roundId": "solo_r06@act2enemyduel",
+   "modeId": "soloOperation",
+   "guessTime": 0,
+   "round": 6,
+   "enemyPredefined": false,
+   "roundScore": 8000,
+   "enemyScore": 160,
+   "enemyScoreRandom": 20,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 4,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolMusic",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act2enemyduel"
+  },
+  "solo_r07@act2enemyduel": {
+   "roundId": "solo_r07@act2enemyduel",
+   "modeId": "soloOperation",
+   "guessTime": 0,
+   "round": 7,
+   "enemyPredefined": false,
+   "roundScore": 12000,
+   "enemyScore": 180,
+   "enemyScoreRandom": 20,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act2enemyduel"
+  },
+  "solo_r08@act2enemyduel": {
+   "roundId": "solo_r08@act2enemyduel",
+   "modeId": "soloOperation",
+   "guessTime": 0,
+   "round": 8,
+   "enemyPredefined": false,
+   "roundScore": 18000,
+   "enemyScore": 200,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 4,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 4,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act2enemyduel"
+  },
+  "solo_r09@act2enemyduel": {
+   "roundId": "solo_r09@act2enemyduel",
+   "modeId": "soloOperation",
+   "guessTime": 0,
+   "round": 9,
+   "enemyPredefined": false,
+   "roundScore": 30000,
+   "enemyScore": 220,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 4,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 4,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act2enemyduel"
+  },
+  "solo_r10@act2enemyduel": {
+   "roundId": "solo_r10@act2enemyduel",
+   "modeId": "soloOperation",
+   "guessTime": 0,
+   "round": 10,
+   "enemyPredefined": false,
+   "roundScore": 50000,
+   "enemyScore": 240,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 3,
+   "enemySideMaxLeft": 4,
+   "enemySideMinRight": 3,
+   "enemySideMaxRight": 4,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act2enemyduel"
+  },
+  "multi_op_m_r01@act2enemyduel": {
+   "roundId": "multi_op_m_r01@act2enemyduel",
+   "modeId": "multiOperationMatch",
+   "guessTime": 0,
+   "round": 1,
+   "enemyPredefined": false,
+   "roundScore": 2000,
+   "enemyScore": 60,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 2,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 2,
+   "enemyPoolLeft": "poolNoSurpriseEnemy",
+   "enemyPoolRight": "poolNoSurpriseEnemy",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "multi_op_m_r02@act2enemyduel": {
+   "roundId": "multi_op_m_r02@act2enemyduel",
+   "modeId": "multiOperationMatch",
+   "guessTime": 0,
+   "round": 2,
+   "enemyPredefined": false,
+   "roundScore": 2400,
+   "enemyScore": 80,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 2,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 2,
+   "enemyPoolLeft": "poolNoSurpriseEnemy",
+   "enemyPoolRight": "poolNoSurpriseEnemy",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "multi_op_m_r03@act2enemyduel": {
+   "roundId": "multi_op_m_r03@act2enemyduel",
+   "modeId": "multiOperationMatch",
+   "guessTime": 0,
+   "round": 3,
+   "enemyPredefined": false,
+   "roundScore": 3000,
+   "enemyScore": 100,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNoSurpriseEnemy",
+   "enemyPoolRight": "poolNoSurpriseEnemy",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "multi_op_m_r04@act2enemyduel": {
+   "roundId": "multi_op_m_r04@act2enemyduel",
+   "modeId": "multiOperationMatch",
+   "guessTime": 0,
+   "round": 4,
+   "enemyPredefined": false,
+   "roundScore": 4000,
+   "enemyScore": 120,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "multi_op_m_r05@act2enemyduel": {
+   "roundId": "multi_op_m_r05@act2enemyduel",
+   "modeId": "multiOperationMatch",
+   "guessTime": 0,
+   "round": 5,
+   "enemyPredefined": false,
+   "roundScore": 5500,
+   "enemyScore": 140,
+   "enemyScoreRandom": 20,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "multi_op_m_r06@act2enemyduel": {
+   "roundId": "multi_op_m_r06@act2enemyduel",
+   "modeId": "multiOperationMatch",
+   "guessTime": 0,
+   "round": 6,
+   "enemyPredefined": false,
+   "roundScore": 8000,
+   "enemyScore": 160,
+   "enemyScoreRandom": 20,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 4,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolMusic",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act2enemyduel"
+  },
+  "multi_op_m_r07@act2enemyduel": {
+   "roundId": "multi_op_m_r07@act2enemyduel",
+   "modeId": "multiOperationMatch",
+   "guessTime": 0,
+   "round": 7,
+   "enemyPredefined": false,
+   "roundScore": 12000,
+   "enemyScore": 180,
+   "enemyScoreRandom": 20,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act2enemyduel"
+  },
+  "multi_op_m_r08@act2enemyduel": {
+   "roundId": "multi_op_m_r08@act2enemyduel",
+   "modeId": "multiOperationMatch",
+   "guessTime": 0,
+   "round": 8,
+   "enemyPredefined": false,
+   "roundScore": 18000,
+   "enemyScore": 200,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 4,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 4,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act2enemyduel"
+  },
+  "multi_op_m_r09@act2enemyduel": {
+   "roundId": "multi_op_m_r09@act2enemyduel",
+   "modeId": "multiOperationMatch",
+   "guessTime": 0,
+   "round": 9,
+   "enemyPredefined": false,
+   "roundScore": 30000,
+   "enemyScore": 220,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 4,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 4,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act2enemyduel"
+  },
+  "multi_op_m_r10@act2enemyduel": {
+   "roundId": "multi_op_m_r10@act2enemyduel",
+   "modeId": "multiOperationMatch",
+   "guessTime": 0,
+   "round": 10,
+   "enemyPredefined": false,
+   "roundScore": 50000,
+   "enemyScore": 240,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 3,
+   "enemySideMaxLeft": 4,
+   "enemySideMinRight": 3,
+   "enemySideMaxRight": 4,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act2enemyduel"
+  },
+  "multi_op_r_r01@act2enemyduel": {
+   "roundId": "multi_op_r_r01@act2enemyduel",
+   "modeId": "multiOperationRoom",
+   "guessTime": 0,
+   "round": 1,
+   "enemyPredefined": false,
+   "roundScore": 2000,
+   "enemyScore": 60,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 2,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 2,
+   "enemyPoolLeft": "poolNoSurpriseEnemy",
+   "enemyPoolRight": "poolNoSurpriseEnemy",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "multi_op_r_r02@act2enemyduel": {
+   "roundId": "multi_op_r_r02@act2enemyduel",
+   "modeId": "multiOperationRoom",
+   "guessTime": 0,
+   "round": 2,
+   "enemyPredefined": false,
+   "roundScore": 2400,
+   "enemyScore": 80,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 2,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 2,
+   "enemyPoolLeft": "poolNoSurpriseEnemy",
+   "enemyPoolRight": "poolNoSurpriseEnemy",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "multi_op_r_r03@act2enemyduel": {
+   "roundId": "multi_op_r_r03@act2enemyduel",
+   "modeId": "multiOperationRoom",
+   "guessTime": 0,
+   "round": 3,
+   "enemyPredefined": false,
+   "roundScore": 3000,
+   "enemyScore": 100,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNoSurpriseEnemy",
+   "enemyPoolRight": "poolNoSurpriseEnemy",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "multi_op_r_r04@act2enemyduel": {
+   "roundId": "multi_op_r_r04@act2enemyduel",
+   "modeId": "multiOperationRoom",
+   "guessTime": 0,
+   "round": 4,
+   "enemyPredefined": false,
+   "roundScore": 4000,
+   "enemyScore": 120,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "multi_op_r_r05@act2enemyduel": {
+   "roundId": "multi_op_r_r05@act2enemyduel",
+   "modeId": "multiOperationRoom",
+   "guessTime": 0,
+   "round": 5,
+   "enemyPredefined": false,
+   "roundScore": 5500,
+   "enemyScore": 140,
+   "enemyScoreRandom": 20,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "multi_op_r_r06@act2enemyduel": {
+   "roundId": "multi_op_r_r06@act2enemyduel",
+   "modeId": "multiOperationRoom",
+   "guessTime": 0,
+   "round": 6,
+   "enemyPredefined": false,
+   "roundScore": 8000,
+   "enemyScore": 160,
+   "enemyScoreRandom": 20,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 4,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolMusic",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act2enemyduel"
+  },
+  "multi_op_r_r07@act2enemyduel": {
+   "roundId": "multi_op_r_r07@act2enemyduel",
+   "modeId": "multiOperationRoom",
+   "guessTime": 0,
+   "round": 7,
+   "enemyPredefined": false,
+   "roundScore": 12000,
+   "enemyScore": 180,
+   "enemyScoreRandom": 20,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act2enemyduel"
+  },
+  "multi_op_r_r08@act2enemyduel": {
+   "roundId": "multi_op_r_r08@act2enemyduel",
+   "modeId": "multiOperationRoom",
+   "guessTime": 0,
+   "round": 8,
+   "enemyPredefined": false,
+   "roundScore": 18000,
+   "enemyScore": 200,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 4,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 4,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act2enemyduel"
+  },
+  "multi_op_r_r09@act2enemyduel": {
+   "roundId": "multi_op_r_r09@act2enemyduel",
+   "modeId": "multiOperationRoom",
+   "guessTime": 0,
+   "round": 9,
+   "enemyPredefined": false,
+   "roundScore": 30000,
+   "enemyScore": 220,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 4,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 4,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act2enemyduel"
+  },
+  "multi_op_r_r10@act2enemyduel": {
+   "roundId": "multi_op_r_r10@act2enemyduel",
+   "modeId": "multiOperationRoom",
+   "guessTime": 0,
+   "round": 10,
+   "enemyPredefined": false,
+   "roundScore": 50000,
+   "enemyScore": 240,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 3,
+   "enemySideMaxLeft": 4,
+   "enemySideMinRight": 3,
+   "enemySideMaxRight": 4,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act2enemyduel"
+  },
+  "multi_st_m_r01@act2enemyduel": {
+   "roundId": "multi_st_m_r01@act2enemyduel",
+   "modeId": "multiStandMatch",
+   "guessTime": 0,
+   "round": 1,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 60,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 2,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 2,
+   "enemyPoolLeft": "poolNoSurpriseEnemy",
+   "enemyPoolRight": "poolNoSurpriseEnemy",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "multi_st_m_r02@act2enemyduel": {
+   "roundId": "multi_st_m_r02@act2enemyduel",
+   "modeId": "multiStandMatch",
+   "guessTime": 0,
+   "round": 2,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 80,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 2,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 2,
+   "enemyPoolLeft": "poolNoSurpriseEnemy",
+   "enemyPoolRight": "poolNoSurpriseEnemy",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "multi_st_m_r03@act2enemyduel": {
+   "roundId": "multi_st_m_r03@act2enemyduel",
+   "modeId": "multiStandMatch",
+   "guessTime": 0,
+   "round": 3,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 100,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNoSurpriseEnemy",
+   "enemyPoolRight": "poolNoSurpriseEnemy",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "multi_st_m_r04@act2enemyduel": {
+   "roundId": "multi_st_m_r04@act2enemyduel",
+   "modeId": "multiStandMatch",
+   "guessTime": 0,
+   "round": 4,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 120,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "multi_st_m_r05@act2enemyduel": {
+   "roundId": "multi_st_m_r05@act2enemyduel",
+   "modeId": "multiStandMatch",
+   "guessTime": 0,
+   "round": 5,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 175,
+   "enemyScoreRandom": 75,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 4,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 1,
+   "enemyPoolLeft": "poolSmallEnemy",
+   "enemyPoolRight": "poolBoss",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "multi_st_m_r06@act2enemyduel": {
+   "roundId": "multi_st_m_r06@act2enemyduel",
+   "modeId": "multiStandMatch",
+   "guessTime": 0,
+   "round": 6,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 160,
+   "enemyScoreRandom": 20,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "multi_st_m_r07@act2enemyduel": {
+   "roundId": "multi_st_m_r07@act2enemyduel",
+   "modeId": "multiStandMatch",
+   "guessTime": 0,
+   "round": 7,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 180,
+   "enemyScoreRandom": 20,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "multi_st_m_r08@act2enemyduel": {
+   "roundId": "multi_st_m_r08@act2enemyduel",
+   "modeId": "multiStandMatch",
+   "guessTime": 0,
+   "round": 8,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 200,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 4,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 4,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "multi_st_m_r09@act2enemyduel": {
+   "roundId": "multi_st_m_r09@act2enemyduel",
+   "modeId": "multiStandMatch",
+   "guessTime": 0,
+   "round": 9,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 220,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 4,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 4,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "multi_st_m_r10@act2enemyduel": {
+   "roundId": "multi_st_m_r10@act2enemyduel",
+   "modeId": "multiStandMatch",
+   "guessTime": 0,
+   "round": 10,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 240,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 3,
+   "enemySideMaxLeft": 4,
+   "enemySideMinRight": 3,
+   "enemySideMaxRight": 4,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "multi_st_r_r01@act2enemyduel": {
+   "roundId": "multi_st_r_r01@act2enemyduel",
+   "modeId": "multiStandRoom",
+   "guessTime": 0,
+   "round": 1,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 60,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 2,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 2,
+   "enemyPoolLeft": "poolNoSurpriseEnemy",
+   "enemyPoolRight": "poolNoSurpriseEnemy",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "multi_st_r_r02@act2enemyduel": {
+   "roundId": "multi_st_r_r02@act2enemyduel",
+   "modeId": "multiStandRoom",
+   "guessTime": 0,
+   "round": 2,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 80,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 2,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 2,
+   "enemyPoolLeft": "poolNoSurpriseEnemy",
+   "enemyPoolRight": "poolNoSurpriseEnemy",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "multi_st_r_r03@act2enemyduel": {
+   "roundId": "multi_st_r_r03@act2enemyduel",
+   "modeId": "multiStandRoom",
+   "guessTime": 0,
+   "round": 3,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 100,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNoSurpriseEnemy",
+   "enemyPoolRight": "poolNoSurpriseEnemy",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "multi_st_r_r04@act2enemyduel": {
+   "roundId": "multi_st_r_r04@act2enemyduel",
+   "modeId": "multiStandRoom",
+   "guessTime": 0,
+   "round": 4,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 120,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "multi_st_r_r05@act2enemyduel": {
+   "roundId": "multi_st_r_r05@act2enemyduel",
+   "modeId": "multiStandRoom",
+   "guessTime": 0,
+   "round": 5,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 175,
+   "enemyScoreRandom": 75,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 4,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 1,
+   "enemyPoolLeft": "poolSmallEnemy",
+   "enemyPoolRight": "poolBoss",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "multi_st_r_r06@act2enemyduel": {
+   "roundId": "multi_st_r_r06@act2enemyduel",
+   "modeId": "multiStandRoom",
+   "guessTime": 0,
+   "round": 6,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 160,
+   "enemyScoreRandom": 20,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "multi_st_r_r07@act2enemyduel": {
+   "roundId": "multi_st_r_r07@act2enemyduel",
+   "modeId": "multiStandRoom",
+   "guessTime": 0,
+   "round": 7,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 180,
+   "enemyScoreRandom": 20,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "multi_st_r_r08@act2enemyduel": {
+   "roundId": "multi_st_r_r08@act2enemyduel",
+   "modeId": "multiStandRoom",
+   "guessTime": 0,
+   "round": 8,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 200,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 4,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 4,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "multi_st_r_r09@act2enemyduel": {
+   "roundId": "multi_st_r_r09@act2enemyduel",
+   "modeId": "multiStandRoom",
+   "guessTime": 0,
+   "round": 9,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 220,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 4,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 4,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "multi_st_r_r10@act2enemyduel": {
+   "roundId": "multi_st_r_r10@act2enemyduel",
+   "modeId": "multiStandRoom",
+   "guessTime": 0,
+   "round": 10,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 240,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 3,
+   "enemySideMaxLeft": 4,
+   "enemySideMinRight": 3,
+   "enemySideMaxRight": 4,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act2enemyduel"
+  },
+  "solo_r01@act3enemyduel": {
+   "roundId": "solo_r01@act3enemyduel",
+   "modeId": "soloOperation",
+   "guessTime": 0,
+   "round": 1,
+   "enemyPredefined": false,
+   "roundScore": 2000,
+   "enemyScore": 60,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 2,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 2,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "solo_r02@act3enemyduel": {
+   "roundId": "solo_r02@act3enemyduel",
+   "modeId": "soloOperation",
+   "guessTime": 0,
+   "round": 2,
+   "enemyPredefined": false,
+   "roundScore": 2400,
+   "enemyScore": 80,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 2,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 2,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "solo_r03@act3enemyduel": {
+   "roundId": "solo_r03@act3enemyduel",
+   "modeId": "soloOperation",
+   "guessTime": 0,
+   "round": 3,
+   "enemyPredefined": false,
+   "roundScore": 3000,
+   "enemyScore": 100,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "solo_r04@act3enemyduel": {
+   "roundId": "solo_r04@act3enemyduel",
+   "modeId": "soloOperation",
+   "guessTime": 0,
+   "round": 4,
+   "enemyPredefined": false,
+   "roundScore": 4000,
+   "enemyScore": 120,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "solo_r05@act3enemyduel": {
+   "roundId": "solo_r05@act3enemyduel",
+   "modeId": "soloOperation",
+   "guessTime": 0,
+   "round": 5,
+   "enemyPredefined": false,
+   "roundScore": 5500,
+   "enemyScore": 150,
+   "enemyScoreRandom": 20,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "solo_r06@act3enemyduel": {
+   "roundId": "solo_r06@act3enemyduel",
+   "modeId": "soloOperation",
+   "guessTime": 0,
+   "round": 6,
+   "enemyPredefined": false,
+   "roundScore": 8000,
+   "enemyScore": 200,
+   "enemyScoreRandom": 20,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 2,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolGiantBoss",
+   "enemyPoolRight": "poolAntiGiantBoss",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act3enemyduel"
+  },
+  "solo_r07@act3enemyduel": {
+   "roundId": "solo_r07@act3enemyduel",
+   "modeId": "soloOperation",
+   "guessTime": 0,
+   "round": 7,
+   "enemyPredefined": false,
+   "roundScore": 12000,
+   "enemyScore": 180,
+   "enemyScoreRandom": 20,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act3enemyduel"
+  },
+  "solo_r08@act3enemyduel": {
+   "roundId": "solo_r08@act3enemyduel",
+   "modeId": "soloOperation",
+   "guessTime": 0,
+   "round": 8,
+   "enemyPredefined": false,
+   "roundScore": 18000,
+   "enemyScore": 200,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act3enemyduel"
+  },
+  "solo_r09@act3enemyduel": {
+   "roundId": "solo_r09@act3enemyduel",
+   "modeId": "soloOperation",
+   "guessTime": 0,
+   "round": 9,
+   "enemyPredefined": false,
+   "roundScore": 30000,
+   "enemyScore": 220,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 4,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 4,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act3enemyduel"
+  },
+  "solo_r10@act3enemyduel": {
+   "roundId": "solo_r10@act3enemyduel",
+   "modeId": "soloOperation",
+   "guessTime": 0,
+   "round": 10,
+   "enemyPredefined": false,
+   "roundScore": 50000,
+   "enemyScore": 250,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 3,
+   "enemySideMaxLeft": 4,
+   "enemySideMinRight": 3,
+   "enemySideMaxRight": 4,
+   "enemyPoolLeft": "poolBoss",
+   "enemyPoolRight": "poolNoSurpriseEnemy",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act3enemyduel"
+  },
+  "multi_op_m_r01@act3enemyduel": {
+   "roundId": "multi_op_m_r01@act3enemyduel",
+   "modeId": "multiOperationMatch",
+   "guessTime": 10,
+   "round": 1,
+   "enemyPredefined": false,
+   "roundScore": 2000,
+   "enemyScore": 60,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 2,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 2,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "multi_op_m_r02@act3enemyduel": {
+   "roundId": "multi_op_m_r02@act3enemyduel",
+   "modeId": "multiOperationMatch",
+   "guessTime": 12,
+   "round": 2,
+   "enemyPredefined": false,
+   "roundScore": 2400,
+   "enemyScore": 80,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 2,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 2,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "multi_op_m_r03@act3enemyduel": {
+   "roundId": "multi_op_m_r03@act3enemyduel",
+   "modeId": "multiOperationMatch",
+   "guessTime": 14,
+   "round": 3,
+   "enemyPredefined": false,
+   "roundScore": 3000,
+   "enemyScore": 100,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "multi_op_m_r04@act3enemyduel": {
+   "roundId": "multi_op_m_r04@act3enemyduel",
+   "modeId": "multiOperationMatch",
+   "guessTime": 16,
+   "round": 4,
+   "enemyPredefined": false,
+   "roundScore": 4000,
+   "enemyScore": 120,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "multi_op_m_r05@act3enemyduel": {
+   "roundId": "multi_op_m_r05@act3enemyduel",
+   "modeId": "multiOperationMatch",
+   "guessTime": 18,
+   "round": 5,
+   "enemyPredefined": false,
+   "roundScore": 5500,
+   "enemyScore": 150,
+   "enemyScoreRandom": 20,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "multi_op_m_r06@act3enemyduel": {
+   "roundId": "multi_op_m_r06@act3enemyduel",
+   "modeId": "multiOperationMatch",
+   "guessTime": 20,
+   "round": 6,
+   "enemyPredefined": false,
+   "roundScore": 8000,
+   "enemyScore": 160,
+   "enemyScoreRandom": 20,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act3enemyduel"
+  },
+  "multi_op_m_r07@act3enemyduel": {
+   "roundId": "multi_op_m_r07@act3enemyduel",
+   "modeId": "multiOperationMatch",
+   "guessTime": 20,
+   "round": 7,
+   "enemyPredefined": false,
+   "roundScore": 12000,
+   "enemyScore": 180,
+   "enemyScoreRandom": 20,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act3enemyduel"
+  },
+  "multi_op_m_r08@act3enemyduel": {
+   "roundId": "multi_op_m_r08@act3enemyduel",
+   "modeId": "multiOperationMatch",
+   "guessTime": 20,
+   "round": 8,
+   "enemyPredefined": false,
+   "roundScore": 18000,
+   "enemyScore": 200,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act3enemyduel"
+  },
+  "multi_op_m_r09@act3enemyduel": {
+   "roundId": "multi_op_m_r09@act3enemyduel",
+   "modeId": "multiOperationMatch",
+   "guessTime": 20,
+   "round": 9,
+   "enemyPredefined": false,
+   "roundScore": 30000,
+   "enemyScore": 220,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 4,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 4,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act3enemyduel"
+  },
+  "multi_op_m_r10@act3enemyduel": {
+   "roundId": "multi_op_m_r10@act3enemyduel",
+   "modeId": "multiOperationMatch",
+   "guessTime": 20,
+   "round": 10,
+   "enemyPredefined": false,
+   "roundScore": 50000,
+   "enemyScore": 250,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 3,
+   "enemySideMaxLeft": 4,
+   "enemySideMinRight": 3,
+   "enemySideMaxRight": 4,
+   "enemyPoolLeft": "poolBoss",
+   "enemyPoolRight": "poolNoSurpriseEnemy",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act3enemyduel"
+  },
+  "multi_op_r_r01@act3enemyduel": {
+   "roundId": "multi_op_r_r01@act3enemyduel",
+   "modeId": "multiOperationRoom",
+   "guessTime": 10,
+   "round": 1,
+   "enemyPredefined": false,
+   "roundScore": 2000,
+   "enemyScore": 60,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 2,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 2,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "multi_op_r_r02@act3enemyduel": {
+   "roundId": "multi_op_r_r02@act3enemyduel",
+   "modeId": "multiOperationRoom",
+   "guessTime": 12,
+   "round": 2,
+   "enemyPredefined": false,
+   "roundScore": 2400,
+   "enemyScore": 80,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 2,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 2,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "multi_op_r_r03@act3enemyduel": {
+   "roundId": "multi_op_r_r03@act3enemyduel",
+   "modeId": "multiOperationRoom",
+   "guessTime": 14,
+   "round": 3,
+   "enemyPredefined": false,
+   "roundScore": 3000,
+   "enemyScore": 100,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "multi_op_r_r04@act3enemyduel": {
+   "roundId": "multi_op_r_r04@act3enemyduel",
+   "modeId": "multiOperationRoom",
+   "guessTime": 16,
+   "round": 4,
+   "enemyPredefined": false,
+   "roundScore": 4000,
+   "enemyScore": 120,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "multi_op_r_r05@act3enemyduel": {
+   "roundId": "multi_op_r_r05@act3enemyduel",
+   "modeId": "multiOperationRoom",
+   "guessTime": 18,
+   "round": 5,
+   "enemyPredefined": false,
+   "roundScore": 5500,
+   "enemyScore": 150,
+   "enemyScoreRandom": 20,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "multi_op_r_r06@act3enemyduel": {
+   "roundId": "multi_op_r_r06@act3enemyduel",
+   "modeId": "multiOperationRoom",
+   "guessTime": 20,
+   "round": 6,
+   "enemyPredefined": false,
+   "roundScore": 8000,
+   "enemyScore": 160,
+   "enemyScoreRandom": 20,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act3enemyduel"
+  },
+  "multi_op_r_r07@act3enemyduel": {
+   "roundId": "multi_op_r_r07@act3enemyduel",
+   "modeId": "multiOperationRoom",
+   "guessTime": 20,
+   "round": 7,
+   "enemyPredefined": false,
+   "roundScore": 12000,
+   "enemyScore": 180,
+   "enemyScoreRandom": 20,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act3enemyduel"
+  },
+  "multi_op_r_r08@act3enemyduel": {
+   "roundId": "multi_op_r_r08@act3enemyduel",
+   "modeId": "multiOperationRoom",
+   "guessTime": 20,
+   "round": 8,
+   "enemyPredefined": false,
+   "roundScore": 18000,
+   "enemyScore": 200,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act3enemyduel"
+  },
+  "multi_op_r_r09@act3enemyduel": {
+   "roundId": "multi_op_r_r09@act3enemyduel",
+   "modeId": "multiOperationRoom",
+   "guessTime": 20,
+   "round": 9,
+   "enemyPredefined": false,
+   "roundScore": 30000,
+   "enemyScore": 220,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 4,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 4,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act3enemyduel"
+  },
+  "multi_op_r_r10@act3enemyduel": {
+   "roundId": "multi_op_r_r10@act3enemyduel",
+   "modeId": "multiOperationRoom",
+   "guessTime": 20,
+   "round": 10,
+   "enemyPredefined": false,
+   "roundScore": 50000,
+   "enemyScore": 250,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 3,
+   "enemySideMaxLeft": 4,
+   "enemySideMinRight": 3,
+   "enemySideMaxRight": 4,
+   "enemyPoolLeft": "poolBoss",
+   "enemyPoolRight": "poolNoSurpriseEnemy",
+   "canSkip": true,
+   "canAllIn": true,
+   "act": "act3enemyduel"
+  },
+  "multi_st_m_r01@act3enemyduel": {
+   "roundId": "multi_st_m_r01@act3enemyduel",
+   "modeId": "multiStandMatch",
+   "guessTime": 10,
+   "round": 1,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 60,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 2,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 2,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "multi_st_m_r02@act3enemyduel": {
+   "roundId": "multi_st_m_r02@act3enemyduel",
+   "modeId": "multiStandMatch",
+   "guessTime": 12,
+   "round": 2,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 80,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 2,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 2,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "multi_st_m_r03@act3enemyduel": {
+   "roundId": "multi_st_m_r03@act3enemyduel",
+   "modeId": "multiStandMatch",
+   "guessTime": 14,
+   "round": 3,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 100,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "multi_st_m_r04@act3enemyduel": {
+   "roundId": "multi_st_m_r04@act3enemyduel",
+   "modeId": "multiStandMatch",
+   "guessTime": 16,
+   "round": 4,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 120,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "multi_st_m_r05@act3enemyduel": {
+   "roundId": "multi_st_m_r05@act3enemyduel",
+   "modeId": "multiStandMatch",
+   "guessTime": 18,
+   "round": 5,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 200,
+   "enemyScoreRandom": 75,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 2,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolGiantBoss",
+   "enemyPoolRight": "poolAntiGiantBoss",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "multi_st_m_r06@act3enemyduel": {
+   "roundId": "multi_st_m_r06@act3enemyduel",
+   "modeId": "multiStandMatch",
+   "guessTime": 20,
+   "round": 6,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 160,
+   "enemyScoreRandom": 20,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "multi_st_m_r07@act3enemyduel": {
+   "roundId": "multi_st_m_r07@act3enemyduel",
+   "modeId": "multiStandMatch",
+   "guessTime": 20,
+   "round": 7,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 180,
+   "enemyScoreRandom": 20,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "multi_st_m_r08@act3enemyduel": {
+   "roundId": "multi_st_m_r08@act3enemyduel",
+   "modeId": "multiStandMatch",
+   "guessTime": 20,
+   "round": 8,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 200,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "multi_st_m_r09@act3enemyduel": {
+   "roundId": "multi_st_m_r09@act3enemyduel",
+   "modeId": "multiStandMatch",
+   "guessTime": 20,
+   "round": 9,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 220,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 4,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 4,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "multi_st_m_r10@act3enemyduel": {
+   "roundId": "multi_st_m_r10@act3enemyduel",
+   "modeId": "multiStandMatch",
+   "guessTime": 20,
+   "round": 10,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 250,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 3,
+   "enemySideMaxLeft": 4,
+   "enemySideMinRight": 3,
+   "enemySideMaxRight": 4,
+   "enemyPoolLeft": "poolBoss",
+   "enemyPoolRight": "poolNoSurpriseEnemy",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "multi_st_r_r01@act3enemyduel": {
+   "roundId": "multi_st_r_r01@act3enemyduel",
+   "modeId": "multiStandRoom",
+   "guessTime": 10,
+   "round": 1,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 60,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 2,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 2,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "multi_st_r_r02@act3enemyduel": {
+   "roundId": "multi_st_r_r02@act3enemyduel",
+   "modeId": "multiStandRoom",
+   "guessTime": 12,
+   "round": 2,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 80,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 2,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 2,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "multi_st_r_r03@act3enemyduel": {
+   "roundId": "multi_st_r_r03@act3enemyduel",
+   "modeId": "multiStandRoom",
+   "guessTime": 14,
+   "round": 3,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 100,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 1,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "multi_st_r_r04@act3enemyduel": {
+   "roundId": "multi_st_r_r04@act3enemyduel",
+   "modeId": "multiStandRoom",
+   "guessTime": 16,
+   "round": 4,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 120,
+   "enemyScoreRandom": 10,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "multi_st_r_r05@act3enemyduel": {
+   "roundId": "multi_st_r_r05@act3enemyduel",
+   "modeId": "multiStandRoom",
+   "guessTime": 18,
+   "round": 5,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 200,
+   "enemyScoreRandom": 75,
+   "enemySideMinLeft": 1,
+   "enemySideMaxLeft": 2,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolGiantBoss",
+   "enemyPoolRight": "poolAntiGiantBoss",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "multi_st_r_r06@act3enemyduel": {
+   "roundId": "multi_st_r_r06@act3enemyduel",
+   "modeId": "multiStandRoom",
+   "guessTime": 20,
+   "round": 6,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 160,
+   "enemyScoreRandom": 20,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "multi_st_r_r07@act3enemyduel": {
+   "roundId": "multi_st_r_r07@act3enemyduel",
+   "modeId": "multiStandRoom",
+   "guessTime": 20,
+   "round": 7,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 180,
+   "enemyScoreRandom": 20,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "multi_st_r_r08@act3enemyduel": {
+   "roundId": "multi_st_r_r08@act3enemyduel",
+   "modeId": "multiStandRoom",
+   "guessTime": 20,
+   "round": 8,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 200,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 3,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 3,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "multi_st_r_r09@act3enemyduel": {
+   "roundId": "multi_st_r_r09@act3enemyduel",
+   "modeId": "multiStandRoom",
+   "guessTime": 20,
+   "round": 9,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 220,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 2,
+   "enemySideMaxLeft": 4,
+   "enemySideMinRight": 2,
+   "enemySideMaxRight": 4,
+   "enemyPoolLeft": "poolNormal",
+   "enemyPoolRight": "poolNormal",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act3enemyduel"
+  },
+  "multi_st_r_r10@act3enemyduel": {
+   "roundId": "multi_st_r_r10@act3enemyduel",
+   "modeId": "multiStandRoom",
+   "guessTime": 20,
+   "round": 10,
+   "enemyPredefined": false,
+   "roundScore": 0,
+   "enemyScore": 250,
+   "enemyScoreRandom": 30,
+   "enemySideMinLeft": 3,
+   "enemySideMaxLeft": 4,
+   "enemySideMinRight": 3,
+   "enemySideMaxRight": 4,
+   "enemyPoolLeft": "poolBoss",
+   "enemyPoolRight": "poolNoSurpriseEnemy",
+   "canSkip": false,
+   "canAllIn": false,
+   "act": "act3enemyduel"
   }
  },
  "npcs": {
-  "act1enemyduel_npc_01": {
-   "npcId": "act1enemyduel_npc_01",
-   "avatarId": "act1enemyduel_avatar_01",
+  "act3enemyduel_npc_01": {
+   "npcId": "act3enemyduel_npc_01",
+   "avatarId": "act3enemyduel_avatar_01",
    "name": "鸭宝押宝",
    "priority": 0,
    "specialStrategy": "DEFAULT",
@@ -1085,9 +3053,9 @@
    "defaultEnemyScore": 1,
    "allinProb": 0.5
   },
-  "act1enemyduel_npc_02": {
-   "npcId": "act1enemyduel_npc_02",
-   "avatarId": "act1enemyduel_avatar_02",
+  "act3enemyduel_npc_02": {
+   "npcId": "act3enemyduel_npc_02",
+   "avatarId": "act3enemyduel_avatar_02",
    "name": "妙算无中生有",
    "priority": 0,
    "specialStrategy": "DEFAULT",
@@ -1095,9 +3063,9 @@
    "defaultEnemyScore": 1,
    "allinProb": 0.5
   },
-  "act1enemyduel_npc_03": {
-   "npcId": "act1enemyduel_npc_03",
-   "avatarId": "act1enemyduel_avatar_03",
+  "act3enemyduel_npc_03": {
+   "npcId": "act3enemyduel_npc_03",
+   "avatarId": "act3enemyduel_avatar_03",
    "name": "旗开大将军",
    "priority": 0,
    "specialStrategy": "DEFAULT",
@@ -1105,9 +3073,9 @@
    "defaultEnemyScore": 1,
    "allinProb": 0.5
   },
-  "act1enemyduel_npc_04": {
-   "npcId": "act1enemyduel_npc_04",
-   "avatarId": "act1enemyduel_avatar_04",
+  "act3enemyduel_npc_04": {
+   "npcId": "act3enemyduel_npc_04",
+   "avatarId": "act3enemyduel_avatar_04",
    "name": "看看队友",
    "priority": 0,
    "specialStrategy": "DEFAULT",
@@ -1115,9 +3083,9 @@
    "defaultEnemyScore": 1,
    "allinProb": 0.5
   },
-  "act1enemyduel_npc_05": {
-   "npcId": "act1enemyduel_npc_05",
-   "avatarId": "act1enemyduel_avatar_05",
+  "act3enemyduel_npc_05": {
+   "npcId": "act3enemyduel_npc_05",
+   "avatarId": "act3enemyduel_avatar_05",
    "name": "闻香识驮兽",
    "priority": 0,
    "specialStrategy": "DEFAULT",
@@ -1125,9 +3093,9 @@
    "defaultEnemyScore": 1,
    "allinProb": 0.5
   },
-  "act1enemyduel_npc_06": {
-   "npcId": "act1enemyduel_npc_06",
-   "avatarId": "act1enemyduel_avatar_06",
+  "act3enemyduel_npc_06": {
+   "npcId": "act3enemyduel_npc_06",
+   "avatarId": "act3enemyduel_avatar_06",
    "name": "你推的∩酱",
    "priority": 0,
    "specialStrategy": "CHOOSE_WIN",
@@ -1135,9 +3103,9 @@
    "defaultEnemyScore": 1,
    "allinProb": 0.5
   },
-  "act1enemyduel_npc_07": {
-   "npcId": "act1enemyduel_npc_07",
-   "avatarId": "act1enemyduel_avatar_07",
+  "act3enemyduel_npc_07": {
+   "npcId": "act3enemyduel_npc_07",
+   "avatarId": "act3enemyduel_avatar_07",
    "name": "没有（“-3”）",
    "priority": 0,
    "specialStrategy": "CHOOSE_ODD",
@@ -1145,9 +3113,9 @@
    "defaultEnemyScore": 1,
    "allinProb": 0.5
   },
-  "act1enemyduel_npc_08": {
-   "npcId": "act1enemyduel_npc_08",
-   "avatarId": "act1enemyduel_avatar_08",
+  "act3enemyduel_npc_08": {
+   "npcId": "act3enemyduel_npc_08",
+   "avatarId": "act3enemyduel_avatar_08",
    "name": "完全明白啦！",
    "priority": 11,
    "specialStrategy": "FOLLOW_FEWER",
@@ -1155,9 +3123,9 @@
    "defaultEnemyScore": 1,
    "allinProb": 0.5
   },
-  "act1enemyduel_npc_09": {
-   "npcId": "act1enemyduel_npc_09",
-   "avatarId": "act1enemyduel_avatar_09",
+  "act3enemyduel_npc_09": {
+   "npcId": "act3enemyduel_npc_09",
+   "avatarId": "act3enemyduel_avatar_09",
    "name": "大家说得对哦",
    "priority": 10,
    "specialStrategy": "FOLLOW_MORE",
@@ -1165,9 +3133,9 @@
    "defaultEnemyScore": 1,
    "allinProb": 0.5
   },
-  "act1enemyduel_npc_10": {
-   "npcId": "act1enemyduel_npc_10",
-   "avatarId": "act1enemyduel_avatar_10",
+  "act3enemyduel_npc_10": {
+   "npcId": "act3enemyduel_npc_10",
+   "avatarId": "act3enemyduel_avatar_10",
    "name": "荒野至高主宰",
    "priority": 0,
    "specialStrategy": "DEFAULT",
@@ -1175,9 +3143,9 @@
    "defaultEnemyScore": 1,
    "allinProb": 0.5
   },
-  "act1enemyduel_npc_11": {
-   "npcId": "act1enemyduel_npc_11",
-   "avatarId": "act1enemyduel_avatar_11",
+  "act3enemyduel_npc_11": {
+   "npcId": "act3enemyduel_npc_11",
+   "avatarId": "act3enemyduel_avatar_11",
    "name": "需要高等教育",
    "priority": 0,
    "specialStrategy": "DEFAULT",
@@ -1185,9 +3153,9 @@
    "defaultEnemyScore": 1,
    "allinProb": 0.5
   },
-  "act1enemyduel_npc_12": {
-   "npcId": "act1enemyduel_npc_12",
-   "avatarId": "act1enemyduel_avatar_12",
+  "act3enemyduel_npc_12": {
+   "npcId": "act3enemyduel_npc_12",
+   "avatarId": "act3enemyduel_avatar_12",
    "name": "各位的老朋友",
    "priority": 0,
    "specialStrategy": "DEFAULT",
@@ -1195,9 +3163,9 @@
    "defaultEnemyScore": 1,
    "allinProb": 0.5
   },
-  "act1enemyduel_npc_13": {
-   "npcId": "act1enemyduel_npc_13",
-   "avatarId": "act1enemyduel_avatar_13",
+  "act3enemyduel_npc_13": {
+   "npcId": "act3enemyduel_npc_13",
+   "avatarId": "act3enemyduel_avatar_13",
    "name": "锟斤拷屯屯屯",
    "priority": 0,
    "specialStrategy": "DEFAULT",
@@ -1205,9 +3173,9 @@
    "defaultEnemyScore": 0,
    "allinProb": 0.5
   },
-  "act1enemyduel_npc_14": {
-   "npcId": "act1enemyduel_npc_14",
-   "avatarId": "act1enemyduel_avatar_14",
+  "act3enemyduel_npc_14": {
+   "npcId": "act3enemyduel_npc_14",
+   "avatarId": "act3enemyduel_avatar_14",
    "name": "灰色地带",
    "priority": 0,
    "specialStrategy": "CHOOSE_ODD_ENEMY_COUNT",
@@ -1215,9 +3183,9 @@
    "defaultEnemyScore": 0,
    "allinProb": 0.5
   },
-  "act1enemyduel_npc_15": {
-   "npcId": "act1enemyduel_npc_15",
-   "avatarId": "act1enemyduel_avatar_15",
+  "act3enemyduel_npc_15": {
+   "npcId": "act3enemyduel_npc_15",
+   "avatarId": "act3enemyduel_avatar_15",
    "name": "博弈解析式",
    "priority": 0,
    "specialStrategy": "CHOOSE_EVEN_ENEMY_COUNT",
@@ -1225,9 +3193,9 @@
    "defaultEnemyScore": 0,
    "allinProb": 0.5
   },
-  "act1enemyduel_npc_16": {
-   "npcId": "act1enemyduel_npc_16",
-   "avatarId": "act1enemyduel_avatar_16",
+  "act3enemyduel_npc_16": {
+   "npcId": "act3enemyduel_npc_16",
+   "avatarId": "act3enemyduel_avatar_16",
    "name": "剑术修炼中",
    "priority": 0,
    "specialStrategy": "DEFAULT",
@@ -1235,9 +3203,9 @@
    "defaultEnemyScore": 0,
    "allinProb": 0.5
   },
-  "act1enemyduel_npc_17": {
-   "npcId": "act1enemyduel_npc_17",
-   "avatarId": "act1enemyduel_avatar_17",
+  "act3enemyduel_npc_17": {
+   "npcId": "act3enemyduel_npc_17",
+   "avatarId": "act3enemyduel_avatar_17",
    "name": "闭着眼选",
    "priority": 0,
    "specialStrategy": "DEFAULT",
@@ -1245,9 +3213,9 @@
    "defaultEnemyScore": 0,
    "allinProb": 0.5
   },
-  "act1enemyduel_npc_18": {
-   "npcId": "act1enemyduel_npc_18",
-   "avatarId": "act1enemyduel_avatar_18",
+  "act3enemyduel_npc_18": {
+   "npcId": "act3enemyduel_npc_18",
+   "avatarId": "act3enemyduel_avatar_18",
    "name": "不是恶作剧",
    "priority": 0,
    "specialStrategy": "DEFAULT",
@@ -1255,9 +3223,9 @@
    "defaultEnemyScore": 0,
    "allinProb": 0.5
   },
-  "act1enemyduel_npc_19": {
-   "npcId": "act1enemyduel_npc_19",
-   "avatarId": "act1enemyduel_avatar_19",
+  "act3enemyduel_npc_19": {
+   "npcId": "act3enemyduel_npc_19",
+   "avatarId": "act3enemyduel_avatar_19",
    "name": "最后的西西里",
    "priority": 0,
    "specialStrategy": "ALWAYS_LEFT",
@@ -1265,9 +3233,9 @@
    "defaultEnemyScore": 0,
    "allinProb": 0.5
   },
-  "act1enemyduel_npc_20": {
-   "npcId": "act1enemyduel_npc_20",
-   "avatarId": "act1enemyduel_avatar_20",
+  "act3enemyduel_npc_20": {
+   "npcId": "act3enemyduel_npc_20",
+   "avatarId": "act3enemyduel_avatar_20",
    "name": "红丝绒糖霜",
    "priority": 0,
    "specialStrategy": "DEFAULT",
@@ -1275,9 +3243,9 @@
    "defaultEnemyScore": 0,
    "allinProb": 0.5
   },
-  "act1enemyduel_npc_21": {
-   "npcId": "act1enemyduel_npc_21",
-   "avatarId": "act1enemyduel_avatar_21",
+  "act3enemyduel_npc_21": {
+   "npcId": "act3enemyduel_npc_21",
+   "avatarId": "act3enemyduel_avatar_21",
    "name": "投注生存法则",
    "priority": 0,
    "specialStrategy": "DEFAULT",
@@ -1285,9 +3253,9 @@
    "defaultEnemyScore": 0,
    "allinProb": 0.5
   },
-  "act1enemyduel_npc_22": {
-   "npcId": "act1enemyduel_npc_22",
-   "avatarId": "act1enemyduel_avatar_22",
+  "act3enemyduel_npc_22": {
+   "npcId": "act3enemyduel_npc_22",
+   "avatarId": "act3enemyduel_avatar_22",
    "name": "锅匠裁缝士兵",
    "priority": 0,
    "specialStrategy": "DEFAULT",
@@ -1295,9 +3263,9 @@
    "defaultEnemyScore": 0,
    "allinProb": 0.5
   },
-  "act1enemyduel_npc_23": {
-   "npcId": "act1enemyduel_npc_23",
-   "avatarId": "act1enemyduel_avatar_23",
+  "act3enemyduel_npc_23": {
+   "npcId": "act3enemyduel_npc_23",
+   "avatarId": "act3enemyduel_avatar_23",
    "name": "准得不能更准",
    "priority": 0,
    "specialStrategy": "DEFAULT",
@@ -1305,9 +3273,9 @@
    "defaultEnemyScore": 0,
    "allinProb": 0.5
   },
-  "act1enemyduel_npc_24": {
-   "npcId": "act1enemyduel_npc_24",
-   "avatarId": "act1enemyduel_avatar_24",
+  "act3enemyduel_npc_24": {
+   "npcId": "act3enemyduel_npc_24",
+   "avatarId": "act3enemyduel_avatar_24",
    "name": "压缩机维修",
    "priority": 0,
    "specialStrategy": "DEFAULT",
@@ -1315,9 +3283,9 @@
    "defaultEnemyScore": 0,
    "allinProb": 0.5
   },
-  "act1enemyduel_npc_25": {
-   "npcId": "act1enemyduel_npc_25",
-   "avatarId": "act1enemyduel_avatar_25",
+  "act3enemyduel_npc_25": {
+   "npcId": "act3enemyduel_npc_25",
+   "avatarId": "act3enemyduel_avatar_25",
    "name": "内部账号1234",
    "priority": 0,
    "specialStrategy": "DEFAULT",
@@ -1325,9 +3293,9 @@
    "defaultEnemyScore": 0,
    "allinProb": 0.5
   },
-  "act1enemyduel_npc_26": {
-   "npcId": "act1enemyduel_npc_26",
-   "avatarId": "act1enemyduel_avatar_26",
+  "act3enemyduel_npc_26": {
+   "npcId": "act3enemyduel_npc_26",
+   "avatarId": "act3enemyduel_avatar_26",
    "name": "大帝_real",
    "priority": 0,
    "specialStrategy": "DEFAULT",
@@ -1335,9 +3303,9 @@
    "defaultEnemyScore": 0,
    "allinProb": 0.5
   },
-  "act1enemyduel_npc_27": {
-   "npcId": "act1enemyduel_npc_27",
-   "avatarId": "act1enemyduel_avatar_27",
+  "act3enemyduel_npc_27": {
+   "npcId": "act3enemyduel_npc_27",
+   "avatarId": "act3enemyduel_avatar_27",
    "name": "战！战！战！",
    "priority": 0,
    "specialStrategy": "DEFAULT",
@@ -1345,9 +3313,9 @@
    "defaultEnemyScore": 0,
    "allinProb": 0.5
   },
-  "act1enemyduel_npc_28": {
-   "npcId": "act1enemyduel_npc_28",
-   "avatarId": "act1enemyduel_avatar_28",
+  "act3enemyduel_npc_28": {
+   "npcId": "act3enemyduel_npc_28",
+   "avatarId": "act3enemyduel_avatar_28",
    "name": "�Ҫ�¨2",
    "priority": 0,
    "specialStrategy": "DEFAULT",
@@ -1357,8 +3325,8 @@
   }
  },
  "npcSelector": {
-  "act1enemyduel_npc_01": {
-   "npcId": "act1enemyduel_npc_01",
+  "act3enemyduel_npc_01": {
+   "npcId": "act3enemyduel_npc_01",
    "data": [
     {
      "enemyId": "enemy_5028_dqlime_2",
@@ -1583,11 +3551,231 @@
     {
      "enemyId": "enemy_15033_dqclif",
      "score": 25
+    },
+    {
+     "enemyId": "enemy_5029_dqslim",
+     "score": 2
+    },
+    {
+     "enemyId": "enemy_15034_dqdrp",
+     "score": 3
+    },
+    {
+     "enemyId": "enemy_15035_dqbone",
+     "score": 4
+    },
+    {
+     "enemyId": "enemy_15036_dqalme",
+     "score": 2
+    },
+    {
+     "enemyId": "enemy_15037_dqhtms",
+     "score": 18
+    },
+    {
+     "enemyId": "enemy_15038_dqhtbw",
+     "score": 7
+    },
+    {
+     "enemyId": "enemy_15039_dqrgrd",
+     "score": 12
+    },
+    {
+     "enemyId": "enemy_15040_dqrdmn",
+     "score": 15
+    },
+    {
+     "enemyId": "enemy_15041_dqgrg",
+     "score": 10
+    },
+    {
+     "enemyId": "enemy_15043_dqrckm",
+     "score": 30
+    },
+    {
+     "enemyId": "enemy_15044_dqtisd",
+     "score": 25
+    },
+    {
+     "enemyId": "enemy_15045_dqrbty",
+     "score": 18
+    },
+    {
+     "enemyId": "enemy_15046_dqxts",
+     "score": 1
+    },
+    {
+     "enemyId": "enemy_15047_dqwlpl",
+     "score": 20
+    },
+    {
+     "enemyId": "enemy_15048_dqdivi",
+     "score": 7
+    },
+    {
+     "enemyId": "enemy_15049_dqfrog",
+     "score": 18
+    },
+    {
+     "enemyId": "enemy_15051_dqxjl",
+     "score": 14
+    },
+    {
+     "enemyId": "enemy_15052_dqboar",
+     "score": 6
+    },
+    {
+     "enemyId": "enemy_15053_dqtrtl",
+     "score": 7
+    },
+    {
+     "enemyId": "enemy_15054_dqprpn",
+     "score": 9
+    },
+    {
+     "enemyId": "enemy_15055_dqrhcr",
+     "score": 20
+    },
+    {
+     "enemyId": "enemy_15057_dqmram",
+     "score": 11
+    },
+    {
+     "enemyId": "enemy_15058_dqtank",
+     "score": 14
+    },
+    {
+     "enemyId": "enemy_15059_dqhmmr",
+     "score": 20
+    },
+    {
+     "enemyId": "enemy_15064_dqdru",
+     "score": 11
+    },
+    {
+     "enemyId": "enemy_15066_dqdudu",
+     "score": 12
+    },
+    {
+     "enemyId": "enemy_15067_dqdidi",
+     "score": 15
+    },
+    {
+     "enemyId": "enemy_15077_dqqzts",
+     "score": 12
+    },
+    {
+     "enemyId": "enemy_15078_dqcjld",
+     "score": 15
+    },
+    {
+     "enemyId": "enemy_15079_dqkodo",
+     "score": 20
+    },
+    {
+     "enemyId": "enemy_15080_dqgtop",
+     "score": 20
+    },
+    {
+     "enemyId": "enemy_15081_dqmage",
+     "score": 20
+    },
+    {
+     "enemyId": "enemy_15082_dqklr",
+     "score": 30
+    },
+    {
+     "enemyId": "enemy_15083_dqymot",
+     "score": 35
+    },
+    {
+     "enemyId": "enemy_15084_dqhfly",
+     "score": 5
+    },
+    {
+     "enemyId": "enemy_15085_dqji",
+     "score": 30
+    },
+    {
+     "enemyId": "enemy_15086_dqcbld",
+     "score": 20
+    },
+    {
+     "enemyId": "enemy_15087_dqkkt",
+     "score": 20
+    },
+    {
+     "enemyId": "enemy_15088_dqterm",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15089_dqbgpa",
+     "score": 35
+    },
+    {
+     "enemyId": "enemy_15090_dqacpa",
+     "score": 30
+    },
+    {
+     "enemyId": "enemy_15091_dqbus",
+     "score": 15
+    },
+    {
+     "enemyId": "enemy_15092_dqudg",
+     "score": 50
+    },
+    {
+     "enemyId": "enemy_15093_dqzfkl",
+     "score": 125
+    },
+    {
+     "enemyId": "enemy_15094_dqgent",
+     "score": 3
+    },
+    {
+     "enemyId": "enemy_15095_dqams",
+     "score": 12
+    },
+    {
+     "enemyId": "enemy_15068_dqsui",
+     "score": 125
+    },
+    {
+     "enemyId": "enemy_15069_dqdeer",
+     "score": 125
+    },
+    {
+     "enemyId": "enemy_15070_dqhlgy",
+     "score": 125
+    },
+    {
+     "enemyId": "enemy_15071_dqyrzf",
+     "score": 125
+    },
+    {
+     "enemyId": "enemy_15072_dqlbgg",
+     "score": 125
+    },
+    {
+     "enemyId": "enemy_15073_dqkght",
+     "score": 125
+    },
+    {
+     "enemyId": "enemy_15074_dqdght",
+     "score": 125
+    },
+    {
+     "enemyId": "enemy_15075_dqzklz",
+     "score": 125
+    },
+    {
+     "enemyId": "enemy_15076_dqzmst",
+     "score": 125
     }
    ]
   },
-  "act1enemyduel_npc_02": {
-   "npcId": "act1enemyduel_npc_02",
+  "act3enemyduel_npc_02": {
+   "npcId": "act3enemyduel_npc_02",
    "data": [
     {
      "enemyId": "enemy_5028_dqlime_2",
@@ -1812,11 +4000,231 @@
     {
      "enemyId": "enemy_15033_dqclif",
      "score": 15
+    },
+    {
+     "enemyId": "enemy_5029_dqslim",
+     "score": -1
+    },
+    {
+     "enemyId": "enemy_15034_dqdrp",
+     "score": -2
+    },
+    {
+     "enemyId": "enemy_15035_dqbone",
+     "score": -2
+    },
+    {
+     "enemyId": "enemy_15036_dqalme",
+     "score": -2
+    },
+    {
+     "enemyId": "enemy_15037_dqhtms",
+     "score": 8
+    },
+    {
+     "enemyId": "enemy_15038_dqhtbw",
+     "score": 6
+    },
+    {
+     "enemyId": "enemy_15039_dqrgrd",
+     "score": 2
+    },
+    {
+     "enemyId": "enemy_15040_dqrdmn",
+     "score": 3
+    },
+    {
+     "enemyId": "enemy_15041_dqgrg",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15043_dqrckm",
+     "score": 15
+    },
+    {
+     "enemyId": "enemy_15044_dqtisd",
+     "score": 10
+    },
+    {
+     "enemyId": "enemy_15045_dqrbty",
+     "score": 8
+    },
+    {
+     "enemyId": "enemy_15046_dqxts",
+     "score": -2
+    },
+    {
+     "enemyId": "enemy_15047_dqwlpl",
+     "score": 8
+    },
+    {
+     "enemyId": "enemy_15048_dqdivi",
+     "score": -1
+    },
+    {
+     "enemyId": "enemy_15049_dqfrog",
+     "score": 5
+    },
+    {
+     "enemyId": "enemy_15051_dqxjl",
+     "score": 2
+    },
+    {
+     "enemyId": "enemy_15052_dqboar",
+     "score": 5
+    },
+    {
+     "enemyId": "enemy_15053_dqtrtl",
+     "score": 1
+    },
+    {
+     "enemyId": "enemy_15054_dqprpn",
+     "score": 2
+    },
+    {
+     "enemyId": "enemy_15055_dqrhcr",
+     "score": 4
+    },
+    {
+     "enemyId": "enemy_15057_dqmram",
+     "score": 6
+    },
+    {
+     "enemyId": "enemy_15058_dqtank",
+     "score": 3
+    },
+    {
+     "enemyId": "enemy_15059_dqhmmr",
+     "score": 15
+    },
+    {
+     "enemyId": "enemy_15064_dqdru",
+     "score": 5
+    },
+    {
+     "enemyId": "enemy_15066_dqdudu",
+     "score": 2
+    },
+    {
+     "enemyId": "enemy_15067_dqdidi",
+     "score": 4
+    },
+    {
+     "enemyId": "enemy_15077_dqqzts",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15078_dqcjld",
+     "score": 1
+    },
+    {
+     "enemyId": "enemy_15079_dqkodo",
+     "score": 3
+    },
+    {
+     "enemyId": "enemy_15080_dqgtop",
+     "score": 3
+    },
+    {
+     "enemyId": "enemy_15081_dqmage",
+     "score": 3
+    },
+    {
+     "enemyId": "enemy_15082_dqklr",
+     "score": 5
+    },
+    {
+     "enemyId": "enemy_15083_dqymot",
+     "score": 10
+    },
+    {
+     "enemyId": "enemy_15084_dqhfly",
+     "score": -5
+    },
+    {
+     "enemyId": "enemy_15085_dqji",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15086_dqcbld",
+     "score": 2
+    },
+    {
+     "enemyId": "enemy_15087_dqkkt",
+     "score": 2
+    },
+    {
+     "enemyId": "enemy_15088_dqterm",
+     "score": 15
+    },
+    {
+     "enemyId": "enemy_15089_dqbgpa",
+     "score": 8
+    },
+    {
+     "enemyId": "enemy_15090_dqacpa",
+     "score": 5
+    },
+    {
+     "enemyId": "enemy_15091_dqbus",
+     "score": -1
+    },
+    {
+     "enemyId": "enemy_15092_dqudg",
+     "score": 12
+    },
+    {
+     "enemyId": "enemy_15093_dqzfkl",
+     "score": 25
+    },
+    {
+     "enemyId": "enemy_15094_dqgent",
+     "score": -5
+    },
+    {
+     "enemyId": "enemy_15095_dqams",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15068_dqsui",
+     "score": 25
+    },
+    {
+     "enemyId": "enemy_15069_dqdeer",
+     "score": 25
+    },
+    {
+     "enemyId": "enemy_15070_dqhlgy",
+     "score": 3
+    },
+    {
+     "enemyId": "enemy_15071_dqyrzf",
+     "score": 3
+    },
+    {
+     "enemyId": "enemy_15072_dqlbgg",
+     "score": 25
+    },
+    {
+     "enemyId": "enemy_15073_dqkght",
+     "score": 25
+    },
+    {
+     "enemyId": "enemy_15074_dqdght",
+     "score": 3
+    },
+    {
+     "enemyId": "enemy_15075_dqzklz",
+     "score": 25
+    },
+    {
+     "enemyId": "enemy_15076_dqzmst",
+     "score": 3
     }
    ]
   },
-  "act1enemyduel_npc_03": {
-   "npcId": "act1enemyduel_npc_03",
+  "act3enemyduel_npc_03": {
+   "npcId": "act3enemyduel_npc_03",
    "data": [
     {
      "enemyId": "enemy_5030_dqpro_3",
@@ -1961,11 +4369,131 @@
     {
      "enemyId": "enemy_15033_dqclif",
      "score": 100
+    },
+    {
+     "enemyId": "enemy_15034_dqdrp",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15036_dqalme",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15037_dqhtms",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15039_dqrgrd",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15041_dqgrg",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15044_dqtisd",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15046_dqxts",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15047_dqwlpl",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15051_dqxjl",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15052_dqboar",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15053_dqtrtl",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15054_dqprpn",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15055_dqrhcr",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15057_dqmram",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15059_dqhmmr",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15078_dqcjld",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15079_dqkodo",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15080_dqgtop",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15082_dqklr",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15083_dqymot",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15085_dqji",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15086_dqcbld",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15087_dqkkt",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15088_dqterm",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15089_dqbgpa",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15091_dqbus",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15093_dqzfkl",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15072_dqlbgg",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15073_dqkght",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15075_dqzklz",
+     "score": 100
     }
    ]
   },
-  "act1enemyduel_npc_04": {
-   "npcId": "act1enemyduel_npc_04",
+  "act3enemyduel_npc_04": {
+   "npcId": "act3enemyduel_npc_04",
    "data": [
     {
      "enemyId": "enemy_5028_dqlime_2",
@@ -2046,11 +4574,83 @@
     {
      "enemyId": "enemy_15030_dqsgpr",
      "score": 100
+    },
+    {
+     "enemyId": "enemy_5029_dqslim",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15035_dqbone",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15038_dqhtbw",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15040_dqrdmn",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15043_dqrckm",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15045_dqrbty",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15048_dqdivi",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15049_dqfrog",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15058_dqtank",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15064_dqdru",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15066_dqdudu",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15067_dqdidi",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15077_dqqzts",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15081_dqmage",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15090_dqacpa",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15092_dqudg",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15094_dqgent",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15095_dqams",
+     "score": 100
     }
    ]
   },
-  "act1enemyduel_npc_10": {
-   "npcId": "act1enemyduel_npc_10",
+  "act3enemyduel_npc_10": {
+   "npcId": "act3enemyduel_npc_10",
    "data": [
     {
      "enemyId": "enemy_5028_dqlime_2",
@@ -2111,11 +4711,111 @@
     {
      "enemyId": "enemy_15033_dqclif",
      "score": 100
+    },
+    {
+     "enemyId": "enemy_5029_dqslim",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15036_dqalme",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15043_dqrckm",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15046_dqxts",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15047_dqwlpl",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15048_dqdivi",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15049_dqfrog",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15051_dqxjl",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15052_dqboar",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15053_dqtrtl",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15054_dqprpn",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15055_dqrhcr",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15077_dqqzts",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15078_dqcjld",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15079_dqkodo",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15081_dqmage",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15082_dqklr",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15084_dqhfly",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15085_dqji",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15089_dqbgpa",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15090_dqacpa",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15091_dqbus",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15095_dqams",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15068_dqsui",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15069_dqdeer",
+     "score": 100
     }
    ]
   },
-  "act1enemyduel_npc_11": {
-   "npcId": "act1enemyduel_npc_11",
+  "act3enemyduel_npc_11": {
+   "npcId": "act3enemyduel_npc_11",
    "data": [
     {
      "enemyId": "enemy_5039_dqgint",
@@ -2128,11 +4828,15 @@
     {
      "enemyId": "enemy_15003_dqltsw",
      "score": 100
+    },
+    {
+     "enemyId": "enemy_15059_dqhmmr",
+     "score": 100
     }
    ]
   },
-  "act1enemyduel_npc_12": {
-   "npcId": "act1enemyduel_npc_12",
+  "act3enemyduel_npc_12": {
+   "npcId": "act3enemyduel_npc_12",
    "data": [
     {
      "enemyId": "enemy_5041_dqkght",
@@ -2145,11 +4849,15 @@
     {
      "enemyId": "enemy_15010_dqcadk",
      "score": 100
+    },
+    {
+     "enemyId": "enemy_15073_dqkght",
+     "score": 500
     }
    ]
   },
-  "act1enemyduel_npc_16": {
-   "npcId": "act1enemyduel_npc_16",
+  "act3enemyduel_npc_16": {
+   "npcId": "act3enemyduel_npc_16",
    "data": [
     {
      "enemyId": "enemy_5032_dqmon",
@@ -2274,11 +4982,123 @@
     {
      "enemyId": "enemy_15033_dqclif",
      "score": 300
+    },
+    {
+     "enemyId": "enemy_15034_dqdrp",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15036_dqalme",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15039_dqrgrd",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15044_dqtisd",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15046_dqxts",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15047_dqwlpl",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15051_dqxjl",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15052_dqboar",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15053_dqtrtl",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15054_dqprpn",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15055_dqrhcr",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15057_dqmram",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15059_dqhmmr",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15078_dqcjld",
+     "score": 50
+    },
+    {
+     "enemyId": "enemy_15079_dqkodo",
+     "score": 50
+    },
+    {
+     "enemyId": "enemy_15080_dqgtop",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15082_dqklr",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15083_dqymot",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15085_dqji",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15086_dqcbld",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15087_dqkkt",
+     "score": 50
+    },
+    {
+     "enemyId": "enemy_15088_dqterm",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15089_dqbgpa",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15091_dqbus",
+     "score": 50
+    },
+    {
+     "enemyId": "enemy_15093_dqzfkl",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15072_dqlbgg",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15073_dqkght",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15075_dqzklz",
+     "score": 200
     }
    ]
   },
-  "act1enemyduel_npc_17": {
-   "npcId": "act1enemyduel_npc_17",
+  "act3enemyduel_npc_17": {
+   "npcId": "act3enemyduel_npc_17",
    "data": [
     {
      "enemyId": "enemy_5028_dqlime_2",
@@ -2323,11 +5143,51 @@
     {
      "enemyId": "enemy_15030_dqsgpr",
      "score": 100
+    },
+    {
+     "enemyId": "enemy_15035_dqbone",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15038_dqhtbw",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15043_dqrckm",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15045_dqrbty",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15049_dqfrog",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15058_dqtank",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15077_dqqzts",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15090_dqacpa",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15092_dqudg",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15094_dqgent",
+     "score": 100
     }
    ]
   },
-  "act1enemyduel_npc_18": {
-   "npcId": "act1enemyduel_npc_18",
+  "act3enemyduel_npc_18": {
+   "npcId": "act3enemyduel_npc_18",
    "data": [
     {
      "enemyId": "enemy_5028_dqlime_2",
@@ -2368,11 +5228,55 @@
     {
      "enemyId": "enemy_15033_dqclif",
      "score": 300
+    },
+    {
+     "enemyId": "enemy_5029_dqslim",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15036_dqalme",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15046_dqxts",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15047_dqwlpl",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15049_dqfrog",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15052_dqboar",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15053_dqtrtl",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15054_dqprpn",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15055_dqrhcr",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15077_dqqzts",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15068_dqsui",
+     "score": 100
     }
    ]
   },
-  "act1enemyduel_npc_21": {
-   "npcId": "act1enemyduel_npc_21",
+  "act3enemyduel_npc_21": {
+   "npcId": "act3enemyduel_npc_21",
    "data": [
     {
      "enemyId": "enemy_15006_dqkrgm",
@@ -2380,8 +5284,8 @@
     }
    ]
   },
-  "act1enemyduel_npc_22": {
-   "npcId": "act1enemyduel_npc_22",
+  "act3enemyduel_npc_22": {
+   "npcId": "act3enemyduel_npc_22",
    "data": [
     {
      "enemyId": "enemy_5028_dqlime_2",
@@ -2606,11 +5510,231 @@
     {
      "enemyId": "enemy_15033_dqclif",
      "score": 0
+    },
+    {
+     "enemyId": "enemy_5029_dqslim",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15034_dqdrp",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15035_dqbone",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15036_dqalme",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15037_dqhtms",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15038_dqhtbw",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15039_dqrgrd",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15040_dqrdmn",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15041_dqgrg",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15043_dqrckm",
+     "score": -100
+    },
+    {
+     "enemyId": "enemy_15044_dqtisd",
+     "score": -100
+    },
+    {
+     "enemyId": "enemy_15045_dqrbty",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15046_dqxts",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15047_dqwlpl",
+     "score": -100
+    },
+    {
+     "enemyId": "enemy_15048_dqdivi",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15049_dqfrog",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15051_dqxjl",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15052_dqboar",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15053_dqtrtl",
+     "score": -100
+    },
+    {
+     "enemyId": "enemy_15054_dqprpn",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15055_dqrhcr",
+     "score": -100
+    },
+    {
+     "enemyId": "enemy_15057_dqmram",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15058_dqtank",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15059_dqhmmr",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15064_dqdru",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15066_dqdudu",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15067_dqdidi",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15077_dqqzts",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15078_dqcjld",
+     "score": -100
+    },
+    {
+     "enemyId": "enemy_15079_dqkodo",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15080_dqgtop",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15081_dqmage",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15082_dqklr",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15083_dqymot",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15084_dqhfly",
+     "score": 50
+    },
+    {
+     "enemyId": "enemy_15085_dqji",
+     "score": 200
+    },
+    {
+     "enemyId": "enemy_15086_dqcbld",
+     "score": -100
+    },
+    {
+     "enemyId": "enemy_15087_dqkkt",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15088_dqterm",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15089_dqbgpa",
+     "score": -100
+    },
+    {
+     "enemyId": "enemy_15090_dqacpa",
+     "score": -200
+    },
+    {
+     "enemyId": "enemy_15091_dqbus",
+     "score": 200
+    },
+    {
+     "enemyId": "enemy_15092_dqudg",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15093_dqzfkl",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15094_dqgent",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15095_dqams",
+     "score": -200
+    },
+    {
+     "enemyId": "enemy_15068_dqsui",
+     "score": -300
+    },
+    {
+     "enemyId": "enemy_15069_dqdeer",
+     "score": -300
+    },
+    {
+     "enemyId": "enemy_15070_dqhlgy",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15071_dqyrzf",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15072_dqlbgg",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15073_dqkght",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15074_dqdght",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15075_dqzklz",
+     "score": 0
+    },
+    {
+     "enemyId": "enemy_15076_dqzmst",
+     "score": 0
     }
    ]
   },
-  "act1enemyduel_npc_23": {
-   "npcId": "act1enemyduel_npc_23",
+  "act3enemyduel_npc_23": {
+   "npcId": "act3enemyduel_npc_23",
    "data": [
     {
      "enemyId": "enemy_5031_dqrtar_2",
@@ -2739,20 +5863,120 @@
     {
      "enemyId": "enemy_15032_dqhrgr",
      "score": 100
-    }
-   ]
-  },
-  "act1enemyduel_npc_24": {
-   "npcId": "act1enemyduel_npc_24",
-   "data": [
+    },
     {
-     "enemyId": "enemy_15021_dqdurg",
+     "enemyId": "enemy_15034_dqdrp",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15035_dqbone",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15037_dqhtms",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15038_dqhtbw",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15039_dqrgrd",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15040_dqrdmn",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15041_dqgrg",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15044_dqtisd",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15045_dqrbty",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15059_dqhmmr",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15064_dqdru",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15066_dqdudu",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15067_dqdidi",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15080_dqgtop",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15083_dqymot",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15086_dqcbld",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15094_dqgent",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15072_dqlbgg",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15075_dqzklz",
      "score": 100
     }
    ]
   },
-  "act1enemyduel_npc_25": {
-   "npcId": "act1enemyduel_npc_25",
+  "act3enemyduel_npc_24": {
+   "npcId": "act3enemyduel_npc_24",
+   "data": [
+    {
+     "enemyId": "enemy_15021_dqdurg",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15057_dqmram",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15058_dqtank",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15088_dqterm",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15089_dqbgpa",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15090_dqacpa",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15091_dqbus",
+     "score": 100
+    }
+   ]
+  },
+  "act3enemyduel_npc_25": {
+   "npcId": "act3enemyduel_npc_25",
    "data": [
     {
      "enemyId": "enemy_15004_dqdhdt",
@@ -2760,8 +5984,8 @@
     }
    ]
   },
-  "act1enemyduel_npc_26": {
-   "npcId": "act1enemyduel_npc_26",
+  "act3enemyduel_npc_26": {
+   "npcId": "act3enemyduel_npc_26",
    "data": [
     {
      "enemyId": "enemy_5053_dqllme",
@@ -2782,11 +6006,39 @@
     {
      "enemyId": "enemy_15024_dqreid",
      "score": 300
+    },
+    {
+     "enemyId": "enemy_15043_dqrckm",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15072_dqlbgg",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15073_dqkght",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15075_dqzklz",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15093_dqzfkl",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15068_dqsui",
+     "score": 300
+    },
+    {
+     "enemyId": "enemy_15069_dqdeer",
+     "score": 300
     }
    ]
   },
-  "act1enemyduel_npc_27": {
-   "npcId": "act1enemyduel_npc_27",
+  "act3enemyduel_npc_27": {
+   "npcId": "act3enemyduel_npc_27",
    "data": [
     {
      "enemyId": "enemy_5032_dqmon",
@@ -2803,11 +6055,35 @@
     {
      "enemyId": "enemy_15018_dqskzc",
      "score": 100
+    },
+    {
+     "enemyId": "enemy_15040_dqrdmn",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15058_dqtank",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15073_dqkght",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15079_dqkodo",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15087_dqkkt",
+     "score": 100
+    },
+    {
+     "enemyId": "enemy_15093_dqzfkl",
+     "score": 100
     }
    ]
   },
-  "act1enemyduel_npc_28": {
-   "npcId": "act1enemyduel_npc_28",
+  "act3enemyduel_npc_28": {
+   "npcId": "act3enemyduel_npc_28",
    "data": [
     {
      "enemyId": "enemy_5028_dqlime_2",
@@ -3032,6 +6308,226 @@
     {
      "enemyId": "enemy_15033_dqclif",
      "score": 17000
+    },
+    {
+     "enemyId": "enemy_5029_dqslim",
+     "score": 1200
+    },
+    {
+     "enemyId": "enemy_15034_dqdrp",
+     "score": 3000
+    },
+    {
+     "enemyId": "enemy_15035_dqbone",
+     "score": 4000
+    },
+    {
+     "enemyId": "enemy_15036_dqalme",
+     "score": 2250
+    },
+    {
+     "enemyId": "enemy_15037_dqhtms",
+     "score": 15000
+    },
+    {
+     "enemyId": "enemy_15038_dqhtbw",
+     "score": 15000
+    },
+    {
+     "enemyId": "enemy_15039_dqrgrd",
+     "score": 20000
+    },
+    {
+     "enemyId": "enemy_15040_dqrdmn",
+     "score": 14000
+    },
+    {
+     "enemyId": "enemy_15041_dqgrg",
+     "score": 7000
+    },
+    {
+     "enemyId": "enemy_15043_dqrckm",
+     "score": 75000
+    },
+    {
+     "enemyId": "enemy_15044_dqtisd",
+     "score": 15000
+    },
+    {
+     "enemyId": "enemy_15045_dqrbty",
+     "score": 17000
+    },
+    {
+     "enemyId": "enemy_15046_dqxts",
+     "score": 1700
+    },
+    {
+     "enemyId": "enemy_15047_dqwlpl",
+     "score": 13000
+    },
+    {
+     "enemyId": "enemy_15048_dqdivi",
+     "score": 8000
+    },
+    {
+     "enemyId": "enemy_15049_dqfrog",
+     "score": 15000
+    },
+    {
+     "enemyId": "enemy_15051_dqxjl",
+     "score": 9000
+    },
+    {
+     "enemyId": "enemy_15052_dqboar",
+     "score": 25000
+    },
+    {
+     "enemyId": "enemy_15053_dqtrtl",
+     "score": 14000
+    },
+    {
+     "enemyId": "enemy_15054_dqprpn",
+     "score": 25000
+    },
+    {
+     "enemyId": "enemy_15055_dqrhcr",
+     "score": 12000
+    },
+    {
+     "enemyId": "enemy_15057_dqmram",
+     "score": 13500
+    },
+    {
+     "enemyId": "enemy_15058_dqtank",
+     "score": 12000
+    },
+    {
+     "enemyId": "enemy_15059_dqhmmr",
+     "score": 10000
+    },
+    {
+     "enemyId": "enemy_15064_dqdru",
+     "score": 10000
+    },
+    {
+     "enemyId": "enemy_15066_dqdudu",
+     "score": 12000
+    },
+    {
+     "enemyId": "enemy_15067_dqdidi",
+     "score": 15000
+    },
+    {
+     "enemyId": "enemy_15077_dqqzts",
+     "score": 10000
+    },
+    {
+     "enemyId": "enemy_15078_dqcjld",
+     "score": 3000
+    },
+    {
+     "enemyId": "enemy_15079_dqkodo",
+     "score": 25000
+    },
+    {
+     "enemyId": "enemy_15080_dqgtop",
+     "score": 12000
+    },
+    {
+     "enemyId": "enemy_15081_dqmage",
+     "score": 8000
+    },
+    {
+     "enemyId": "enemy_15082_dqklr",
+     "score": 16000
+    },
+    {
+     "enemyId": "enemy_15083_dqymot",
+     "score": 18000
+    },
+    {
+     "enemyId": "enemy_15084_dqhfly",
+     "score": 1200
+    },
+    {
+     "enemyId": "enemy_15085_dqji",
+     "score": 10000
+    },
+    {
+     "enemyId": "enemy_15086_dqcbld",
+     "score": 10000
+    },
+    {
+     "enemyId": "enemy_15087_dqkkt",
+     "score": 5000
+    },
+    {
+     "enemyId": "enemy_15088_dqterm",
+     "score": 20000
+    },
+    {
+     "enemyId": "enemy_15089_dqbgpa",
+     "score": 25000
+    },
+    {
+     "enemyId": "enemy_15090_dqacpa",
+     "score": 25000
+    },
+    {
+     "enemyId": "enemy_15091_dqbus",
+     "score": 15000
+    },
+    {
+     "enemyId": "enemy_15092_dqudg",
+     "score": 38000
+    },
+    {
+     "enemyId": "enemy_15093_dqzfkl",
+     "score": 300000
+    },
+    {
+     "enemyId": "enemy_15094_dqgent",
+     "score": 3500
+    },
+    {
+     "enemyId": "enemy_15095_dqams",
+     "score": 80000
+    },
+    {
+     "enemyId": "enemy_15068_dqsui",
+     "score": 100000
+    },
+    {
+     "enemyId": "enemy_15069_dqdeer",
+     "score": 100000
+    },
+    {
+     "enemyId": "enemy_15070_dqhlgy",
+     "score": 60000
+    },
+    {
+     "enemyId": "enemy_15071_dqyrzf",
+     "score": 120000
+    },
+    {
+     "enemyId": "enemy_15072_dqlbgg",
+     "score": 38000
+    },
+    {
+     "enemyId": "enemy_15073_dqkght",
+     "score": 70000
+    },
+    {
+     "enemyId": "enemy_15074_dqdght",
+     "score": 70000
+    },
+    {
+     "enemyId": "enemy_15075_dqzklz",
+     "score": 60000
+    },
+    {
+     "enemyId": "enemy_15076_dqzmst",
+     "score": 120000
     }
    ]
   }
@@ -3280,11 +6776,11 @@
     "txt": "<@ping.high>{0}</>ms"
    }
   ],
-  "chatCd": 1,
+  "chatCd": 0.5,
   "chatTime": 3,
   "dailyMissionParam": 150,
   "dailyMissionReward": {
-   "id": "act1enemyduel_token_duel",
+   "id": "act3enemyduel_token_duel",
    "count": 200,
    "type": "ACTIVITY_ITEM"
   },
@@ -3330,22 +6826,22 @@
   "modeStandRankTime": 8,
   "modeStandHotRoundNumber": 10,
   "milestoneName": "争锋大礼花",
-  "milestoneItemId": "act1enemyduel_milestone_point",
-  "milestoneItemName": "争锋观赛椅和“专业观众”观赛台",
-  "milestoneItemText": "青草计划到达<color=#6db8a9>15</color>级和<color=#6db8a9>40</color>级后领取",
-  "milestoneTrackId": "act1enemyduel_milestone_update",
-  "entryVideoId": "video/act1enemyduel/entry.mp4",
-  "entryTabText": "青草城对战中心",
-  "matchTabText": "预选赛青草城会场",
+  "milestoneItemId": "act3enemyduel_milestone_point",
+  "milestoneItemName": "[头像]“全投！” 和 [家具]争锋魄力奖杯",
+  "milestoneItemText": "绿藤计划到达<color=#6db8a9>25</color>级和<color=#6db8a9>40</color>级后领取",
+  "milestoneTrackId": "act3enemyduel_milestone_update",
+  "entryVideoId": "video/act3enemyduel/entry.mp4",
+  "entryTabText": "对战中心",
+  "matchTabText": "预选赛会场",
   "modeOperationId": "multiOperationMatch",
   "modeStandId": "multiStandMatch",
   "multiPreposedModeId": "soloOperation",
   "entryMusicName": "Duel Channel - 塞壬唱片-MSR/N2V",
-  "milestonePlanName": "青草计划",
+  "milestonePlanName": "绿藤计划",
   "modeCondLockText": "体验{0}模式后开放",
   "modeTimeLockText": "{0}后开放",
   "titlePicRotateTime": 3,
-  "titlePicId": "pic_default_act1enemyduel"
+  "titlePicId": "pic_default_act3enemyduel"
  },
  "env": {
   "atkMul": 1.5,
@@ -3381,7 +6877,871 @@
   ],
   "statusResist": [
    "enemy_15024_dqreid"
-  ]
+  ],
+  "surprise": [
+   "enemy_15034_dqdrp",
+   "enemy_15035_dqbone",
+   "enemy_15036_dqalme",
+   "enemy_15037_dqhtms",
+   "enemy_15038_dqhtbw",
+   "enemy_15039_dqrgrd"
+  ],
+  "globalBuffs": [
+   "enemyduel_report_hurt"
+  ],
+  "envKey": "env_025_act1enemyduel"
+ },
+ "roster": [
+  "enemy_5028_dqlime_2",
+  "enemy_5030_dqpro_3",
+  "enemy_5031_dqrtar_2",
+  "enemy_5032_dqmon",
+  "enemy_5033_dqmstr_2",
+  "enemy_5034_dqield",
+  "enemy_5035_dqveng_2",
+  "enemy_5036_dqger_2",
+  "enemy_5037_dqdbox",
+  "enemy_5038_dqiprr_2",
+  "enemy_5039_dqgint",
+  "enemy_5040_dqmage",
+  "enemy_5041_dqkght",
+  "enemy_5042_dqkght_2",
+  "enemy_5043_dqgscr",
+  "enemy_5044_dqzeni",
+  "enemy_5045_dqjedi_2",
+  "enemy_5046_dqmir",
+  "enemy_5047_dqripr",
+  "enemy_5048_dqingd",
+  "enemy_5050_dqomg",
+  "enemy_5051_dqrwar",
+  "enemy_5052_dqsbr",
+  "enemy_5053_dqllme",
+  "enemy_5055_dqkill",
+  "enemy_15001_dqsmwa",
+  "enemy_15002_dqwing",
+  "enemy_15003_dqltsw",
+  "enemy_15004_dqdhdt",
+  "enemy_15005_dqdsbs",
+  "enemy_15006_dqkrgm",
+  "enemy_15007_dqbear",
+  "enemy_15008_dqspsb",
+  "enemy_15009_dqmgcs",
+  "enemy_15010_dqcadk",
+  "enemy_15011_dqnhst",
+  "enemy_15012_dqbsli",
+  "enemy_15013_dqsnsl",
+  "enemy_15014_dqmmka",
+  "enemy_15015_dqmerr",
+  "enemy_15016_dqdkma",
+  "enemy_15017_dqdwlo",
+  "enemy_15018_dqskzc",
+  "enemy_15019_dqharc",
+  "enemy_15020_dqplas",
+  "enemy_15021_dqdurg",
+  "enemy_15022_dqhvys",
+  "enemy_5054_dqxi",
+  "enemy_15023_dqwlfm",
+  "enemy_15024_dqreid",
+  "enemy_15026_dqmtrf",
+  "enemy_15027_dqmtrs",
+  "enemy_15028_dqmtrb",
+  "enemy_15029_dqfrtu",
+  "enemy_15030_dqsgpr",
+  "enemy_15031_dqhlti",
+  "enemy_15032_dqhrgr",
+  "enemy_15033_dqclif",
+  "enemy_15034_dqdrp",
+  "enemy_15035_dqbone",
+  "enemy_15036_dqalme",
+  "enemy_15037_dqhtms",
+  "enemy_15038_dqhtbw",
+  "enemy_15039_dqrgrd",
+  "enemy_15040_dqrdmn",
+  "enemy_15041_dqgrg",
+  "enemy_15043_dqrckm",
+  "enemy_15044_dqtisd",
+  "enemy_15045_dqrbty",
+  "enemy_15046_dqxts",
+  "enemy_15047_dqwlpl",
+  "enemy_15048_dqdivi",
+  "enemy_15049_dqfrog",
+  "enemy_15051_dqxjl",
+  "enemy_15052_dqboar",
+  "enemy_15053_dqtrtl",
+  "enemy_15054_dqprpn",
+  "enemy_15055_dqrhcr",
+  "enemy_15057_dqmram",
+  "enemy_15058_dqtank",
+  "enemy_15059_dqhmmr",
+  "enemy_15064_dqdru",
+  "enemy_15066_dqdudu",
+  "enemy_15067_dqdidi",
+  "enemy_5029_dqslim",
+  "enemy_15077_dqqzts",
+  "enemy_15078_dqcjld",
+  "enemy_15079_dqkodo",
+  "enemy_15080_dqgtop",
+  "enemy_15081_dqmage",
+  "enemy_15082_dqklr",
+  "enemy_15083_dqymot",
+  "enemy_15084_dqhfly",
+  "enemy_15085_dqji",
+  "enemy_15086_dqcbld",
+  "enemy_15087_dqkkt",
+  "enemy_15088_dqterm",
+  "enemy_15089_dqbgpa",
+  "enemy_15090_dqacpa",
+  "enemy_15091_dqbus",
+  "enemy_15092_dqudg",
+  "enemy_15093_dqzfkl",
+  "enemy_15094_dqgent",
+  "enemy_15095_dqams",
+  "enemy_15068_dqsui",
+  "enemy_15069_dqdeer",
+  "enemy_15070_dqhlgy",
+  "enemy_15071_dqyrzf",
+  "enemy_15072_dqlbgg",
+  "enemy_15073_dqkght",
+  "enemy_15074_dqdght",
+  "enemy_15075_dqzklz",
+  "enemy_15076_dqzmst"
+ ],
+ "pools": {
+  "enemy_5028_dqlime_2": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "antigiant": 50
+  },
+  "enemy_5030_dqpro_3": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "antigiant": 50
+  },
+  "enemy_5031_dqrtar_2": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "antigiant": 50
+  },
+  "enemy_5032_dqmon": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "antigiant": 50
+  },
+  "enemy_5033_dqmstr_2": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "antigiant": 50
+  },
+  "enemy_5034_dqield": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50
+  },
+  "enemy_5035_dqveng_2": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "antigiant": 50
+  },
+  "enemy_5036_dqger_2": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "antigiant": 50
+  },
+  "enemy_5037_dqdbox": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "antigiant": 50
+  },
+  "enemy_5038_dqiprr_2": {
+   "normal": 50,
+   "small": 100,
+   "boss": 50,
+   "nosurprise": 50,
+   "antigiant": 50
+  },
+  "enemy_5039_dqgint": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50
+  },
+  "enemy_5040_dqmage": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "antigiant": 50
+  },
+  "enemy_5041_dqkght": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "antigiant": 50
+  },
+  "enemy_5042_dqkght_2": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "antigiant": 50
+  },
+  "enemy_5043_dqgscr": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "antigiant": 50
+  },
+  "enemy_5044_dqzeni": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "antigiant": 50
+  },
+  "enemy_5045_dqjedi_2": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50
+  },
+  "enemy_5046_dqmir": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50
+  },
+  "enemy_5047_dqripr": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50
+  },
+  "enemy_5048_dqingd": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "antigiant": 50
+  },
+  "enemy_5050_dqomg": {
+   "normal": 50,
+   "small": 100
+  },
+  "enemy_5051_dqrwar": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "antigiant": 50
+  },
+  "enemy_5052_dqsbr": {
+   "normal": 50,
+   "small": 100,
+   "boss": 50,
+   "nosurprise": 50,
+   "antigiant": 50
+  },
+  "enemy_5053_dqllme": {
+   "normal": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "giant": 10
+  },
+  "enemy_5055_dqkill": {
+   "normal": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "antigiant": 50
+  },
+  "enemy_15001_dqsmwa": {
+   "normal": 50,
+   "small": 100
+  },
+  "enemy_15002_dqwing": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "antigiant": 50
+  },
+  "enemy_15003_dqltsw": {
+   "normal": 50,
+   "small": 100,
+   "boss": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "antigiant": 50
+  },
+  "enemy_15004_dqdhdt": {
+   "normal": 50,
+   "small": 100,
+   "boss": 50,
+   "music": 10,
+   "nosurprise": 50,
+   "antigiant": 50
+  },
+  "enemy_15005_dqdsbs": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50
+  },
+  "enemy_15006_dqkrgm": {
+   "normal": 50,
+   "small": 100
+  },
+  "enemy_15007_dqbear": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "antigiant": 50
+  },
+  "enemy_15008_dqspsb": {
+   "normal": 50,
+   "small": 100,
+   "boss": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "antigiant": 50
+  },
+  "enemy_15009_dqmgcs": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "antigiant": 50
+  },
+  "enemy_15010_dqcadk": {
+   "normal": 50,
+   "small": 100,
+   "boss": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "antigiant": 50
+  },
+  "enemy_15011_dqnhst": {
+   "normal": 50,
+   "small": 100,
+   "boss": 50,
+   "nosurprise": 50,
+   "antigiant": 50
+  },
+  "enemy_15012_dqbsli": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "antigiant": 50
+  },
+  "enemy_15013_dqsnsl": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "antigiant": 50
+  },
+  "enemy_15014_dqmmka": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "antigiant": 50
+  },
+  "enemy_15015_dqmerr": {
+   "normal": 50,
+   "small": 100,
+   "boss": 50,
+   "nosurprise": 50,
+   "antigiant": 50
+  },
+  "enemy_15016_dqdkma": {
+   "normal": 50,
+   "small": 100
+  },
+  "enemy_15017_dqdwlo": {
+   "normal": 50,
+   "small": 100
+  },
+  "enemy_15018_dqskzc": {
+   "normal": 50,
+   "small": 100,
+   "boss": 50,
+   "music": 50,
+   "nosurprise": 50
+  },
+  "enemy_15019_dqharc": {
+   "normal": 50,
+   "small": 100,
+   "antigiant": 50
+  },
+  "enemy_15020_dqplas": {
+   "normal": 50,
+   "small": 100
+  },
+  "enemy_15021_dqdurg": {
+   "normal": 50,
+   "small": 100,
+   "boss": 50,
+   "nosurprise": 50,
+   "antigiant": 50
+  },
+  "enemy_15022_dqhvys": {
+   "normal": 50,
+   "small": 100,
+   "boss": 20,
+   "music": 50,
+   "nosurprise": 50,
+   "antigiant": 50
+  },
+  "enemy_5054_dqxi": {
+   "boss": 100,
+   "music": 50,
+   "giant": 10
+  },
+  "enemy_15023_dqwlfm": {
+   "boss": 100,
+   "nosurprise": 50,
+   "giant": 20
+  },
+  "enemy_15024_dqreid": {
+   "boss": 100,
+   "giant": 20
+  },
+  "enemy_15026_dqmtrf": {
+   "normal": 50,
+   "small": 100,
+   "boss": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "antigiant": 50
+  },
+  "enemy_15027_dqmtrs": {
+   "normal": 50,
+   "small": 100
+  },
+  "enemy_15028_dqmtrb": {
+   "normal": 50,
+   "small": 100,
+   "boss": 50,
+   "nosurprise": 50,
+   "antigiant": 50
+  },
+  "enemy_15029_dqfrtu": {
+   "normal": 50,
+   "small": 100,
+   "boss": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "antigiant": 50
+  },
+  "enemy_15030_dqsgpr": {
+   "normal": 50,
+   "small": 100,
+   "boss": 50,
+   "nosurprise": 50,
+   "antigiant": 50
+  },
+  "enemy_15031_dqhlti": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 10
+  },
+  "enemy_15032_dqhrgr": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50
+  },
+  "enemy_15033_dqclif": {
+   "normal": 50,
+   "small": 100,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "giant": 50,
+   "antigiant": 50
+  },
+  "enemy_5029_dqslim": {
+   "normal": 50,
+   "small": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "antigiant": 50
+  },
+  "enemy_15034_dqdrp": {
+   "normal": 50,
+   "small": 50,
+   "music": 250
+  },
+  "enemy_15035_dqbone": {
+   "normal": 50,
+   "small": 50,
+   "music": 250
+  },
+  "enemy_15036_dqalme": {
+   "normal": 50,
+   "small": 50,
+   "music": 250
+  },
+  "enemy_15037_dqhtms": {
+   "normal": 50,
+   "small": 50,
+   "music": 250
+  },
+  "enemy_15038_dqhtbw": {
+   "normal": 50,
+   "small": 50,
+   "music": 250
+  },
+  "enemy_15039_dqrgrd": {
+   "normal": 50,
+   "small": 50,
+   "music": 250
+  },
+  "enemy_15040_dqrdmn": {
+   "normal": 50,
+   "small": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "antigiant": 50
+  },
+  "enemy_15041_dqgrg": {
+   "normal": 50,
+   "small": 50,
+   "music": 50,
+   "nosurprise": 50
+  },
+  "enemy_15043_dqrckm": {
+   "normal": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "giant": 10,
+   "antigiant": 50
+  },
+  "enemy_15044_dqtisd": {
+   "normal": 50,
+   "small": 50,
+   "music": 50,
+   "nosurprise": 50
+  },
+  "enemy_15045_dqrbty": {
+   "normal": 50,
+   "small": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "antigiant": 50
+  },
+  "enemy_15046_dqxts": {
+   "normal": 50,
+   "small": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "antigiant": 50
+  },
+  "enemy_15047_dqwlpl": {
+   "normal": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50
+  },
+  "enemy_15048_dqdivi": {
+   "normal": 50,
+   "small": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "antigiant": 50
+  },
+  "enemy_15049_dqfrog": {
+   "normal": 50,
+   "small": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50,
+   "antigiant": 50
+  },
+  "enemy_15051_dqxjl": {
+   "normal": 50,
+   "small": 50,
+   "music": 50,
+   "nosurprise": 50
+  },
+  "enemy_15052_dqboar": {
+   "normal": 50,
+   "small": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "boss": 50
+  },
+  "enemy_15053_dqtrtl": {
+   "normal": 50,
+   "small": 50,
+   "music": 50,
+   "nosurprise": 50
+  },
+  "enemy_15054_dqprpn": {
+   "normal": 50,
+   "small": 50,
+   "music": 50,
+   "nosurprise": 50
+  },
+  "enemy_15055_dqrhcr": {
+   "normal": 50,
+   "small": 50,
+   "music": 50,
+   "nosurprise": 50
+  },
+  "enemy_15057_dqmram": {
+   "normal": 50,
+   "small": 50,
+   "music": 50,
+   "nosurprise": 50
+  },
+  "enemy_15058_dqtank": {
+   "normal": 50,
+   "small": 50,
+   "music": 50,
+   "nosurprise": 50
+  },
+  "enemy_15059_dqhmmr": {
+   "normal": 50,
+   "small": 50,
+   "music": 50,
+   "nosurprise": 50
+  },
+  "enemy_15064_dqdru": {
+   "normal": 50,
+   "small": 50,
+   "music": 500,
+   "nosurprise": 50
+  },
+  "enemy_15066_dqdudu": {
+   "normal": 50,
+   "small": 50,
+   "music": 500,
+   "nosurprise": 50
+  },
+  "enemy_15067_dqdidi": {
+   "normal": 50,
+   "small": 50,
+   "music": 500,
+   "nosurprise": 50
+  },
+  "enemy_15077_dqqzts": {
+   "normal": 50,
+   "small": 50,
+   "boss": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "antigiant": 50
+  },
+  "enemy_15078_dqcjld": {
+   "normal": 20,
+   "boss": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "antigiant": 50
+  },
+  "enemy_15079_dqkodo": {
+   "normal": 50,
+   "boss": 50,
+   "nosurprise": 50
+  },
+  "enemy_15080_dqgtop": {
+   "normal": 50,
+   "small": 50,
+   "boss": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "antigiant": 50
+  },
+  "enemy_15081_dqmage": {
+   "normal": 50,
+   "small": 50,
+   "boss": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "antigiant": 50
+  },
+  "enemy_15082_dqklr": {
+   "normal": 30,
+   "boss": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "antigiant": 50
+  },
+  "enemy_15083_dqymot": {
+   "normal": 50,
+   "boss": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "antigiant": 50
+  },
+  "enemy_15084_dqhfly": {
+   "normal": 50,
+   "boss": 50,
+   "nosurprise": 50,
+   "antigiant": 50
+  },
+  "enemy_15085_dqji": {
+   "normal": 50,
+   "small": 50,
+   "boss": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "antigiant": 50
+  },
+  "enemy_15086_dqcbld": {
+   "normal": 20,
+   "boss": 50,
+   "nosurprise": 50,
+   "antigiant": 50
+  },
+  "enemy_15087_dqkkt": {
+   "normal": 20,
+   "boss": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "antigiant": 50
+  },
+  "enemy_15088_dqterm": {
+   "normal": 50,
+   "boss": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "antigiant": 50
+  },
+  "enemy_15089_dqbgpa": {
+   "normal": 20,
+   "boss": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "antigiant": 50
+  },
+  "enemy_15090_dqacpa": {
+   "normal": 20,
+   "boss": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "antigiant": 50
+  },
+  "enemy_15091_dqbus": {
+   "normal": 50,
+   "boss": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "antigiant": 50
+  },
+  "enemy_15092_dqudg": {
+   "normal": 20,
+   "boss": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "giant": 50
+  },
+  "enemy_15093_dqzfkl": {
+   "boss": 10,
+   "nosurprise": 10,
+   "giant": 50
+  },
+  "enemy_15094_dqgent": {
+   "normal": 50,
+   "small": 50,
+   "boss": 50,
+   "nosurprise": 50
+  },
+  "enemy_15095_dqams": {
+   "normal": 50,
+   "small": 50,
+   "boss": 50,
+   "music": 50,
+   "nosurprise": 50,
+   "antigiant": 50
+  },
+  "enemy_15068_dqsui": {
+   "boss": 10,
+   "giant": 50
+  },
+  "enemy_15069_dqdeer": {
+   "boss": 10,
+   "giant": 50
+  },
+  "enemy_15070_dqhlgy": {},
+  "enemy_15071_dqyrzf": {},
+  "enemy_15072_dqlbgg": {
+   "boss": 20,
+   "music": 50,
+   "nosurprise": 20,
+   "giant": 50,
+   "antigiant": 10
+  },
+  "enemy_15073_dqkght": {
+   "boss": 20,
+   "music": 50,
+   "nosurprise": 20,
+   "giant": 50,
+   "antigiant": 10
+  },
+  "enemy_15074_dqdght": {},
+  "enemy_15075_dqzklz": {
+   "boss": 20,
+   "music": 50,
+   "nosurprise": 20,
+   "giant": 50,
+   "antigiant": 10
+  },
+  "enemy_15076_dqzmst": {}
  },
  "emoticons": [
   {
@@ -3399,6 +7759,151 @@
     "pic_shock",
     "pic_pray",
     "pic_busk"
+   ]
+  },
+  {
+   "id": "emoticon_foolsday_amiya",
+   "pics": [
+    "pic_foolamiya_01_battle",
+    "pic_foolamiya_02_battle",
+    "pic_foolamiya_03_battle",
+    "pic_foolamiya_04_battle",
+    "pic_foolamiya_05_battle",
+    "pic_foolamiya_06_battle",
+    "pic_foolamiya_01_battle",
+    "pic_foolamiya_01_battle",
+    "pic_foolamiya_01_battle",
+    "pic_foolamiya_02_battle",
+    "pic_foolamiya_02_battle",
+    "pic_foolamiya_02_battle",
+    "pic_foolamiya_03_battle",
+    "pic_foolamiya_03_battle",
+    "pic_foolamiya_03_battle",
+    "pic_foolamiya_04_battle",
+    "pic_foolamiya_04_battle",
+    "pic_foolamiya_04_battle",
+    "pic_foolamiya_05_battle",
+    "pic_foolamiya_05_battle",
+    "pic_foolamiya_05_battle",
+    "pic_foolamiya_06_battle",
+    "pic_foolamiya_06_battle",
+    "pic_foolamiya_06_battle"
+   ]
+  },
+  {
+   "id": "emoticon_foolsday_wisdel",
+   "pics": [
+    "pic_foolwisdel_01_battle",
+    "pic_foolwisdel_02_battle",
+    "pic_foolwisdel_03_battle",
+    "pic_foolwisdel_04_battle",
+    "pic_foolwisdel_05_battle",
+    "pic_foolwisdel_06_battle",
+    "pic_foolwisdel_01_battle",
+    "pic_foolwisdel_01_battle",
+    "pic_foolwisdel_01_battle",
+    "pic_foolwisdel_02_battle",
+    "pic_foolwisdel_02_battle",
+    "pic_foolwisdel_02_battle",
+    "pic_foolwisdel_03_battle",
+    "pic_foolwisdel_03_battle",
+    "pic_foolwisdel_03_battle",
+    "pic_foolwisdel_04_battle",
+    "pic_foolwisdel_04_battle",
+    "pic_foolwisdel_04_battle",
+    "pic_foolwisdel_05_battle",
+    "pic_foolwisdel_05_battle",
+    "pic_foolwisdel_05_battle",
+    "pic_foolwisdel_06_battle",
+    "pic_foolwisdel_06_battle",
+    "pic_foolwisdel_06_battle"
+   ]
+  },
+  {
+   "id": "emoticon_foolsday_doctor",
+   "pics": [
+    "pic_fooldoctor_01_battle",
+    "pic_fooldoctor_02_battle",
+    "pic_fooldoctor_04_battle",
+    "pic_fooldoctor_05_battle",
+    "pic_fooldoctor_06_battle",
+    "pic_fooldoctor_08_battle",
+    "pic_fooldoctor_01_battle",
+    "pic_fooldoctor_01_battle",
+    "pic_fooldoctor_01_battle",
+    "pic_fooldoctor_02_battle",
+    "pic_fooldoctor_02_battle",
+    "pic_fooldoctor_02_battle",
+    "pic_fooldoctor_04_battle",
+    "pic_fooldoctor_04_battle",
+    "pic_fooldoctor_04_battle",
+    "pic_fooldoctor_05_battle",
+    "pic_fooldoctor_05_battle",
+    "pic_fooldoctor_05_battle",
+    "pic_fooldoctor_06_battle",
+    "pic_fooldoctor_06_battle",
+    "pic_fooldoctor_06_battle",
+    "pic_fooldoctor_08_battle",
+    "pic_fooldoctor_08_battle",
+    "pic_fooldoctor_08_battle"
+   ]
+  },
+  {
+   "id": "emoticon_originium_slug",
+   "pics": [
+    "pic_hello",
+    "pic_nice_work",
+    "pic_thanks",
+    "pic_bye",
+    "pic_sorry",
+    "pic_exchange",
+    "pic_exchange",
+    "pic_coming",
+    "pic_hurry",
+    "pic_very_soon",
+    "pic_hello",
+    "pic_hello",
+    "pic_nice_work",
+    "pic_nice_work",
+    "pic_thanks",
+    "pic_thanks",
+    "pic_sorry",
+    "pic_bye",
+    "pic_coming",
+    "pic_sorry",
+    "pic_distrust",
+    "pic_exchange",
+    "pic_ufirst",
+    "pic_nice_work",
+    "pic_coming",
+    "pic_mefirst",
+    "pic_thanks",
+    "pic_hurry",
+    "pic_hurry",
+    "pic_sorry",
+    "pic_very_soon",
+    "pic_very_soon",
+    "pic_bye",
+    "pic_distrust",
+    "pic_distrust",
+    "pic_ufirst",
+    "pic_very_soon",
+    "pic_mefirst",
+    "pic_nice_work_battle",
+    "pic_nice_work_battle",
+    "pic_nice_work_battle",
+    "pic_thanks_battle",
+    "pic_thanks_battle",
+    "pic_thanks_battle",
+    "pic_sorry_battle",
+    "pic_sorry_battle",
+    "pic_sorry_battle",
+    "pic_bye_battle",
+    "pic_bye_battle",
+    "pic_distrust_battle",
+    "pic_distrust_battle",
+    "pic_very_soon_battle",
+    "pic_very_soon_battle"
    ]
   }
  ]

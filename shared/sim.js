@@ -10,9 +10,10 @@
 // data (enemy_database enemy_5054_dqxi / enemy_15023_dqwlfm / enemy_15024_dqreid): see LEADERS below.
 // A battle is deterministic for its line-ups and seed: the server computes the outcome before the bets and every client
 // replays it identically (IEEE-exact arithmetic only: sqrt, + − × ÷; time is counted in whole steps).
-// Globals expected: FIGHTERS (the roster), DUELCFG (the duel config), clamp, lerp.
-const POOL = FIGHTERS;
+// Globals expected: FIGHTERS (every enemy), DUELCFG (data/duelcfg.json: the three events as one), clamp, lerp.
+// The roster is DUELCFG.roster, each enemy with its pool weights (DUELCFG.pools: the highest of the three events') as f.pool.
 const DCFG = DUELCFG, ENV = DCFG.env;
+const POOL = FIGHTERS.filter((f) => DCFG.roster.includes(f.key)).map((f) => ({ ...f, pool: DCFG.pools[f.key] || {} }));
 const AW = 13, AH = 9;                      // playable columns (S … E) and lanes; the forbidden border is drawn around
 const byKey = (k) => POOL.find((f) => f.key === k);
 const dist = (dx, dy) => Math.sqrt(dx * dx + dy * dy);
@@ -410,7 +411,10 @@ function predict(lineups, seed) {
 }
 
 // ---- line-ups: the round's table (target score ± random, types per side, pool) over the official per-unit scores -----
-const POOL_FIELD = { poolNormal: 'normal', poolSmallEnemy: 'small', poolBoss: 'boss' };
+// the pools a round's sides draw from (roundData enemyPoolLeft / Right): 青草城 normal / small / boss; 蜜果城 adds 音乐
+// (music) and 无惊喜 (nosurprise), 绿藤城 巨型领袖 (giant) and its counter (antigiant)
+const POOL_FIELD = { poolNormal: 'normal', poolSmallEnemy: 'small', poolBoss: 'boss', poolMusic: 'music', poolNoSurpriseEnemy: 'nosurprise',
+  poolGiantBoss: 'giant', poolAntiGiantBoss: 'antigiant' };
 const sideScore = (gs) => gs.reduce((s, g) => s + g.f.score * g.n, 0);
 const sidePower = (gs) => gs.reduce((s, g) => s + g.n * g.f.power, 0);
 // (the default generator serves the page's decorations only; the sim passes its own)
@@ -521,8 +525,16 @@ const isStand = (modeId) => !!DCFG.modes[modeId] && DCFG.modes[modeId].modeType 
 const STAND = {
   shieldTurn: DCFG.consts.modeStandShieldTurn ?? 5, cap: DCFG.consts.modeStandRoundNumber ?? 60, npcMaxRight: DCFG.consts.npcMaxCorrectCountInStand ?? 3,
 };
-// the round table's row for round r (1-based)
-const standRow = (rows, r) => rows[Math.min(r, rows.length) - 1];
+// a mode's rounds in turn, each a list of the events' versions of that round (data/duelcfg.json keeps all three events'
+// rounds whole: <roundId>@<act>); a match plays one of them, drawn when the round comes (pickRound)
+function roundTable(modeId) {
+  const by = new Map();
+  for (const r of Object.values(DCFG.rounds)) if (r.modeId === modeId) { if (!by.has(r.round)) by.set(r.round, []); by.get(r.round).push(r); }
+  return [...by.keys()].sort((a, b) => a - b).map((k) => by.get(k).sort((a, b) => (a.act < b.act ? -1 : a.act > b.act ? 1 : 0)));
+}
+const pickRound = (versions, rnd) => versions[Math.floor(rnd() * versions.length)];
+// 竞猜对决: the versions of round r (1-based) — past the table's last, its last
+const standRow = (table, r) => table[Math.min(r, table.length) - 1];
 // a viewer's stand state: rounds guessed right, the 观众保护 (still held; taken in round shieldAt), saved this round
 const standSeat = () => ({ pass: 0, shield: true, shieldAt: 0, saved: false });
 // at the start of round r: past the protected rounds nobody holds a shield any more

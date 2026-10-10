@@ -1,16 +1,20 @@
 // Builds the playable page from web/index.src.html, the scripts, the data and the local asset pack, in two forms:
-//   public/duel-flow.html          one self-contained file: opened as a file it plays offline (the pack inlined)
+//   public/duel-flow.html          one self-contained file: opened as a file it plays offline (the pack and every model
+//                                  inlined)
 //   public/index.html              what the gateway serves: the code only, plus web/src/loader.js, which fetches
-//   public/pack/duel-pack.<hash>.json   the asset pack, named after its content so browsers may cache it for good
+//   public/pack/duel-pack.<hash>.json   the asset pack (screens, sounds, effects, the enemies' portraits and animation
+//                                  roles), named after its content so browsers may cache it for good
+//   public/models/<model>.<hash>.json   an enemy model's skeleton and textures, fetched when a battle needs it (113 models,
+//                                  some 30 MB in all: a battle needs a few)
 // The served files also get brotli (.br) and gzip (.gz) copies, which the gateway sends to browsers that take them.
 //
 // Inputs
 //   web/src/*.js, shared/sim.js        this repository's code
-//   data/duelcfg.json, data/fighters.json   the duel's configuration and roster (generated from the game's data tables)
+//   data/duelcfg.json, data/fighters.json   the duel's configuration and roster (tools/build-data.mjs, from the game's tables)
 //   node_modules/pixi.js, pixi-spine    the renderers (npm install)
 //   <assets>/                           the asset pack, in the repository — see docs/ASSETS.md:
 //     ui.json            the event's exported screens, templates, sprites, clips and UI Spine
-//     models.json        per roster key: { spine: { skel, atlas, pages, pma, anims }, icon }
+//     models/<orig>.json an original enemy's model: { icon, spine: { skel, atlas, pages, pma, anims } }
 //     audio/*.ogg        the event's UI sounds (+ the default BGM, m_nobetnolife.ogg, if present)
 //     fx/*               the textures listed in web/fx-map.json
 //     fonts/             Bender and Novecento wide: not the game's and not in the repository (their authors' free-font
@@ -36,7 +40,7 @@ const FX = JSON.parse(readFileSync(join(ROOT, 'web', 'fx-map.json'), 'utf8'));
 delete FX._comment;
 const need = [
   join(ROOT, 'node_modules', 'pixi.js', 'dist', 'pixi.min.js'), join(ROOT, 'node_modules', 'pixi-spine', 'dist', 'pixi-spine.js'),
-  join(A, 'ui.json'), join(A, 'models.json'), join(A, 'audio'),
+  join(A, 'ui.json'), join(A, 'models'), join(A, 'audio'),
   ...Object.values(FX).map((f) => join(A, 'fx', f)),
 ];
 const missing = need.filter((p) => !existsSync(p));
@@ -76,9 +80,15 @@ async function fontSrc(f) {
 const rd = (p) => readFileSync(p, 'utf8');
 const b64 = (p) => readFileSync(p).toString('base64');
 const safe = (t) => t.replace(/<\/script/gi, '<\\/script');
-// the roster: the committed stats + the local models
-const lite = JSON.parse(rd(join(ROOT, 'data', 'fighters.json'))), models = JSON.parse(rd(join(A, 'models.json')));
-const fighters = lite.filter((f) => models[f.key]).map((f) => ({ ...f, ...models[f.key] }));
+// the roster: the committed stats + each model's portrait and animation roles; the skeletons and textures apart (MODELS)
+const lite = JSON.parse(rd(join(ROOT, 'data', 'fighters.json'))), MODELS = {}, looks = {};
+for (const f of lite) {
+  if (f.model in looks || !existsSync(join(A, 'models', `${f.model}.json`))) continue;
+  const m = JSON.parse(rd(join(A, 'models', `${f.model}.json`)));
+  looks[f.model] = { icon: m.icon, anims: m.spine.anims };
+  MODELS[f.model] = m.spine;
+}
+const fighters = lite.filter((f) => looks[f.model]).map((f) => ({ ...f, ...looks[f.model] }));
 if (fighters.length < lite.length) console.warn(`models for ${fighters.length} of ${lite.length} fighters; the others are left out`);
 const audio = Object.fromEntries(readdirSync(join(A, 'audio')).filter((f) => f.endsWith('.ogg')).sort().map((f) => [f.slice(0, -4), b64(join(A, 'audio', f))]));
 const fxtex = Object.fromEntries(Object.entries(FX).map(([k, f]) => [k, `data:image/${f.endsWith('.jpg') ? 'jpeg' : 'png'};base64,${b64(join(A, 'fx', f))}`]));
@@ -126,12 +136,26 @@ const write = (p, text) => {
 };
 
 // the single file: the pack inlined, the game started at once
-const single = page(safe(`const DUEL = ${ui};\nconst FIGHTERS = ${JSON.stringify(fighters)};\nconst AUDIO = ${JSON.stringify(audio)};\nconst FXTEX = ${JSON.stringify(fxtex)};\nduelMain();`));
+const single = page(safe(`const DUEL = ${ui};\nconst FIGHTERS = ${JSON.stringify(fighters)};\nconst MODELS = ${JSON.stringify(MODELS)};\nconst AUDIO = ${JSON.stringify(audio)};\nconst FXTEX = ${JSON.stringify(fxtex)};\nduelMain();`));
 writeFileSync(join(OUT, 'duel-flow.html'), single);
-console.log(`${rel(join(OUT, 'duel-flow.html'))}  ${mb(single.length)}  (${fighters.length} fighters, ${Object.keys(audio).length} sounds, ${Object.keys(fxtex).length} textures)`);
+console.log(`${rel(join(OUT, 'duel-flow.html'))}  ${mb(single.length)}  (${fighters.length} fighters, ${Object.keys(MODELS).length} models, ${Object.keys(audio).length} sounds, ${Object.keys(fxtex).length} textures)`);
+
+// the served models: one file each, named after its content (older ones removed)
+mkdirSync(join(OUT, 'models'), { recursive: true });
+const modelFiles = {};
+let modelBytes = 0;
+for (const [k, spine] of Object.entries(MODELS)) {
+  const text = JSON.stringify(spine), file = `${k}.${createHash('sha256').update(text).digest('hex').slice(0, 16)}.json`;
+  modelFiles[k] = 'models/' + file;
+  if (!existsSync(join(OUT, 'models', file))) write(join(OUT, 'models', file), text);
+  modelBytes += text.length;
+}
+const keep = new Set(Object.values(modelFiles).map((f) => f.slice(7)));
+for (const f of readdirSync(join(OUT, 'models'))) if (!keep.has(f.replace(/\.(br|gz)$/, ''))) rmSync(join(OUT, 'models', f));
+console.log(`${rel(join(OUT, 'models'))}/  ${Object.keys(modelFiles).length} models, ${mb(modelBytes)}`);
 
 // the served pair: the pack under its content hash (older packs removed), the page pointing at it
-const packText = `{"v":1,"ui":${ui},"fighters":${JSON.stringify(fighters)},"audio":${JSON.stringify(audio)},"fx":${JSON.stringify(fxtex)}}`;
+const packText = `{"v":2,"ui":${ui},"fighters":${JSON.stringify(fighters)},"models":${JSON.stringify(modelFiles)},"audio":${JSON.stringify(audio)},"fx":${JSON.stringify(fxtex)}}`;
 const name = `duel-pack.${createHash('sha256').update(packText).digest('hex').slice(0, 16)}.json`;
 for (const f of readdirSync(join(OUT, 'pack'))) if (/^duel-pack\.[0-9a-f]{16}\.json(\.br|\.gz)?$/.test(f) && !f.startsWith(name)) rmSync(join(OUT, 'pack', f));
 const pk = write(join(OUT, 'pack', name), packText);

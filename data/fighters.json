@@ -1,7 +1,312 @@
 [
  {
+  "key": "enemy_15008_dqspsb",
+  "orig": "enemy_1123_spsbr",
+  "model": "enemy_1123_spsbr",
+  "tag": "tag_single",
+  "name": "清醒的墨魉",
+  "desc": "虽然已经戒酒，但仍然顽皮贪吃，毕竟只是墨魉而已。",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 3000,
+  "atk": 290,
+  "def": 120,
+  "res": 10,
+  "bat": 2,
+  "aspd": 100,
+  "ms": 1.1,
+  "range": 0.8,
+  "mass": 1,
+  "score": 2,
+  "talents": {
+   "yinyang.dynamic": -1,
+   "yinyang.buff_yinyang[same].atk_scale": 0.6,
+   "yinyang.buff_yinyang[diff].atk_scale": 1.4
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "“阿咬”",
+  "abilities": [],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1,
+   "hit": 0.4
+  },
+  "power": 641
+ },
+ {
+  "key": "enemy_15036_dqalme",
+  "orig": "enemy_1246_aslime",
+  "model": "enemy_1246_aslime",
+  "tag": "tag_single",
+  "name": "污水虫虫",
+  "desc": "如果你看到一只，那就不得不怀疑整个下水道里到底有多少只了！",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 2250,
+  "atk": 280,
+  "def": 0,
+  "res": 0,
+  "bat": 1.7,
+  "aspd": 100,
+  "ms": 1,
+  "range": 0.8,
+  "mass": 0,
+  "score": 2,
+  "talents": {
+   "rarity": 1
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "黑水源石虫",
+  "abilities": [
+   {
+    "text": "能够从战场中出现",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.7,
+   "hit": 1.067
+  },
+  "power": 527
+ },
+ {
+  "key": "enemy_15046_dqxts",
+  "orig": "enemy_1395_dhxts",
+  "model": "enemy_1395_dhxts",
+  "tag": "tag_single",
+  "name": "最普通的鼷",
+  "desc": "前面的定语的深层意思是：它们真的到处都是！",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 2000,
+  "atk": 340,
+  "def": 0,
+  "res": 0,
+  "bat": 0.8,
+  "aspd": 100,
+  "ms": 1.9,
+  "range": 0.8,
+  "mass": 1,
+  "score": 2,
+  "talents": {},
+  "skills": [
+   "TL"
+  ],
+  "skillData": {
+   "TL": {
+    "sp": 0,
+    "cd": 0,
+    "init": 0,
+    "bb": {
+     "hp_ratio": 0.01
+    }
+   }
+  },
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "田鼷",
+  "abilities": [
+   {
+    "text": "会攻击周围的阻流阀",
+    "title": false
+   },
+   {
+    "text": "位于受病害污染的田地上时隐匿",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.1,
+   "hit": 0.367
+  },
+  "power": 798
+ },
+ {
+  "key": "enemy_5028_dqlime_2",
+  "orig": "enemy_1004_mslime_2",
+  "model": "enemy_1004_mslime_2",
+  "tag": "tag_single",
+  "name": "流鼻涕虫虫",
+  "desc": "努力地向敌人喷出腐蚀性的鼻涕，呕。",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 2780,
+  "atk": 290,
+  "def": 0,
+  "res": 0,
+  "bat": 3.3,
+  "aspd": 100,
+  "ms": 1,
+  "range": 2.75,
+  "mass": 0,
+  "score": 2,
+  "talents": {
+   "defdown.def": -15
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "酸液源石虫·α",
+  "abilities": [
+   {
+    "text": "每次攻击会降低击中目标的防御",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.333,
+   "hit": 0.833
+  },
+  "power": 428
+ },
+ {
+  "key": "enemy_5029_dqslim",
+  "orig": "enemy_1305_mhslim",
+  "model": "enemy_1007_slime",
+  "tag": "tag_single",
+  "name": "巧克力流心虫虫",
+  "desc": "努力地向敌人喷出滚烫巧克力液，很诱人但是真的很烫。",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "arts",
+  "hp": 1200,
+  "atk": 50,
+  "def": 0,
+  "res": 0,
+  "bat": 2,
+  "aspd": 100,
+  "ms": 0.8,
+  "range": 2.8,
+  "mass": 0,
+  "score": 2,
+  "talents": {
+   "EpDamage.attack@ep_damage_ratio": 1
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "灼热源石虫",
+  "abilities": [
+   {
+    "text": "攻击造成灼燃损伤",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 0.767,
+   "hit": 0.333
+  },
+  "power": 150
+ },
+ {
+  "key": "enemy_5030_dqpro_3",
+  "orig": "enemy_1000_gopro_3",
+  "model": "enemy_1000_gopro_3",
+  "tag": "tag_single",
+  "name": "狗Pro",
+  "desc": "没人知道它为何变得如此狂暴，咬人又快又痛。",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 3000,
+  "atk": 370,
+  "def": 0,
+  "res": 20,
+  "bat": 1.4,
+  "aspd": 100,
+  "ms": 1.9,
+  "range": 0.8,
+  "mass": 0,
+  "score": 2,
+  "talents": {},
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "狂暴的猎狗pro",
+  "abilities": [],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1,
+   "hit": 0.6
+  },
+  "power": 809
+ },
+ {
   "key": "enemy_15012_dqbsli",
   "orig": "enemy_1021_bslime",
+  "model": "enemy_1021_bslime",
+  "tag": "tag_single",
   "name": "易爆源石虫",
   "desc": "不稳定，易爆——就像你的理财组合一样。",
   "rank": "NORMAL",
@@ -19,19 +324,16 @@
   "range": 0.8,
   "mass": 0,
   "score": 3,
-  "pool": {
-   "normal": 50,
-   "small": 100,
-   "boss": 0
-  },
   "talents": {
    "boom.atk_scale": 4
   },
   "skills": [],
   "skillData": {},
+  "spData": null,
   "immune": {
    "stun": false,
-   "frozen": false
+   "frozen": false,
+   "silence": false
   },
   "origName": "高能源石虫",
   "abilities": [
@@ -51,8 +353,226 @@
   "power": 531
  },
  {
+  "key": "enemy_15034_dqdrp",
+  "orig": "enemy_1013_airdrp",
+  "model": "enemy_1013_airdrp",
+  "tag": "tag_single",
+  "name": "喷射背包客",
+  "desc": "很多时候他们落下来只是因为燃料根本不够。",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 3500,
+  "atk": 380,
+  "def": 200,
+  "res": 20,
+  "bat": 1.9,
+  "aspd": 100,
+  "ms": 1,
+  "range": 0.8,
+  "mass": 0,
+  "score": 3,
+  "talents": {
+   "rarity": 1
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "空降兵",
+  "abilities": [
+   {
+    "text": "能够从战场中降落",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1,
+   "hit": 0.433
+  },
+  "power": 877
+ },
+ {
+  "key": "enemy_15035_dqbone",
+  "orig": "enemy_1109_uabone",
+  "model": "enemy_1109_uabone",
+  "tag": "tag_single",
+  "name": "黑土游击弩手",
+  "desc": "雪天的时候他们会试着伪装成岩石，但效果往往不好。",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 5000,
+  "atk": 430,
+  "def": 200,
+  "res": 20,
+  "bat": 2.3,
+  "aspd": 100,
+  "ms": 1,
+  "range": 3.4,
+  "mass": 1,
+  "score": 3,
+  "talents": {
+   "rarity": 1
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "乌萨斯突袭弩手",
+  "abilities": [
+   {
+    "text": "能够从战场中降落",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1,
+   "hit": 0.533
+  },
+  "power": 1014
+ },
+ {
+  "key": "enemy_15084_dqhfly",
+  "orig": "enemy_1269_nhfly",
+  "model": "enemy_1269_nhfly",
+  "tag": "tag_single",
+  "name": "易爆种子",
+  "desc": "不用问工作人员接近这些种子是否安全，没人会去确认的。",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 1200,
+  "atk": 1750,
+  "def": 0,
+  "res": 0,
+  "bat": 2,
+  "aspd": 100,
+  "ms": 0.6,
+  "range": 2,
+  "mass": 0,
+  "score": 3,
+  "talents": {},
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "枯朽之种",
+  "abilities": [
+   {
+    "text": "飞行单位",
+    "title": false
+   },
+   {
+    "text": "接近干员时，自毁并对其造成物理伤害",
+    "title": false
+   }
+  ],
+  "scale": 0.8889,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 0.367,
+   "hit": 0.367
+  },
+  "power": 887
+ },
+ {
+  "key": "enemy_15094_dqgent",
+  "orig": "enemy_1047_sagent",
+  "model": "enemy_1047_sagent",
+  "tag": "tag_single",
+  "name": "橡胶弹狙击手",
+  "desc": "先不论他们能击倒多少对手，会被他们的子弹吵得脑袋嗡嗡响是真的。",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 3500,
+  "atk": 300,
+  "def": 100,
+  "res": 10,
+  "bat": 4,
+  "aspd": 100,
+  "ms": 0.8,
+  "range": 3.8,
+  "mass": 1,
+  "score": 3,
+  "talents": {},
+  "skills": [
+   "stunattack"
+  ],
+  "skillData": {
+   "stunattack": {
+    "sp": 2,
+    "cd": 0,
+    "init": 0,
+    "bb": {
+     "stun": 5
+    }
+   }
+  },
+  "spData": {
+   "type": "INCREASE_WHEN_ATTACK",
+   "max": 2,
+   "init": 0,
+   "inc": 1
+  },
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "狙击步兵",
+  "abilities": [
+   {
+    "text": "攻击2次后，下一次攻击会晕眩目标",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.333,
+   "hit": 0.5
+  },
+  "power": 491
+ },
+ {
   "key": "enemy_15013_dqsnsl",
   "orig": "enemy_1067_snslime",
+  "model": "enemy_1067_snslime",
+  "tag": "tag_single",
   "name": "自爆冰虫",
   "desc": "为什么大家看它的眼神总是冷冰冰？或许因为它自己就很冷冰冰。",
   "rank": "NORMAL",
@@ -70,20 +590,17 @@
   "range": 0.8,
   "mass": 0,
   "score": 4,
-  "pool": {
-   "normal": 50,
-   "small": 100,
-   "boss": 0
-  },
   "talents": {
    "boom.atk_scale": 2,
    "boom.freeze": 10
   },
   "skills": [],
   "skillData": {},
+  "spData": null,
   "immune": {
    "stun": false,
-   "frozen": false
+   "frozen": false,
+   "silence": false
   },
   "origName": "冰爆源石虫",
   "abilities": [
@@ -103,8 +620,590 @@
   "power": 656
  },
  {
+  "key": "enemy_15009_dqmgcs",
+  "orig": "enemy_1350_mgcshp",
+  "model": "enemy_1350_mgcshp",
+  "tag": "tag_single",
+  "name": "星星魔法师",
+  "desc": "对着它们许愿没什么用，它们只能给你好梦一场，好像也不赖。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "arts",
+  "hp": 7000,
+  "atk": 380,
+  "def": 250,
+  "res": 50,
+  "bat": 3.2,
+  "aspd": 100,
+  "ms": 0.7,
+  "range": 4.5,
+  "mass": 2,
+  "score": 5,
+  "talents": {
+   "PowerAttack.attack@max_target": 3
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "风情街“星术师”",
+  "abilities": [
+   {
+    "text": "处于洋红蒸汽中同时攻击3个单位",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1,
+   "hit": 0.5
+  },
+  "power": 1051
+ },
+ {
+  "key": "enemy_15048_dqdivi",
+  "orig": "enemy_1436_dsdivi",
+  "model": "enemy_1436_dsdivi",
+  "tag": "tag_single",
+  "name": "高敏感积藏者",
+  "desc": "一旦受到惊吓就会分裂的海嗣，并且很容易受惊。",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "arts",
+  "hp": 8000,
+  "atk": 190,
+  "def": 150,
+  "res": 35,
+  "bat": 1.6,
+  "aspd": 100,
+  "ms": 1,
+  "range": 2.8,
+  "mass": 2,
+  "score": 5,
+  "talents": {
+   "0.interval": 0.3,
+   "0.hp_ratio": 0.5,
+   "0.offset_bound": 0.2
+  },
+  "skills": [
+   "0"
+  ],
+  "skillData": {
+   "0": {
+    "sp": 0,
+    "cd": 0,
+    "init": 0,
+    "bb": {
+     "enemy_key": "enemy_15048_dqdivi",
+     "offset_bound": 0.3
+    }
+   }
+  },
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "诡核集养者",
+  "abilities": [
+   {
+    "text": "生命值首次低于一半时，分裂自身",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 0.567,
+   "hit": 0.267
+  },
+  "power": 1023
+ },
+ {
+  "key": "enemy_5038_dqiprr_2",
+  "orig": "enemy_1117_liiprr_2",
+  "model": "enemy_1117_liiprr_2",
+  "tag": "tag_single",
+  "name": "衣架射手",
+  "desc": "使用着监狱里的衣架制成的长弓，多用用就顺手了。",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 7000,
+  "atk": 320,
+  "def": 80,
+  "res": 30,
+  "bat": 3,
+  "aspd": 100,
+  "ms": 0.9,
+  "range": 3,
+  "mass": 1,
+  "score": 5,
+  "talents": {
+   "liberty.atk": 0.5,
+   "confinement.times": 4,
+   "confinement.attack_speed": -50,
+   "confinement.max_valid_stack_cnt": -1,
+   "confinement.max_stack_cnt": -1
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "神射手囚犯",
+  "abilities": [
+   {
+    "text": "初始为禁锢状态，禁锢状态下攻击速度降低",
+    "title": false
+   },
+   {
+    "text": "攻击数次后解放，解放后攻击力提升且攻击切换成法术伤害",
+    "title": false
+   },
+   {
+    "text": "优先攻击禁锢装置",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.667,
+   "hit": 0.933
+  },
+  "power": 854
+ },
+ {
+  "key": "enemy_5041_dqkght",
+  "orig": "enemy_1101_plkght",
+  "model": "enemy_1101_plkght",
+  "tag": "tag_single",
+  "name": "保鲜膜骑士",
+  "desc": "呼啸守卫轻型盔甲，以柔克刚，刀枪不入！有效时间不保证。",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 2800,
+  "atk": 300,
+  "def": 100,
+  "res": 0,
+  "bat": 2.4,
+  "aspd": 100,
+  "ms": 0.9,
+  "range": 3,
+  "mass": 1,
+  "score": 5,
+  "talents": {
+   "buff.duration": 30,
+   "buff.def": 3000,
+   "buff.magic_resistance": 95
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "呼啸骑士团学徒",
+  "abilities": [
+   {
+    "text": "初始防御力与法抗大幅提升，持续一定时间",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.333,
+   "hit": 0.467
+  },
+  "power": 553
+ },
+ {
+  "key": "enemy_5044_dqzeni",
+  "orig": "enemy_2022_syzeni",
+  "model": "enemy_2022_syzeni",
+  "tag": "tag_single",
+  "name": "小寄居蟹",
+  "desc": "发现猎物后会停在原地一直吐口水。",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 6000,
+  "atk": 330,
+  "def": 200,
+  "res": 10,
+  "bat": 2.5,
+  "aspd": 100,
+  "ms": 0.9,
+  "range": 3.4,
+  "mass": 2,
+  "score": 5,
+  "talents": {
+   "Attack.duration": 20,
+   "Attack.def": 300
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "固海凿石者",
+  "abilities": [
+   {
+    "text": "攻击范围内首次出现我方单位时，停止移动且防御力提升，持续一定时间",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.333,
+   "hit": 0.533
+  },
+  "power": 912
+ },
+ {
+  "key": "enemy_15038_dqhtbw",
+  "orig": "enemy_1340_bthtbw",
+  "model": "enemy_1340_bthtbw",
+  "tag": "tag_single",
+  "name": "赛场无赖射手",
+  "desc": "扔扔水瓶还能理解，像他们这样掏出武器可就有些过分了。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 15000,
+  "atk": 500,
+  "def": 500,
+  "res": 30,
+  "bat": 3,
+  "aspd": 100,
+  "ms": 0.7,
+  "range": 3.8,
+  "mass": 2,
+  "score": 6,
+  "talents": {
+   "rarity": 1
+  },
+  "skills": [
+   "PowerHit"
+  ],
+  "skillData": {
+   "PowerHit": {
+    "sp": 2,
+    "cd": 0,
+    "init": 0,
+    "bb": {
+     "cost": -1
+    }
+   }
+  },
+  "spData": {
+   "type": "INCREASE_WHEN_ATTACK",
+   "max": 2,
+   "init": 0,
+   "inc": 1
+  },
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "赏金猎人弩手",
+  "abilities": [
+   {
+    "text": " 能够从战场中出现",
+    "title": false
+   },
+   {
+    "text": "优先攻击圣像",
+    "title": false
+   },
+   {
+    "text": "攻击数次后，下一次变为十字溅射伤害，每攻击到一个目标偷取我方1费用",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.433,
+   "hit": 0.533
+  },
+  "power": 1988
+ },
+ {
+  "key": "enemy_5043_dqgscr",
+  "orig": "enemy_1192_krgscr",
+  "model": "enemy_1192_krgscr",
+  "tag": "tag_single",
+  "name": "冰手术师",
+  "desc": "他那双冰冷的手是想伸到谁的领子里？多伸几次会冻死人的！",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "arts",
+  "hp": 5000,
+  "atk": 250,
+  "def": 200,
+  "res": 50,
+  "bat": 4.5,
+  "aspd": 100,
+  "ms": 0.7,
+  "range": 3.2,
+  "mass": 2,
+  "score": 6,
+  "talents": {},
+  "skills": [
+   "coldattack"
+  ],
+  "skillData": {
+   "coldattack": {
+    "sp": 2,
+    "cd": 0,
+    "init": 0,
+    "bb": {
+     "freeze": 5
+    }
+   }
+  },
+  "spData": {
+   "type": "INCREASE_WHEN_ATTACK",
+   "max": 2,
+   "init": 0,
+   "inc": 1
+  },
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "冰原术师",
+  "abilities": [
+   {
+    "text": "同时攻击2个目标",
+    "title": false
+   },
+   {
+    "text": "每攻击2次后下次攻击会对目标施加寒冷",
+    "title": false
+   },
+   {
+    "text": "拥有抵抗",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.167,
+   "hit": 0.5
+  },
+  "power": 589
+ },
+ {
+  "key": "enemy_5052_dqsbr",
+  "orig": "enemy_2043_smsbr",
+  "model": "enemy_2043_smsbr",
+  "tag": "tag_single",
+  "name": "奔跑吧！躯壳！",
+  "desc": "受到伤害后移动速度会提升，所以它可以替我去参加运动会吗？",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 4000,
+  "atk": 400,
+  "def": 200,
+  "res": 0,
+  "bat": 1.5,
+  "aspd": 100,
+  "ms": 1,
+  "range": 0.8,
+  "mass": 1,
+  "score": 6,
+  "talents": {
+   "SpeedUp.move_speed": 3,
+   "SpeedUp.duration": 2,
+   "SpeedUp.cooldown": 5
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "染污躯壳",
+  "abilities": [
+   {
+    "text": "受到伤害后移动速度短暂大幅提升",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.167,
+   "hit": 0.533
+  },
+  "power": 1033
+ },
+ {
+  "key": "enemy_15051_dqxjl",
+  "orig": "enemy_10066_ftxjl",
+  "model": "enemy_10066_ftxjl",
+  "tag": "tag_single",
+  "name": "“巢穴”",
+  "desc": "很可惜，就算头上的蛋真的能变大，它们也没法用来当武器。",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 9000,
+  "atk": 320,
+  "def": 0,
+  "res": 0,
+  "bat": 2,
+  "aspd": 100,
+  "ms": 0.7,
+  "range": 0.8,
+  "mass": 3,
+  "score": 7,
+  "talents": {
+   "growth.add_max_hp_ratio": 4,
+   "growth.time": 30,
+   "growth.add_atk_ratio": 0.8
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "“巢穴”",
+  "abilities": [
+   {
+    "text": "不在我方单位攻击范围时，持续成长，攻击力和最大生命值逐渐提升",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.333,
+   "hit": 0.6
+  },
+  "power": 1039
+ },
+ {
+  "key": "enemy_15053_dqtrtl",
+  "orig": "enemy_1306_mhtrtl",
+  "model": "enemy_1306_mhtrtl",
+  "tag": "tag_single",
+  "name": "勇敢的壳",
+  "desc": "叫这个名字是因为，它们能展现出勇气完全在于背上的壳。",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 14000,
+  "atk": 600,
+  "def": 120,
+  "res": 0,
+  "bat": 4,
+  "aspd": 100,
+  "ms": 0.7,
+  "range": 0.8,
+  "mass": 2,
+  "score": 7,
+  "talents": {
+   "Weakness.damage_resistance": 0.8,
+   "WeaknessUI.value": 0
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "硬甲爪兽",
+  "abilities": [
+   {
+    "text": "弱点部位位于正面，背面所受伤害大幅降低",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.367,
+   "hit": 0.5
+  },
+  "power": 1375
+ },
+ {
   "key": "enemy_5032_dqmon",
   "orig": "enemy_1010_demon",
+  "model": "enemy_1010_demon",
+  "tag": "tag_single",
   "name": "普通的萨卡兹",
   "desc": "类似的萨卡兹佣兵有千千万万，人们从不愿费力去区分他们。",
   "rank": "ELITE",
@@ -122,17 +1221,14 @@
   "range": 0.8,
   "mass": 2,
   "score": 7,
-  "pool": {
-   "normal": 50,
-   "small": 100,
-   "boss": 0
-  },
   "talents": {},
   "skills": [],
   "skillData": {},
+  "spData": null,
   "immune": {
    "stun": false,
-   "frozen": false
+   "frozen": false,
+   "silence": false
   },
   "origName": "萨卡兹大剑手",
   "abilities": [],
@@ -149,6 +1245,8 @@
  {
   "key": "enemy_5034_dqield",
   "orig": "enemy_1006_shield",
+  "model": "enemy_1006_shield",
+  "tag": "tag_single",
   "name": "迟钝的持盾者",
   "desc": "或许因为装备太厚重，他平时的反应很慢，危急时刻的反应也很慢。",
   "rank": "ELITE",
@@ -166,17 +1264,14 @@
   "range": 0.8,
   "mass": 3,
   "score": 7,
-  "pool": {
-   "normal": 50,
-   "small": 100,
-   "boss": 0
-  },
   "talents": {},
   "skills": [],
   "skillData": {},
+  "spData": null,
   "immune": {
    "stun": false,
-   "frozen": false
+   "frozen": false,
+   "silence": false
   },
   "origName": "重装防御者",
   "abilities": [],
@@ -191,8 +1286,832 @@
   "power": 1557
  },
  {
+  "key": "enemy_5037_dqdbox",
+  "orig": "enemy_1118_lidbox",
+  "model": "enemy_1118_lidbox",
+  "tag": "tag_single",
+  "name": "锁链拳手",
+  "desc": "拳手很生气，一旦把这烦人的锁链拿掉，他就能揍翻一切。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 8000,
+  "atk": 300,
+  "def": 300,
+  "res": 0,
+  "bat": 1.2,
+  "aspd": 100,
+  "ms": 1.6,
+  "range": 0.8,
+  "mass": 2,
+  "score": 7,
+  "talents": {
+   "liberty.atk": 0.5,
+   "confinement.times": 4,
+   "confinement.attack_speed": -50,
+   "liberty.def_penetrate": 0.6,
+   "confinement.max_stack_cnt": -1,
+   "confinement.max_valid_stack_cnt": -1
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "拳手囚犯",
+  "abilities": [
+   {
+    "text": "初始为禁锢状态，禁锢状态下攻击速度降低",
+    "title": false
+   },
+   {
+    "text": "攻击数次后解放，解放后攻击力提升并无视目标一定的防御力",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack_grey",
+   "dur": 1,
+   "hit": 0.2
+  },
+  "power": 1500
+ },
+ {
+  "key": "enemy_5047_dqripr",
+  "orig": "enemy_1095_ccripr",
+  "model": "enemy_1095_ccripr",
+  "tag": "tag_single",
+  "name": "窃笑鳄鱼",
+  "desc": "让别人破防的不知道是他的拳头还是他的怪笑。",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 5500,
+  "atk": 320,
+  "def": 380,
+  "res": 10,
+  "bat": 1,
+  "aspd": 100,
+  "ms": 0.8,
+  "range": 0.8,
+  "mass": 2,
+  "score": 7,
+  "talents": {
+   "defdown.def": -10
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "提亚卡乌好战者",
+  "abilities": [
+   {
+    "text": "每次攻击会降低击中目标的防御",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 0.8,
+   "hit": 0.333
+  },
+  "power": 1505
+ },
+ {
+  "key": "enemy_5051_dqrwar",
+  "orig": "enemy_1259_durwar",
+  "model": "enemy_1259_durwar",
+  "tag": "tag_single",
+  "name": "拳击宗师",
+  "desc": "业余救生员经过训练成为拳击宗师，会以诡异的步伐躲避攻击。",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 4000,
+  "atk": 320,
+  "def": 250,
+  "res": 50,
+  "bat": 0.4,
+  "aspd": 100,
+  "ms": 0.95,
+  "range": 0.8,
+  "mass": 2,
+  "score": 7,
+  "talents": {
+   "Evade.prob": 1,
+   "Evade.duration": 10,
+   "Evade.hp_ratio": 0.5
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "湖畔志愿者",
+  "abilities": [
+   {
+    "text": "生命值首次降至一半以下后获得100%物理闪避，持续一段时间",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 0.933,
+   "hit": 0.467
+  },
+  "power": 2062
+ },
+ {
+  "key": "enemy_15030_dqsgpr",
+  "orig": "enemy_1153_dsexcu_2",
+  "model": "enemy_1153_dsexcu_2",
+  "tag": "tag_single",
+  "name": "标枪恐鱼",
+  "desc": "没有了海水的阻力，扎人更疼了。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 12500,
+  "atk": 700,
+  "def": 240,
+  "res": 20,
+  "bat": 3.5,
+  "aspd": 100,
+  "ms": 0.75,
+  "range": 1.7,
+  "mass": 3,
+  "score": 8,
+  "talents": {},
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "富营养的穿刺者",
+  "abilities": [
+   {
+    "text": "优先攻击小范围内当前生命比例最低的目标",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.333,
+   "hit": 0.6
+  },
+  "power": 1699
+ },
+ {
+  "key": "enemy_15041_dqgrg",
+  "orig": "enemy_1191_krgrg_2",
+  "model": "enemy_1191_krgrg_2",
+  "tag": "tag_single",
+  "name": "爆裂冰法师",
+  "desc": "好消息是，他们活着的时候情绪一向很稳定。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "arts",
+  "hp": 7000,
+  "atk": 800,
+  "def": 350,
+  "res": 50,
+  "bat": 2.5,
+  "aspd": 100,
+  "ms": 0.7,
+  "range": 0.8,
+  "mass": 1,
+  "score": 8,
+  "talents": {
+   "boom.atk_scale": 1.5,
+   "boom.freeze": 5,
+   "unbalanced_bleed.damage": 50,
+   "unbalanced_bleed.interval": 0.066,
+   "boom.cold": 5
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "冰原御法者",
+  "abilities": [
+   {
+    "text": "被击倒时对周围所有单位造成法术伤害且施加寒冷",
+    "title": false
+   },
+   {
+    "text": "失衡移动时损失生命。",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.833,
+   "hit": 0.967
+  },
+  "power": 1823
+ },
+ {
+  "key": "enemy_15064_dqdru",
+  "orig": "enemy_1376_ltndru",
+  "model": "enemy_1376_ltndru",
+  "tag": "tag_single",
+  "name": "街头乐队鼓手",
+  "desc": "其貌不扬，但能驾驭的鼓点速度超越常人理解。",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "arts",
+  "hp": 10000,
+  "atk": 250,
+  "def": 250,
+  "res": 50,
+  "bat": 1.8,
+  "aspd": 100,
+  "ms": 0.7,
+  "range": 1,
+  "mass": 2,
+  "score": 8,
+  "talents": {
+   "switchMode.enemy_act29side[buff_depressed].attack_speed": -50,
+   "switchMode.enemy_act29side[buff_depressed].atk": 0.2,
+   "switchMode.enemy_act29side[buff_depressed].move_speed": 0.5,
+   "switchMode.enemy_act29side[buff_depressed].def": 0,
+   "switchMode.enemy_act29side[buff_enthu].attack_speed": 50,
+   "switchMode.enemy_act29side[buff_enthu].move_speed": 2,
+   "switchMode.enemy_act29side[buff_enthu].def": -0.5,
+   "switchMode.enemy_act29side[buff_enthu].atk": 0
+  },
+  "skills": [
+   "aoeAttack",
+   "aoeAttack_enthu"
+  ],
+  "skillData": {
+   "aoeAttack": {
+    "sp": 2,
+    "cd": 0,
+    "init": 0,
+    "bb": {}
+   },
+   "aoeAttack_enthu": {
+    "sp": 2,
+    "cd": 0,
+    "init": 0,
+    "bb": {}
+   }
+  },
+  "spData": {
+   "type": "INCREASE_WHEN_ATTACK",
+   "max": 2,
+   "init": 0,
+   "inc": 1
+  },
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "残党乐团鼓手",
+  "abilities": [
+   {
+    "text": "攻击2次后，下一次攻击对攻击范围内所有目标造成溅射伤害",
+    "title": false
+   },
+   {
+    "text": "在激昂变奏下，攻击范围扩大",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.5,
+   "hit": 0.667
+  },
+  "power": 1358
+ },
+ {
+  "key": "enemy_15015_dqmerr",
+  "orig": "enemy_1143_merrpg",
+  "model": "enemy_1143_merrpg",
+  "tag": "tag_single",
+  "name": "榴弹佣兵",
+  "desc": "他们跑那么快难道是为了追上发射出去的榴弹？",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "ALL",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 3200,
+  "atk": 500,
+  "def": 50,
+  "res": 40,
+  "bat": 2.6,
+  "aspd": 100,
+  "ms": 0.9,
+  "range": 1,
+  "mass": 2,
+  "score": 9,
+  "talents": {
+   "Combat.attack@atk_scale": 2,
+   "MoveSpeedUp.move_speed": 2
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "反装甲步兵",
+  "abilities": [
+   {
+    "text": "可以发射超远距离的榴弹造成群体物理伤害",
+    "title": false
+   },
+   {
+    "text": "发射之后移动速度大幅度提升，只能近战攻击",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack_A",
+   "dur": 1.767,
+   "hit": 0.5
+  },
+  "power": 775
+ },
+ {
+  "key": "enemy_15054_dqprpn",
+  "orig": "enemy_1310_mhprpn",
+  "model": "enemy_1310_mhprpn",
+  "tag": "tag_single",
+  "name": "荒原刺背兽",
+  "desc": "你说有没有一种可能，它们倒着走会更厉害？",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 25000,
+  "atk": 580,
+  "def": 130,
+  "res": 5,
+  "bat": 3.5,
+  "aspd": 100,
+  "ms": 0.7,
+  "range": 1,
+  "mass": 3,
+  "score": 9,
+  "talents": {
+   "Weakness.damage_resistance": 0.75,
+   "QuillSpray.hp_ratio": 0.12,
+   "QuillSpray.atk_scale": 2.4,
+   "QuillSpray.range_radius": 2.8,
+   "WeaknessUI.value": 0
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "棘兽",
+  "abilities": [
+   {
+    "text": "弱点部位位于正面，背面所受伤害降低",
+    "title": false
+   },
+   {
+    "text": "每损失一定生命值向背面半圆范围造成伤害",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 2.167,
+   "hit": 0.967
+  },
+  "power": 1968
+ },
+ {
+  "key": "enemy_15017_dqdwlo",
+  "orig": "enemy_1275_dwlock",
+  "model": "enemy_1275_dwlock",
+  "tag": "tag_single",
+  "name": "凋零萨卡兹",
+  "desc": "枯枝早已道明凋亡的含义。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "arts",
+  "hp": 12000,
+  "atk": 450,
+  "def": 250,
+  "res": 50,
+  "bat": 4,
+  "aspd": 100,
+  "ms": 0.8,
+  "range": 3.5,
+  "mass": 2,
+  "score": 10,
+  "talents": {
+   "empty.attack@ep_damage_ratio": 0.25
+  },
+  "skills": [
+   "DeathEye"
+  ],
+  "skillData": {
+   "DeathEye": {
+    "sp": 0,
+    "cd": 24,
+    "init": 10,
+    "bb": {
+     "hit_duration": 8,
+     "ep_damage_ratio": 2.2,
+     "atk_scale": 0.4
+    }
+   }
+  },
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "萨卡兹王庭军术师",
+  "abilities": [
+   {
+    "text": "攻击额外造成凋亡损伤",
+    "title": false
+   },
+   {
+    "text": "会锁定我方单位持续造成法术伤害，并在释放完成时造成群体凋亡损伤",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.333,
+   "hit": 0.767
+  },
+  "power": 1339
+ },
+ {
+  "key": "enemy_15028_dqmtrb",
+  "orig": "enemy_1097_cclmbjk_2",
+  "model": "enemy_1097_cclmbjk_2",
+  "tag": "tag_single",
+  "name": "机鳄战甲",
+  "desc": "整个村子里最能砍树的选手。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 9500,
+  "atk": 750,
+  "def": 700,
+  "res": 10,
+  "bat": 5,
+  "aspd": 100,
+  "ms": 0.7,
+  "range": 0.8,
+  "mass": 4,
+  "score": 10,
+  "talents": {},
+  "skills": [
+   "cuttree"
+  ],
+  "skillData": {
+   "cuttree": {
+    "sp": 4,
+    "cd": 0,
+    "init": 0,
+    "bb": {
+     "max_cnt": 1
+    }
+   }
+  },
+  "spData": {
+   "type": "INCREASE_WHEN_ATTACK",
+   "max": 4,
+   "init": 0,
+   "inc": 1
+  },
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "提亚卡乌破坏王",
+  "abilities": [
+   {
+    "text": "若干次攻击后破坏巨蕈或木桩地面，使其无法被部署",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 2.7,
+   "hit": 1.433
+  },
+  "power": 1559
+ },
+ {
+  "key": "enemy_15037_dqhtms",
+  "orig": "enemy_1341_bthtms",
+  "model": "enemy_1341_bthtms",
+  "tag": "tag_single",
+  "name": "赛场流氓",
+  "desc": "冲进赛场的理由不是对比赛不满，他们就是喜欢制造混乱。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "arts",
+  "hp": 15000,
+  "atk": 650,
+  "def": 500,
+  "res": 50,
+  "bat": 2.5,
+  "aspd": 100,
+  "ms": 0.8,
+  "range": 0.8,
+  "mass": 5,
+  "score": 10,
+  "talents": {
+   "ReduceCost.max_cost": 10,
+   "rarity": 1
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "赏金猎人扰乱者",
+  "abilities": [
+   {
+    "text": " 能够从战场中出现",
+    "title": false
+   },
+   {
+    "text": "攻击造成法术伤害",
+    "title": false
+   },
+   {
+    "text": "每有一个扰乱者在场时我方费用上限降低一定数值",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.667,
+   "hit": 0.7
+  },
+  "power": 2589
+ },
+ {
+  "key": "enemy_15052_dqboar",
+  "orig": "enemy_1309_mhboar",
+  "model": "enemy_1309_mhboar",
+  "tag": "tag_single",
+  "name": "狂躁觅食兽",
+  "desc": "看起来它们已经饿了一段时间了，最好不要挡道......",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 25000,
+  "atk": 600,
+  "def": 20,
+  "res": 0,
+  "bat": 4,
+  "aspd": 100,
+  "ms": 0.35,
+  "range": 0.8,
+  "mass": 2,
+  "score": 10,
+  "talents": {
+   "Rush.mhboar_t[trigger].move_speed": 0.333,
+   "Rush.mhboar_t[trigger].interval": 0.333,
+   "Rush.mhboar_t[trigger].trig_cnt": 30,
+   "Rush.mhboar_t_predelay.predelay": 3,
+   "FirstAttack.atk_scale": 700,
+   "Crash.atk_scale": 700,
+   "Crash.stun": 0
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "凶豕兽",
+  "abilities": [
+   {
+    "text": "只能被阻挡数大于等于2的单位阻挡",
+    "title": false
+   },
+   {
+    "text": "冲撞时逐渐加速，并对经过与阻挡自身的目标根据移动速度造成伤害",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 0.8,
+   "hit": 0.233
+  },
+  "power": 1705
+ },
+ {
+  "key": "enemy_5033_dqmstr_2",
+  "orig": "enemy_1044_zomstr_2",
+  "model": "enemy_1044_zomstr_2",
+  "tag": "tag_single",
+  "name": "源石的腿脚",
+  "desc": "他已然成为源石的傀儡，他不被允许倒下。",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 11000,
+  "atk": 650,
+  "def": 200,
+  "res": 30,
+  "bat": 3,
+  "aspd": 100,
+  "ms": 0.65,
+  "range": 0.8,
+  "mass": 2,
+  "score": 10,
+  "talents": {},
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "宿主流浪者",
+  "abilities": [
+   {
+    "text": "能够自然回复生命",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.533,
+   "hit": 0.867
+  },
+  "power": 1656
+ },
+ {
+  "key": "enemy_5046_dqmir",
+  "orig": "enemy_1300_ymmir",
+  "model": "enemy_1300_ymmir_2",
+  "tag": "tag_single",
+  "name": "镜子机关枪",
+  "desc": "拥有金酒之杯的镜之术师。等他蓄力完毕会发生恐怖的事。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "arts",
+  "hp": 10000,
+  "atk": 400,
+  "def": 200,
+  "res": 40,
+  "bat": 2.5,
+  "aspd": 100,
+  "ms": 0.8,
+  "range": 3,
+  "mass": 3,
+  "score": 10,
+  "talents": {},
+  "skills": [
+   "Guide"
+  ],
+  "skillData": {
+   "Guide": {
+    "sp": 0,
+    "cd": 35,
+    "init": 10,
+    "bb": {
+     "anim_duration": 5,
+     "atk_scale": 2,
+     "duration": 20,
+     "attack_speed": 100
+    }
+   }
+  },
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "山海众窥魅人",
+  "abilities": [
+   {
+    "text": "会持续锁定我方单位并在释放完成时造成一次高额法术伤害，之后攻击速度提升",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.5,
+   "hit": 0.633
+  },
+  "power": 1386
+ },
+ {
   "key": "enemy_15011_dqnhst",
   "orig": "enemy_1270_nhstlk",
+  "model": "enemy_1270_nhstlk",
+  "tag": "tag_single",
   "name": "食腐野兽",
   "desc": "以腐烂为食的腐烂造物，得阻止它们啃自己的尾巴，不然就没个完了！",
   "rank": "ELITE",
@@ -210,20 +2129,17 @@
   "range": 0.8,
   "mass": 2,
   "score": 11,
-  "pool": {
-   "normal": 50,
-   "small": 100,
-   "boss": 0
-  },
   "talents": {
    "Bleeding.attack@bleeding_damage": 100,
    "Bleeding.attack@duration": 10
   },
   "skills": [],
   "skillData": {},
+  "spData": null,
   "immune": {
    "stun": false,
-   "frozen": false
+   "frozen": false,
+   "silence": false
   },
   "origName": "逐腐兽",
   "abilities": [
@@ -243,8 +2159,295 @@
   "power": 1945
  },
  {
+  "key": "enemy_15057_dqmram",
+  "orig": "enemy_1274_stmram_2",
+  "model": "enemy_1274_stmram_2",
+  "tag": "tag_single",
+  "name": "勤奋的钻头",
+  "desc": "只要敲打它们足够多次，它们就会判定那是需要加大功率的信号。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 13500,
+  "atk": 750,
+  "def": 800,
+  "res": 20,
+  "bat": 3,
+  "aspd": 100,
+  "ms": 0.7,
+  "range": 0.8,
+  "mass": 3,
+  "score": 11,
+  "talents": {
+   "Rage.attack_speed": 100,
+   "Rage.move_speed": 1
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "极温蒸汽战车",
+  "abilities": [
+   {
+    "text": "生命值降至一半时攻击速度和移动速度大幅提升，且免疫大部分控制效果",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 2,
+   "hit": 1.067
+  },
+  "power": 2549
+ },
+ {
+  "key": "enemy_5035_dqveng_2",
+  "orig": "enemy_1025_reveng_2",
+  "model": "enemy_1025_reveng_2",
+  "tag": "tag_single",
+  "name": "“火苗与软钢”",
+  "desc": "你知道他的刀变成红色意味着什么。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 18000,
+  "atk": 480,
+  "def": 230,
+  "res": 50,
+  "bat": 2.3,
+  "aspd": 100,
+  "ms": 0.65,
+  "range": 0.8,
+  "mass": 2,
+  "score": 11,
+  "talents": {
+   "atkup.atk": 1.8
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "复仇者",
+  "abilities": [
+   {
+    "text": "生命值降至一半以下时攻击力大幅度提升",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.5,
+   "hit": 0.667
+  },
+  "power": 2207
+ },
+ {
+  "key": "enemy_15010_dqcadk",
+  "orig": "enemy_1184_cadkgt",
+  "model": "enemy_1184_cadkgt",
+  "tag": "tag_single",
+  "name": "点灯骑士",
+  "desc": "他们点灯靠的是法术，可不是什么骑士风度。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "arts",
+  "hp": 7500,
+  "atk": 350,
+  "def": 300,
+  "res": 60,
+  "bat": 3.2,
+  "aspd": 100,
+  "ms": 0.7,
+  "range": 3.2,
+  "mass": 4,
+  "score": 12,
+  "talents": {},
+  "skills": [
+   "ChargeAttack"
+  ],
+  "skillData": {
+   "ChargeAttack": {
+    "sp": 0,
+    "cd": 25,
+    "init": 10,
+    "bb": {
+     "duration": 7,
+     "atk_scale": 2.5,
+     "range_radius": 3.2
+    }
+   }
+  },
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "散华骑士团学徒",
+  "abilities": [
+   {
+    "text": "【微光之触】蓄力一段时间后对目标及其周围所有单位造成大量法术伤害",
+    "title": false
+   },
+   {
+    "text": "蓄力时失去隐匿",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.833,
+   "hit": 0.667
+  },
+  "power": 1095
+ },
+ {
+  "key": "enemy_15039_dqrgrd",
+  "orig": "enemy_1339_bhrgrd",
+  "model": "enemy_1339_bhrgrd",
+  "tag": "tag_single",
+  "name": "过激的竞猜者",
+  "desc": "“比起等着下注结果，我们直接上去打趴对面不就得了？”",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 20000,
+  "atk": 500,
+  "def": 800,
+  "res": 0,
+  "bat": 4,
+  "aspd": 100,
+  "ms": 0.6,
+  "range": 0.8,
+  "mass": 6,
+  "score": 12,
+  "talents": {
+   "rarity": 1
+  },
+  "skills": [
+   "CostHealHit"
+  ],
+  "skillData": {
+   "CostHealHit": {
+    "sp": 1,
+    "cd": 0,
+    "init": 0,
+    "bb": {
+     "cost": -3,
+     "hp_ratio": 0.05
+    }
+   }
+  },
+  "spData": {
+   "type": "INCREASE_WHEN_ATTACK",
+   "max": 1,
+   "init": 0,
+   "inc": 1
+  },
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "荒原劫掠者",
+  "abilities": [
+   {
+    "text": " 能够从战场中出现",
+    "title": false
+   },
+   {
+    "text": "攻击数次，偷取我方干员3费用，并回复一定生命值",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.667,
+   "hit": 0.533
+  },
+  "power": 2092
+ },
+ {
+  "key": "enemy_15078_dqcjld",
+  "orig": "enemy_10052_cjshld",
+  "model": "enemy_10052_cjshld",
+  "tag": "tag_single",
+  "name": "“食器时代”",
+  "desc": "提问：它们背上的巨大器皿究竟是用来干什么的？",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 3000,
+  "atk": 800,
+  "def": 3000,
+  "res": 90,
+  "bat": 3,
+  "aspd": 100,
+  "ms": 0.5,
+  "range": 0.8,
+  "mass": 4,
+  "score": 12,
+  "talents": {},
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "“果腹”",
+  "abilities": [
+   {
+    "text": "更容易受到攻击",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.667,
+   "hit": 0.767
+  },
+  "power": 2285
+ },
+ {
   "key": "enemy_15022_dqhvys",
   "orig": "enemy_1160_hvyslr",
+  "model": "enemy_1160_hvyslr",
+  "tag": "tag_single",
   "name": "过气水手",
   "desc": "即使早就因为酒驾被赶下了船，他依然打扮得像个水手。",
   "rank": "ELITE",
@@ -262,11 +2465,6 @@
   "range": 0.8,
   "mass": 4,
   "score": 13,
-  "pool": {
-   "normal": 50,
-   "small": 100,
-   "boss": 0
-  },
   "talents": {
    "Drown.damage": 1000
   },
@@ -283,9 +2481,16 @@
     }
    }
   },
+  "spData": {
+   "type": "INCREASE_WHEN_ATTACK",
+   "max": 3,
+   "init": 0,
+   "inc": 1
+  },
   "immune": {
    "stun": false,
-   "frozen": false
+   "frozen": false,
+   "silence": false
   },
   "origName": "码头水手",
   "abilities": [
@@ -309,8 +2514,1511 @@
   "power": 2098
  },
  {
+  "key": "enemy_15055_dqrhcr",
+  "orig": "enemy_1307_mhrhcr",
+  "model": "enemy_1307_mhrhcr_2",
+  "tag": "tag_single",
+  "name": "石头脑袋",
+  "desc": "如果你看到它们抬不起头，那十有八九不是因为它们有愧疚感。",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 12000,
+  "atk": 600,
+  "def": 140,
+  "res": 0,
+  "bat": 4,
+  "aspd": 100,
+  "ms": 0.7,
+  "range": 1,
+  "mass": 2,
+  "score": 13,
+  "talents": {
+   "Weakness.damage_resistance": 0.8,
+   "WeaknessUI.value": 0
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "岩冠兽",
+  "abilities": [
+   {
+    "text": "弱点部位位于背面，正面所受伤害大幅降低",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.333,
+   "hit": 0.5
+  },
+  "power": 1290
+ },
+ {
+  "key": "enemy_15077_dqqzts",
+  "orig": "enemy_1394_dhzts",
+  "model": "enemy_1394_dhzts",
+  "tag": "tag_single",
+  "name": "群集之瘴",
+  "desc": "如果这种化物会说话，它们的口号也许是“大地给予我力量！”吧。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 10000,
+  "atk": 750,
+  "def": 200,
+  "res": 30,
+  "bat": 2.5,
+  "aspd": 100,
+  "ms": 0.5,
+  "range": 0.9,
+  "mass": 3,
+  "score": 13,
+  "talents": {
+   "Reborning.duration": 5,
+   "Reborning.value": -10,
+   "Reborning.damage_magic": 0.1,
+   "Reborning.def_add": 0.3,
+   "Reborning.interval": 0.5
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "瘴",
+  "abilities": [
+   {
+    "text": "重生",
+    "title": false
+   },
+   {
+    "text": "重生时持续吸收脚下田地的病害污染，根据吸收量提升自己防御力，并使自身攻击附带法术伤害",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.333,
+   "hit": 0.833
+  },
+  "power": 1857
+ },
+ {
+  "key": "enemy_15081_dqmage",
+  "orig": "enemy_1128_spmage",
+  "model": "enemy_1128_spmage",
+  "tag": "tag_single",
+  "name": "“睡眠不足”",
+  "desc": "主办方安排的医疗团队怎么也治不好它们的失眠。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "arts",
+  "hp": 8000,
+  "atk": 500,
+  "def": 100,
+  "res": 60,
+  "bat": 4,
+  "aspd": 100,
+  "ms": 0.8,
+  "range": 2.5,
+  "mass": 3,
+  "score": 13,
+  "talents": {
+   "yinyang.dynamic": 1,
+   "yinyang.buff_yinyang[same].atk_scale": 0.6,
+   "yinyang.buff_yinyang[diff].atk_scale": 1.4
+  },
+  "skills": [
+   "ChargeAttack"
+  ],
+  "skillData": {
+   "ChargeAttack": {
+    "sp": 0,
+    "cd": 60,
+    "init": 10,
+    "bb": {
+     "atk_scale": 2,
+     "duration": 5
+    }
+   }
+  },
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "“妒”",
+  "abilities": [
+   {
+    "text": "可以使用蓄力攻击，若未被打断则造成法术伤害并使目标明晦属性变化",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 2,
+   "hit": 0.8
+  },
+  "power": 1067
+ },
+ {
+  "key": "enemy_15095_dqams",
+  "orig": "enemy_2093_skzams",
+  "model": "enemy_2093_skzams",
+  "tag": "tag_single",
+  "name": "迷茫的合声",
+  "desc": "误打误撞走进赛场，稀里糊涂成了选手，现在它们也只能走一步算一步了。",
+  "rank": "BOSS",
+  "levelType": "BOSS",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "arts",
+  "hp": 60000,
+  "atk": 300,
+  "def": 0,
+  "res": 0,
+  "bat": 5,
+  "aspd": 100,
+  "ms": 0.9,
+  "range": 8,
+  "mass": 10,
+  "score": 13,
+  "talents": {},
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "终曲合声",
+  "abilities": [
+   {
+    "text": "进入保护目标后，掉落随机收藏品，剩余生命值将继承至下次作战中",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 3.967,
+   "hit": 2.067
+  },
+  "power": 1643
+ },
+ {
+  "key": "enemy_15004_dqdhdt",
+  "orig": "enemy_1396_dhdts",
+  "model": "enemy_1396_dhdts",
+  "tag": "tag_single",
+  "name": "硕鼷",
+  "desc": "和人一样高的鼷兽只是传说，并不真实存在。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 19000,
+  "atk": 700,
+  "def": 200,
+  "res": 20,
+  "bat": 3,
+  "aspd": 100,
+  "ms": 0.3,
+  "range": 0.8,
+  "mass": 3,
+  "score": 14,
+  "talents": {
+   "SpeedUp.move_speed": 3,
+   "SpeedUp.duration": 5,
+   "SpeedUp.cooldown": 10,
+   "AuraHit.hp_ratio": 0.5
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "田鼷力士",
+  "abilities": [
+   {
+    "text": "只能被阻挡数大于等于3的单位阻挡",
+    "title": false
+   },
+   {
+    "text": "受到伤害后奔跑，移动速度短暂大幅提升",
+    "title": false
+   },
+   {
+    "text": "经过阻流阀时对其造成高额伤害",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.667,
+   "hit": 0.6
+  },
+  "power": 2208
+ },
+ {
+  "key": "enemy_15058_dqtank",
+  "orig": "enemy_1272_nhtank",
+  "model": "enemy_1272_nhtank",
+  "tag": "tag_single",
+  "name": "改装排污车",
+  "desc": "如果不慎沾染污秽，竞赛主办方不提供清洁协助，敬请注意。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "ALL",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 12000,
+  "atk": 750,
+  "def": 750,
+  "res": 10,
+  "bat": 4.5,
+  "aspd": 100,
+  "ms": 0.7,
+  "range": 2.2,
+  "mass": 4,
+  "score": 14,
+  "talents": {
+   "Empty.attack@chuang_atk_scale": 2,
+   "Empty.sp": 2
+  },
+  "skills": [
+   "PollutedRangedAtk"
+  ],
+  "skillData": {
+   "PollutedRangedAtk": {
+    "sp": 2,
+    "cd": -1,
+    "init": -1,
+    "bb": {
+     "polluted_damage_low": 100,
+     "polluted_damage_high": 100,
+     "projectile_delay_time": 10,
+     "range_radius": 4,
+     "projectile_life_time": 10
+    }
+   }
+  },
+  "spData": {
+   "type": "INCREASE_WHEN_ATTACK",
+   "max": 2,
+   "init": 2,
+   "inc": 1
+  },
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "萨卡兹枯朽战车",
+  "abilities": [
+   {
+    "text": "只攻击地面单位",
+    "title": false
+   },
+   {
+    "text": "近战攻击造成更高伤害",
+    "title": false
+   },
+   {
+    "text": "数次攻击后，下次攻击释放污染秽蚀",
+    "title": false
+   }
+  ],
+  "scale": 0.8889,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1,
+   "hit": 0.5
+  },
+  "power": 1882
+ },
+ {
+  "key": "enemy_15002_dqwing",
+  "orig": "enemy_1388_wingnt",
+  "model": "enemy_1388_wingnt",
+  "tag": "tag_single",
+  "name": "巨大雪球投手",
+  "desc": "郑重承诺：本场战斗不率先使用冷兵器。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 10000,
+  "atk": 800,
+  "def": 700,
+  "res": 20,
+  "bat": 3,
+  "aspd": 100,
+  "ms": 0.7,
+  "range": 1,
+  "mass": 4,
+  "score": 15,
+  "talents": {
+   "FirstAttack.attack@first_atk_scale": 1.5
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "“投石机”",
+  "abilities": [
+   {
+    "text": "可以抛出巨大雪球造成十字溅射伤害",
+    "title": false
+   },
+   {
+    "text": "抛出雪球后只能进行近战攻击",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "A_Attack",
+   "dur": 1.4,
+   "hit": 0.567
+  },
+  "power": 2183
+ },
+ {
+  "key": "enemy_15019_dqharc",
+  "orig": "enemy_1133_harchn",
+  "model": "enemy_1133_harchn",
+  "tag": "tag_single",
+  "name": "大喷蛛",
+  "desc": "还好召唤出来的不是小喷蛛，只是畸变赘生物。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 15000,
+  "atk": 600,
+  "def": 300,
+  "res": 0,
+  "bat": 3,
+  "aspd": 100,
+  "ms": 0.8,
+  "range": 3,
+  "mass": 4,
+  "score": 15,
+  "talents": {
+   "deathrattle.enemy_key": 0,
+   "deathrattle.cnt": 4,
+   "deathrattle.offset_bound": 0.2,
+   "deathrattle.delay": 0.2
+  },
+  "skills": [
+   "SummonToken"
+  ],
+  "skillData": {
+   "SummonToken": {
+    "sp": 0,
+    "cd": 5,
+    "init": 5,
+    "bb": {
+     "enemy_key": "enemy_15020_dqplas",
+     "cnt": 1
+    }
+   }
+  },
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "变异巨岩蛛",
+  "abilities": [
+   {
+    "text": "周期性分裂一个",
+    "title": false
+   },
+   {
+    "text": "死亡时分裂四个",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.5,
+   "hit": 0.7
+  },
+  "power": 1837
+ },
+ {
+  "key": "enemy_15027_dqmtrs",
+  "orig": "enemy_1060_emouse_2",
+  "model": "enemy_1060_emouse_2",
+  "tag": "tag_single",
+  "name": "玻璃球打手",
+  "desc": "戴着墨镜也许是为了防止护盾的碎片扎到眼睛。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 4000,
+  "atk": 800,
+  "def": 250,
+  "res": 20,
+  "bat": 3.2,
+  "aspd": 100,
+  "ms": 0.9,
+  "range": 0.8,
+  "mass": 2,
+  "score": 15,
+  "talents": {
+   "shield.dynamic": 3334,
+   "shield.def": 1750,
+   "speedup.move_speed": 2
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "灰尾香主",
+  "abilities": [
+   {
+    "text": "屏障存在时大幅提升防御力",
+    "title": false
+   },
+   {
+    "text": "屏障被摧毁时大幅提升移动速度",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 2,
+   "hit": 0.6
+  },
+  "power": 1081
+ },
+ {
+  "key": "enemy_15031_dqhlti",
+  "orig": "enemy_10044_wintun_2",
+  "model": "enemy_10044_wintun_2",
+  "tag": "tag_single",
+  "name": "假酒海盗",
+  "desc": "假酒害人，害的最好都是你的敌人。",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 10500,
+  "atk": 1000,
+  "def": 500,
+  "res": 20,
+  "bat": 3,
+  "aspd": 100,
+  "ms": 0.5,
+  "range": 0.8,
+  "mass": 3,
+  "score": 15,
+  "talents": {
+   "1.move_speed": 3
+  },
+  "skills": [
+   "BlockedBoom"
+  ],
+  "skillData": {
+   "BlockedBoom": {
+    "sp": 0,
+    "cd": 0,
+    "init": 0,
+    "bb": {
+     "attack_speed": 100,
+     "prob": 0.8,
+     "fixed_duration": 30,
+     "blockee_atk_scale": 2.8
+    }
+   }
+  },
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "朗姆酒推荐者",
+  "abilities": [
+   {
+    "text": "携带酒桶时移动速度提升",
+    "title": false
+   },
+   {
+    "text": "首次攻击消耗酒桶造成大量物理伤害并生成一片区域，区域内敌人攻击速度提升且获得物理闪避",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.467,
+   "hit": 0.7
+  },
+  "power": 2301
+ },
+ {
+  "key": "enemy_15040_dqrdmn",
+  "orig": "enemy_1114_rgrdmn_2",
+  "model": "enemy_1114_rgrdmn_2",
+  "tag": "tag_single",
+  "name": "虹吸巨刃",
+  "desc": "他们模糊的意识中只剩一句命令：“不许倒下！”",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "arts",
+  "hp": 14000,
+  "atk": 700,
+  "def": 220,
+  "res": 60,
+  "bat": 5,
+  "aspd": 100,
+  "ms": 0.8,
+  "range": 1.6,
+  "mass": 3,
+  "score": 15,
+  "talents": {
+   "vampire.heal_scale": 1.5,
+   "vampire.attack@max_target": 3
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "萨卡兹宿主卫巢百夫长",
+  "abilities": [
+   {
+    "text": "同时攻击三个目标",
+    "title": false
+   },
+   {
+    "text": "恢复攻击总伤害一定比例的生命值",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 3.5,
+   "hit": 1.133
+  },
+  "power": 1616
+ },
+ {
+  "key": "enemy_15066_dqdudu",
+  "orig": "enemy_1417_mmdudu",
+  "model": "enemy_1417_mmdudu",
+  "tag": "tag_single",
+  "name": "街头乐队贝斯手",
+  "desc": "身处低音区不应该是被忽视的理由，他们会让你明白原因的。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "arts",
+  "hp": 12000,
+  "atk": 600,
+  "def": 300,
+  "res": 60,
+  "bat": 5,
+  "aspd": 100,
+  "ms": 0.8,
+  "range": 2.6,
+  "mass": 4,
+  "score": 15,
+  "talents": {},
+  "skills": [
+   "RockYou"
+  ],
+  "skillData": {
+   "RockYou": {
+    "sp": 0,
+    "cd": 10,
+    "init": 0,
+    "bb": {
+     "hit_interval": 1,
+     "dot_value": 150,
+     "dot_ep_value": 80
+    }
+   }
+  },
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "自由佣兵“贝斯”",
+  "abilities": [
+   {
+    "text": "选择一个我方单位持续施法，对目标及稳固锁链连接的所有干员持续造成法术伤害和灼燃损伤",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.767,
+   "hit": 0.8
+  },
+  "power": 1451
+ },
+ {
+  "key": "enemy_15091_dqbus",
+  "orig": "enemy_1263_durbus",
+  "model": "enemy_1263_durbus",
+  "tag": "tag_single",
+  "name": "度假区越野车",
+  "desc": "驾驶员工会严正抗议一切针对司机的攻击行为。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 15000,
+  "atk": 750,
+  "def": 500,
+  "res": 10,
+  "bat": 3.5,
+  "aspd": 100,
+  "ms": 2,
+  "range": 0.8,
+  "mass": 4,
+  "score": 15,
+  "talents": {
+   "Bus.max_cnt": 3
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "全封闭沙滩车",
+  "abilities": [
+   {
+    "text": "只能被阻挡数大于等于3的单位阻挡",
+    "title": false
+   },
+   {
+    "text": "周围有领袖以外的非机械敌人时会将其装载为乘客（最多3个），自身被击败时释放出乘客",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 2.333,
+   "hit": 1.267
+  },
+  "power": 2154
+ },
+ {
+  "key": "enemy_5031_dqrtar_2",
+  "orig": "enemy_1024_mortar_2",
+  "model": "enemy_1024_mortar_2",
+  "tag": "tag_single",
+  "name": "迫击炮弹投手",
+  "desc": "有时候，他真的很希望自己抛射的不是炮弹，而是卷心菜。",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 5000,
+  "atk": 550,
+  "def": 150,
+  "res": 0,
+  "bat": 4.5,
+  "aspd": 100,
+  "ms": 0.8,
+  "range": 7,
+  "mass": 2,
+  "score": 15,
+  "talents": {},
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "炮击组长",
+  "abilities": [
+   {
+    "text": "超远距离攻击",
+    "title": false
+   },
+   {
+    "text": "炮弹能对目标及其周围八格内的所有我方单位造成伤害",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.2,
+   "hit": 0.533
+  },
+  "power": 757
+ },
+ {
+  "key": "enemy_5040_dqmage",
+  "orig": "enemy_1241_ltmage",
+  "model": "enemy_1241_ltmage",
+  "tag": "tag_single",
+  "name": "扩音术师",
+  "desc": "面具内置扩音器能使声音被更多人听到，这不是理所当然的吗。",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "arts",
+  "hp": 7000,
+  "atk": 600,
+  "def": 160,
+  "res": 65,
+  "bat": 7,
+  "aspd": 100,
+  "ms": 0.6,
+  "range": 3.2,
+  "mass": 2,
+  "score": 15,
+  "talents": {
+   "AOEDamage.atk_scale": 1,
+   "AOEDamage.range_id": 0
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "高塔术师",
+  "abilities": [
+   {
+    "text": "同时攻击2个目标",
+    "title": false
+   },
+   {
+    "text": "攻击重整束流之外的目标时，造成溅射伤害",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.2,
+   "hit": 0.567
+  },
+  "power": 869
+ },
+ {
+  "key": "enemy_15006_dqkrgm",
+  "orig": "enemy_1194_krgmtr",
+  "model": "enemy_1194_krgmtr",
+  "tag": "tag_single",
+  "name": "雪境精锐",
+  "desc": "作为谢拉格最精锐的部队，他们也开始在国际赛场展露头角。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 15000,
+  "atk": 600,
+  "def": 600,
+  "res": 50,
+  "bat": 3.7,
+  "aspd": 100,
+  "ms": 0.9,
+  "range": 1.5,
+  "mass": 5,
+  "score": 16,
+  "talents": {
+   "AtkUp.atk": 0.3,
+   "DefDown.def": -100
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "山雪鬼",
+  "abilities": [
+   {
+    "text": "拥有抵抗",
+    "title": false
+   },
+   {
+    "text": "时攻击力提升",
+    "title": false
+   },
+   {
+    "text": "攻击降低攻击目标的防御力",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.5,
+   "hit": 0.6
+  },
+  "power": 2136
+ },
+ {
+  "key": "enemy_15086_dqcbld",
+  "orig": "enemy_1329_cbshld",
+  "model": "enemy_1329_cbshld",
+  "tag": "tag_single",
+  "name": "速胜卫士",
+  "desc": "叫这个名字是因为不速战速决的话他们可能就赢不下比赛了。",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 10000,
+  "atk": 700,
+  "def": 2500,
+  "res": 60,
+  "bat": 3,
+  "aspd": 100,
+  "ms": 0.75,
+  "range": 0.8,
+  "mass": 3,
+  "score": 16,
+  "talents": {
+   "def_reduce.max_stack_cnt": 80,
+   "def_reduce.def": -4000,
+   "def_reduce.change1_stack_cnt": 15,
+   "def_reduce.change2_stack_cnt": 45,
+   "def_reduce.magic_resistance": -160
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "弧光镜卫",
+  "abilities": [
+   {
+    "text": "初始护甲与法抗较高，但每次受到伤害后降低",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 2.333,
+   "hit": 0.9
+  },
+  "power": 3428
+ },
+ {
+  "key": "enemy_5045_dqjedi_2",
+  "orig": "enemy_1328_cbjedi_2",
+  "model": "enemy_1328_cbjedi_2",
+  "tag": "tag_single",
+  "name": "弧光武士",
+  "desc": "合成加工的红色灯管竟然可以造成法术伤害！",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "arts",
+  "hp": 14000,
+  "atk": 800,
+  "def": 650,
+  "res": 50,
+  "bat": 3,
+  "aspd": 100,
+  "ms": 0.75,
+  "range": 0.8,
+  "mass": 1,
+  "score": 16,
+  "talents": {
+   "unbalanced_bleed.damage": 400,
+   "unbalanced_bleed.interval": 0.066
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "弧光锋卫长",
+  "abilities": [
+   {
+    "text": "失衡移动时正比于距离损失生命",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 3,
+   "hit": 0.967
+  },
+  "power": 2700
+ },
+ {
+  "key": "enemy_5048_dqingd",
+  "orig": "enemy_7002_veingd",
+  "model": "enemy_7002_veingd_2",
+  "tag": "tag_single",
+  "name": "扎人的石头",
+  "desc": "被它打了很疼，打它还是很疼。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "arts",
+  "hp": 25000,
+  "atk": 400,
+  "def": 300,
+  "res": 10,
+  "bat": 4,
+  "aspd": 100,
+  "ms": 0.6,
+  "range": 0.8,
+  "mass": 4,
+  "score": 16,
+  "talents": {
+   "taunt.value": 300
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "矿脉守卫",
+  "abilities": [
+   {
+    "text": "更容易受到我方的攻击，受到攻击时对目标造成一定法术伤害",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.667,
+   "hit": 1
+  },
+  "power": 1718
+ },
+ {
+  "key": "enemy_15049_dqfrog",
+  "orig": "enemy_10058_cjfrog",
+  "model": "enemy_10058_cjfrog",
+  "tag": "tag_single",
+  "name": "“铜舌”",
+  "desc": "那枚铜币根本不值得你去挨它那一舌头。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 15000,
+  "atk": 1200,
+  "def": 700,
+  "res": 20,
+  "bat": 3,
+  "aspd": 100,
+  "ms": 0.7,
+  "range": 1,
+  "mass": 4,
+  "score": 17,
+  "talents": {
+   "Attack.attack@atk_scale": 2
+  },
+  "skills": [
+   "Prey"
+  ],
+  "skillData": {
+   "Prey": {
+    "sp": 0,
+    "cd": 4,
+    "init": 2,
+    "bb": {
+     "range_radius": 1.5
+    }
+   }
+  },
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "旺财",
+  "abilities": [
+   {
+    "text": "可以吐出铜币造成高额远程伤害，吐出铜币后只能进行近战攻击",
+    "title": false
+   },
+   {
+    "text": "会捕食周围的和，为自身补充1个铜币",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack_a",
+   "dur": 1.633,
+   "hit": 0.567
+  },
+  "power": 3275
+ },
+ {
+  "key": "enemy_15003_dqltsw",
+  "orig": "enemy_1243_ltswar",
+  "model": "enemy_1243_ltswar",
+  "tag": "tag_single",
+  "name": "失业萨克斯手",
+  "desc": "乐团解散后怎么也找不到新工作，听得出来他真的一肚子怨气。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "ALL",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 17500,
+  "atk": 800,
+  "def": 650,
+  "res": 20,
+  "bat": 4.5,
+  "aspd": 100,
+  "ms": 0.8,
+  "range": 0.8,
+  "mass": 4,
+  "score": 18,
+  "talents": {},
+  "skills": [
+   "FourDirAttack"
+  ],
+  "skillData": {
+   "FourDirAttack": {
+    "sp": 0,
+    "cd": 20,
+    "init": 10,
+    "bb": {
+     "atk_scale": 1.5
+    }
+   }
+  },
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "残党萨克斯手",
+  "abilities": [
+   {
+    "text": "全力吹奏时，发出四方向远程攻击，对碰到的我方目标造成高额物理伤害，会被重整束流阻挡",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 2.5,
+   "hit": 0.8
+  },
+  "power": 2312
+ },
+ {
+  "key": "enemy_15016_dqdkma",
+  "orig": "enemy_1225_dkmage",
+  "model": "enemy_1225_dkmage",
+  "tag": "tag_single",
+  "name": "重生术师",
+  "desc": "打倒他算一个还是算两个？当然只能算一个！",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "arts",
+  "hp": 12000,
+  "atk": 420,
+  "def": 450,
+  "res": 50,
+  "bat": 4,
+  "aspd": 100,
+  "ms": 0.7,
+  "range": 3.2,
+  "mass": 3,
+  "score": 18,
+  "talents": {
+   "epdamage.attack@ep_damage_ratio": 0.3,
+   "epdamage.attack@max_target": 4,
+   "epdamage.attack@chain.atk_scale": 0.85,
+   "deathrattle.enemy_key": 0,
+   "deathrattle.delay": 1,
+   "epdamage.attack@projectile_range": 1.6
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "萨卡兹子裔链术师",
+  "abilities": [
+   {
+    "text": "攻击造成凋亡损伤，且会在4个敌人间跳跃，每次跳跃伤害降低",
+    "title": false
+   },
+   {
+    "text": "首次倒下后重生为",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 2.2,
+   "hit": 1.233
+  },
+  "power": 1438
+ },
+ {
+  "key": "enemy_15029_dqfrtu",
+  "orig": "enemy_1134_diamd",
+  "model": "enemy_1134_diamd",
+  "tag": "tag_single",
+  "name": "畸变之矛",
+  "desc": "小心那刺破天际的矛头。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "arts",
+  "hp": 4000,
+  "atk": 1000,
+  "def": 2000,
+  "res": 80,
+  "bat": 4,
+  "aspd": 100,
+  "ms": 0.7,
+  "range": 0.8,
+  "mass": 4,
+  "score": 18,
+  "talents": {},
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "源石畸变体",
+  "abilities": [],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 2.133,
+   "hit": 1.1
+  },
+  "power": 2133
+ },
+ {
+  "key": "enemy_15045_dqrbty",
+  "orig": "enemy_1219_mtrbty",
+  "model": "enemy_1219_mtrbty",
+  "tag": "tag_single",
+  "name": "无德决斗家",
+  "desc": "比起获胜，伤人手脚才是他们的主要目的。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "ALL",
+  "fly": false,
+  "dmg": "arts",
+  "hp": 17000,
+  "atk": 600,
+  "def": 500,
+  "res": 60,
+  "bat": 2.7,
+  "aspd": 100,
+  "ms": 0.8,
+  "range": 1,
+  "mass": 4,
+  "score": 18,
+  "talents": {
+   "shotbuff.attack@headshot_atk_scale": 1.5,
+   "shotbuff.attack@headshot_disarmed_duration": 15,
+   "shotbuff.attack@headshot_sp": -1,
+   "shotbuff.attack@headshot_trapdamage": 5000
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": {
+   "type": "INCREASE_WITH_TIME",
+   "max": 1,
+   "init": 1,
+   "inc": 0
+  },
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "寻路者信使",
+  "abilities": [
+   {
+    "text": "携带弹药时使用远程攻击并使目标无法攻击或治疗一段时间，弹药上限：1",
+    "title": false
+   },
+   {
+    "text": "对“冰淇淋机”造成额外法术伤害",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack_A",
+   "dur": 1.333,
+   "hit": 0.5
+  },
+  "power": 2599
+ },
+ {
+  "key": "enemy_15067_dqdidi",
+  "orig": "enemy_1417_mmdudu_2",
+  "model": "enemy_1417_mmdudu_2",
+  "tag": "tag_single",
+  "name": "街头乐队吉他手",
+  "desc": "他们编排出的乐段可能会是字面意义上的“杀手旋律”。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "arts",
+  "hp": 15000,
+  "atk": 800,
+  "def": 360,
+  "res": 70,
+  "bat": 5,
+  "aspd": 100,
+  "ms": 0.8,
+  "range": 2.6,
+  "mass": 4,
+  "score": 18,
+  "talents": {},
+  "skills": [
+   "RockYou"
+  ],
+  "skillData": {
+   "RockYou": {
+    "sp": 0,
+    "cd": 10,
+    "init": 0,
+    "bb": {
+     "hit_interval": 1,
+     "dot_value": 200,
+     "dot_ep_value": 80
+    }
+   }
+  },
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "自由佣兵“主音吉他”",
+  "abilities": [
+   {
+    "text": "选择一个我方单位持续施法，对目标及稳固锁链连接的所有干员持续造成法术伤害和灼燃损伤",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.767,
+   "hit": 0.8
+  },
+  "power": 1972
+ },
+ {
+  "key": "enemy_15082_dqklr",
+  "orig": "enemy_1129_spklr",
+  "model": "enemy_1129_spklr",
+  "tag": "tag_single",
+  "name": "“情绪失控”",
+  "desc": "心理治疗师们都很困惑，它们的暴脾气究竟是从哪儿来的。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 16000,
+  "atk": 1100,
+  "def": 600,
+  "res": 25,
+  "bat": 3,
+  "aspd": 100,
+  "ms": 0.7,
+  "range": 1.9,
+  "mass": 3,
+  "score": 18,
+  "talents": {
+   "yinyang.dynamic": 1,
+   "yinyang.buff_yinyang[same].atk_scale": 0.6,
+   "yinyang.buff_yinyang[diff].atk_scale": 1.4,
+   "atkup.atk_scale": 1.8
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "“盛怒”",
+  "abilities": [
+   {
+    "text": "攻击属性相反的目标时攻击力大幅度提升",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.633,
+   "hit": 0.567
+  },
+  "power": 3146
+ },
+ {
   "key": "enemy_15007_dqbear",
   "orig": "enemy_2002_bearmi",
+  "model": "enemy_2002_bearmi",
+  "tag": "tag_single",
   "name": "高普尼克",
   "desc": "兢兢业业当了多年保镖的乌萨斯壮汉，皮糙肉厚，拳脚也相当了得。",
   "rank": "ELITE",
@@ -328,17 +4036,14 @@
   "range": 0.8,
   "mass": 4,
   "score": 20,
-  "pool": {
-   "normal": 50,
-   "small": 100,
-   "boss": 0
-  },
   "talents": {},
   "skills": [],
   "skillData": {},
+  "spData": null,
   "immune": {
    "stun": true,
-   "frozen": true
+   "frozen": true,
+   "silence": false
   },
   "origName": "高普尼克",
   "abilities": [],
@@ -353,8 +4058,685 @@
   "power": 4629
  },
  {
+  "key": "enemy_15047_dqwlpl",
+  "orig": "enemy_10003_trwlpl_2",
+  "model": "enemy_10003_trwlpl_2",
+  "tag": "tag_single",
+  "name": "变异食肉植物",
+  "desc": "它们对“肉”的定义远比人们想象的要广泛得多。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "NONE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 13000,
+  "atk": 0,
+  "def": 250,
+  "res": 10,
+  "bat": 2,
+  "aspd": 100,
+  "ms": 0.6,
+  "range": 1,
+  "mass": 2,
+  "score": 20,
+  "talents": {
+   "InitEat.token_key": 0,
+   "InitEat.cnt": 2
+  },
+  "skills": [
+   "Devour",
+   "Eat",
+   "InitEat"
+  ],
+  "skillData": {
+   "Devour": {
+    "sp": 0,
+    "cd": 0,
+    "init": 0,
+    "bb": {}
+   },
+   "Eat": {
+    "sp": 0,
+    "cd": 0,
+    "init": 0,
+    "bb": {
+     "duration": 20
+    }
+   },
+   "InitEat": {
+    "sp": 0,
+    "cd": 0,
+    "init": 0,
+    "bb": {
+     "duration": 40
+    }
+   }
+  },
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "暴走食人花",
+  "abilities": [
+   {
+    "text": "会吞食周围一个目标，每次吞食需要长时间原地消化",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack_Die",
+   "dur": 1,
+   "hit": 0.5
+  },
+  "power": 0
+ },
+ {
+  "key": "enemy_15059_dqhmmr",
+  "orig": "enemy_1091_mdhmmr",
+  "model": "enemy_1091_mdhmmr",
+  "tag": "tag_single",
+  "name": "覆面大锤客",
+  "desc": "永远不让自己“丢脸”，是他们的信条之一。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 10000,
+  "atk": 900,
+  "def": 800,
+  "res": 30,
+  "bat": 3.5,
+  "aspd": 100,
+  "ms": 0.8,
+  "range": 0.8,
+  "mass": 3,
+  "score": 20,
+  "talents": {
+   "shield.dynamic": 2000,
+   "shield.max_hp": 0.5,
+   "shield.attack_speed": 50
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "泥岩小队践行者",
+  "abilities": [
+   {
+    "text": "拥有屏障吸收法术伤害",
+    "title": false
+   },
+   {
+    "text": "屏障存在时大幅提升生命上限与攻击速度",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.6,
+   "hit": 0.733
+  },
+  "power": 2275
+ },
+ {
+  "key": "enemy_15070_dqhlgy",
+  "orig": "enemy_2112_dyhlgy",
+  "model": "enemy_2112_dyhlgy",
+  "tag": "tag_single",
+  "name": "枣大刀",
+  "desc": "擅使刀的侠客，活跃于百氏之乱期间，以忠义闻名天下。",
+  "rank": "BOSS",
+  "levelType": "BOSS",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 60000,
+  "atk": 1800,
+  "def": 600,
+  "res": 60,
+  "bat": 2.5,
+  "aspd": 100,
+  "ms": 0.7,
+  "range": 0.8,
+  "mass": 4,
+  "score": 20,
+  "talents": {
+   "WindDamage.atk_scale": 0.8,
+   "WindDamage.range_radius": 1.2,
+   "WindDamage.interval": 1
+  },
+  "skills": [
+   "StartBattle",
+   "WindMove",
+   "WindEnd"
+  ],
+  "skillData": {
+   "StartBattle": {
+    "sp": 0,
+    "cd": 999,
+    "init": 105,
+    "bb": {}
+   },
+   "WindMove": {
+    "sp": 0,
+    "cd": 20,
+    "init": 0,
+    "bb": {
+     "duration": 2,
+     "lb_duration": 4,
+     "move_speed": 2
+    }
+   },
+   "WindEnd": {
+    "sp": 0,
+    "cd": 9999,
+    "init": 9999,
+    "bb": {}
+   }
+  },
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "枣大刀",
+  "abilities": [
+   {
+    "text": "被阻挡时，会使自身变为不可阻挡，移动速度大幅提升并对周围的目标造成攻击力一定比例的物理伤害",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "B_Attack",
+   "dur": 1.267,
+   "hit": 0.5
+  },
+  "power": 9178
+ },
+ {
+  "key": "enemy_15071_dqyrzf",
+  "orig": "enemy_2110_dyyrzf",
+  "model": "enemy_2110_dyyrzf",
+  "tag": "tag_single",
+  "name": "炭长矛",
+  "desc": "擅使矛的侠客，活跃于百氏之乱期间，以武勇闻名天下。",
+  "rank": "BOSS",
+  "levelType": "BOSS",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 120000,
+  "atk": 1200,
+  "def": 300,
+  "res": 60,
+  "bat": 5,
+  "aspd": 100,
+  "ms": 0.9,
+  "range": 0.8,
+  "mass": 4,
+  "score": 20,
+  "talents": {
+   "1.damage_scale": 1.5,
+   "1.lb_damage_scale": 2
+  },
+  "skills": [
+   "StartBattle"
+  ],
+  "skillData": {
+   "StartBattle": {
+    "sp": 0,
+    "cd": 999,
+    "init": 75,
+    "bb": {}
+   }
+  },
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "炭长矛",
+  "abilities": [
+   {
+    "text": "更容易受到攻击",
+    "title": false
+   },
+   {
+    "text": "被阻挡时，自身和阻挡自身的单位受到的物理和法术伤害大幅增加",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "B_Attack",
+   "dur": 1.767,
+   "hit": 0.733
+  },
+  "power": 6490
+ },
+ {
+  "key": "enemy_15074_dqdght",
+  "orig": "enemy_1513_dekght_2",
+  "model": "enemy_1513_dekght_2",
+  "tag": "tag_single",
+  "name": "凋零骑士",
+  "desc": "当腐败骑士死亡时，攻击力、攻击速度、移动速度大幅提升",
+  "rank": "BOSS",
+  "levelType": "BOSS",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "arts",
+  "hp": 70000,
+  "atk": 700,
+  "def": 500,
+  "res": 70,
+  "bat": 4,
+  "aspd": 100,
+  "ms": 0.65,
+  "range": 2.5,
+  "mass": 6,
+  "score": 20,
+  "talents": {
+   "triggerrage.atk": 0.8,
+   "triggerrage.attack_speed": 100,
+   "triggerrage.move_speed": 1.5
+  },
+  "skills": [
+   "TripleAttack"
+  ],
+  "skillData": {
+   "TripleAttack": {
+    "sp": 0,
+    "cd": 22,
+    "init": 22,
+    "bb": {
+     "dekght_2[aoe].interval": 2.5,
+     "dekght_2[aoe].atk_scale": 1.6,
+     "dekght_2[aoe].range_id": "x-5"
+    }
+   }
+  },
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "凋零骑士",
+  "abilities": [
+   {
+    "text": "同时攻击两名目标",
+    "title": false
+   },
+   {
+    "text": "对三名目标发射爆炸箭，短暂延迟后爆炸，对目标与周围四格的单位造成高额法术伤害",
+    "title": false
+   },
+   {
+    "text": "当死亡时，攻击力、攻击速度、移动速度大幅提升",
+    "title": false
+   }
+  ],
+  "scale": 1.0741,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.667,
+   "hit": 1
+  },
+  "power": 4769
+ },
+ {
+  "key": "enemy_15076_dqzmst",
+  "orig": "enemy_2078_skzmst",
+  "model": "enemy_2078_skzmst",
+  "tag": "tag_single",
+  "name": "Mon2tr",
+  "desc": "换位或死亡后对周围所有友方单位造成物理伤害，并使其晕眩一段时间",
+  "rank": "BOSS",
+  "levelType": "BOSS",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 120000,
+  "atk": 1000,
+  "def": 1000,
+  "res": 0,
+  "bat": 5,
+  "aspd": 100,
+  "ms": 0.5,
+  "range": 0.8,
+  "mass": 5,
+  "score": 20,
+  "talents": {
+   "1.atk_scale": 1.5,
+   "1.boom_duration": 5
+  },
+  "skills": [
+   "StopAttack",
+   "Boom"
+  ],
+  "skillData": {
+   "StopAttack": {
+    "sp": 0,
+    "cd": 0,
+    "init": 0,
+    "bb": {
+     "stop_attack_duration": 5
+    }
+   },
+   "Boom": {
+    "sp": 0,
+    "cd": 0,
+    "init": 0,
+    "bb": {
+     "boom_duration": 5,
+     "atk_scale": 1,
+     "range_radius": 2
+    }
+   }
+  },
+  "spData": null,
+  "immune": {
+   "stun": true,
+   "frozen": true,
+   "silence": true
+  },
+  "origName": "Mon2tr",
+  "abilities": [
+   {
+    "text": "换位或死亡后对周围所有友方单位造成物理伤害，并使其晕眩数秒",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.667,
+   "hit": 0.567
+  },
+  "power": 6928
+ },
+ {
+  "key": "enemy_15085_dqji",
+  "orig": "enemy_1207_sfji",
+  "model": "enemy_1207_sfji",
+  "tag": "tag_single",
+  "name": "止戈者",
+  "desc": "被它们手上的锈刃伤到可不好受，一定要学会保护自己。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 10000,
+  "atk": 1500,
+  "def": 500,
+  "res": 30,
+  "bat": 2.2,
+  "aspd": 100,
+  "ms": 1.5,
+  "range": 0.8,
+  "mass": 3,
+  "score": 20,
+  "talents": {
+   "DeadSpawn.cnt": 4,
+   "Atkup.atk": 0.7,
+   "DeadSpawn.cnt_add": -1
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "沉沙",
+  "abilities": [
+   {
+    "text": "攻击消耗断刃使攻击力提升",
+    "title": false
+   },
+   {
+    "text": "被击倒时未消耗的断刃会生成（至少1个）。",
+    "title": false
+   }
+  ],
+  "scale": 0.8889,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.333,
+   "hit": 0.533
+  },
+  "power": 3283
+ },
+ {
+  "key": "enemy_15005_dqdsbs",
+  "orig": "enemy_1235_dsbskr",
+  "model": "enemy_1235_dsbskr",
+  "tag": "tag_single",
+  "name": "狂躁珊瑚",
+  "desc": "越打人越兴奋的奇怪珊瑚，当心别让它真的狂躁起来！",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "ALL",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 20000,
+  "atk": 300,
+  "def": 750,
+  "res": 40,
+  "bat": 1.5,
+  "aspd": 100,
+  "ms": 1.2,
+  "range": 1.5,
+  "mass": 4,
+  "score": 21,
+  "talents": {
+   "Combat.atk_scale": 2,
+   "Attack.atk_scale": 1,
+   "AtkUp.atk": 0.15,
+   "AtkUp.max_stack_cnt": 15,
+   "EpDamage.ep_damage_ratio": 0,
+   "AtkUp.dsbskr_atk_reduce.interval": 0
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "深溟裂礁者",
+  "abilities": [
+   {
+    "text": "位于溟痕时隐匿",
+    "title": false
+   },
+   {
+    "text": "每造成一次伤害后攻击力提升，停止攻击后快速衰减",
+    "title": false
+   },
+   {
+    "text": "对阻挡自身的单位造成的伤害提升",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1,
+   "hit": 0.5
+  },
+  "power": 2846
+ },
+ {
+  "key": "enemy_5042_dqkght_2",
+  "orig": "enemy_1103_wdkght_2",
+  "model": "enemy_1103_wdkght_2",
+  "tag": "tag_single",
+  "name": "劈柴骑士",
+  "desc": "从动作来看，他成为骑士前应该是樵夫。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 13000,
+  "atk": 650,
+  "def": 800,
+  "res": 0,
+  "bat": 2.3,
+  "aspd": 100,
+  "ms": 0.7,
+  "range": 0.8,
+  "mass": 3,
+  "score": 21,
+  "talents": {
+   "enhance.atk": 0.1,
+   "enhance.attack_speed": 5,
+   "enhance.max_stack_cnt": 10
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "沸血骑士团精锐",
+  "abilities": [
+   {
+    "text": "每有一个敌人死亡时攻击力与攻击速度提升，最多提升10次",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 2,
+   "hit": 1
+  },
+  "power": 2536
+ },
+ {
+  "key": "enemy_15080_dqgtop",
+  "orig": "enemy_10116_ymgtop",
+  "model": "enemy_10116_ymgtop",
+  "tag": "tag_single",
+  "name": "龙卷风忍者",
+  "desc": "忍者训练第一课：克服晕头转向的感觉。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 12000,
+  "atk": 750,
+  "def": 350,
+  "res": 20,
+  "bat": 1.5,
+  "aspd": 100,
+  "ms": 0.7,
+  "range": 0.8,
+  "mass": 2,
+  "score": 22,
+  "talents": {
+   "ProtectionTime.protection_duration": 1,
+   "EndRotate.rotate_duration": 60,
+   "RotateDamage.attack@atk_scale": 1.2,
+   "RotateDamage.attack@range_radius": 1,
+   "RotateDamage.interval": 1
+  },
+  "skills": [
+   "SwitchModeTrigger",
+   "EndAnim",
+   "BeginAnim"
+  ],
+  "skillData": {
+   "SwitchModeTrigger": {
+    "sp": 0,
+    "cd": 60,
+    "init": 10,
+    "bb": {}
+   },
+   "EndAnim": {
+    "sp": 0,
+    "cd": 0,
+    "init": 0,
+    "bb": {}
+   },
+   "BeginAnim": {
+    "sp": 0,
+    "cd": 0,
+    "init": 0,
+    "bb": {}
+   }
+  },
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "水遁忍者",
+  "abilities": [
+   {
+    "text": "旋转时持续对周围造成物理伤害，失衡移动后停止旋转",
+    "title": false
+   },
+   {
+    "text": "弹开",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.5,
+   "hit": 0.533
+  },
+  "power": 2800
+ },
+ {
   "key": "enemy_5036_dqger_2",
   "orig": "enemy_1062_rager_2",
+  "model": "enemy_1062_rager_2",
+  "tag": "tag_single",
   "name": "苦难的具象",
   "desc": "他已然成为源石的傀儡，他不被允许生存。",
   "rank": "ELITE",
@@ -372,19 +4754,16 @@
   "range": 0.8,
   "mass": 2,
   "score": 22,
-  "pool": {
-   "normal": 50,
-   "small": 100,
-   "boss": 0
-  },
   "talents": {
    "periodic_damage.damage": 300
   },
   "skills": [],
   "skillData": {},
+  "spData": null,
   "immune": {
    "stun": false,
-   "frozen": false
+   "frozen": false,
+   "silence": false
   },
   "origName": "狂暴宿主组长",
   "abilities": [
@@ -404,8 +4783,204 @@
   "power": 6941
  },
  {
+  "key": "enemy_15001_dqsmwa",
+  "orig": "enemy_2046_smwar",
+  "model": "enemy_2046_smwar",
+  "tag": "tag_single",
+  "name": "北方战士",
+  "desc": "在北方战场经受历练的战士，不会后退，不容后退。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 20000,
+  "atk": 700,
+  "def": 800,
+  "res": 20,
+  "bat": 1.2,
+  "aspd": 100,
+  "ms": 2.5,
+  "range": 0.8,
+  "mass": 3,
+  "score": 25,
+  "talents": {},
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "木裂战士",
+  "abilities": [],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack_A",
+   "dur": 1,
+   "hit": 0.467
+  },
+  "power": 4739
+ },
+ {
+  "key": "enemy_15033_dqclif",
+  "orig": "enemy_7015_xbcrab2",
+  "model": "enemy_7015_xbcrab2",
+  "tag": "tag_single",
+  "name": "蟹蟹爷爷",
+  "desc": "在家里大家都很尊重它，不是因为辈分最长，而是因为它最能打。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 17000,
+  "atk": 1300,
+  "def": 2500,
+  "res": 90,
+  "bat": 3,
+  "aspd": 100,
+  "ms": 0.9,
+  "range": 0.8,
+  "mass": 3,
+  "score": 25,
+  "talents": {
+   "Trace.view_radius": 1.5,
+   "TraceTime.duration": 20
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "“钳钳生风”",
+  "abilities": [
+   {
+    "text": "平时不攻击，受到攻击时反击",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 3,
+   "hit": 0.533
+  },
+  "power": 6434
+ },
+ {
+  "key": "enemy_15044_dqtisd",
+  "orig": "enemy_1081_sotisd",
+  "model": "enemy_1081_sotisd",
+  "tag": "tag_single",
+  "name": "臭嗓门战士",
+  "desc": "他们的嗓音本就不好听，经过头盔的过滤就更让人难以忍受了。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 15000,
+  "atk": 700,
+  "def": 1300,
+  "res": 60,
+  "bat": 3.8,
+  "aspd": 100,
+  "ms": 0.7,
+  "range": 0.8,
+  "mass": 4,
+  "score": 25,
+  "talents": {
+   "taunt.taunt_level": 1
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "游击队盾卫",
+  "abilities": [
+   {
+    "text": "使自身容易受到敌人的攻击",
+    "title": false
+   }
+  ],
+  "scale": 1.0741,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.7,
+   "hit": 0.933
+  },
+  "power": 2921
+ },
+ {
+  "key": "enemy_15090_dqacpa",
+  "orig": "enemy_1256_lyacpa",
+  "model": "enemy_1256_lyacpa",
+  "tag": "tag_single",
+  "name": "神射机甲",
+  "desc": "听说保险公司拒绝为它们造成的人身伤害和设施损坏进行赔付。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 25000,
+  "atk": 1200,
+  "def": 1000,
+  "res": 20,
+  "bat": 5,
+  "aspd": 100,
+  "ms": 0.3,
+  "range": 5,
+  "mass": 5,
+  "score": 25,
+  "talents": {
+   "Passive.attack@ranged.atk_scale": 0.5
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": true,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "R-11突击动力装甲",
+  "abilities": [
+   {
+    "text": "同时攻击四个目标",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 2,
+   "hit": 0.833
+  },
+  "power": 3633
+ },
+ {
   "key": "enemy_5039_dqgint",
   "orig": "enemy_1092_mdgint",
+  "model": "enemy_1092_mdgint",
+  "tag": "tag_single",
   "name": "砸人的石头",
   "desc": "行走的巨石堆，挥拳慢不是因为真的慢，而是因为它在深思熟虑。",
   "rank": "ELITE",
@@ -423,17 +4998,14 @@
   "range": 0.8,
   "mass": 5,
   "score": 25,
-  "pool": {
-   "normal": 50,
-   "small": 100,
-   "boss": 0
-  },
   "talents": {},
   "skills": [],
   "skillData": {},
+  "spData": null,
   "immune": {
    "stun": false,
-   "frozen": false
+   "frozen": false,
+   "silence": false
   },
   "origName": "泥岩巨像",
   "abilities": [],
@@ -450,6 +5022,8 @@
  {
   "key": "enemy_5053_dqllme",
   "orig": "enemy_1050_lslime",
+  "model": "enemy_1050_lslime",
+  "tag": "tag_single",
   "name": "“庞贝”",
   "desc": "巨大的源石虫，不论在它周围还是保持一定距离都不安全。",
   "rank": "BOSS",
@@ -467,11 +5041,6 @@
   "range": 4.5,
   "mass": 4,
   "score": 25,
-  "pool": {
-   "normal": 50,
-   "small": 0,
-   "boss": 0
-  },
   "talents": {
    "selfbuff.attack_speed": 40,
    "selfbuff.hp_ratio": 0.5,
@@ -483,9 +5052,11 @@
   },
   "skills": [],
   "skillData": {},
+  "spData": null,
   "immune": {
    "stun": false,
-   "frozen": false
+   "frozen": false,
+   "silence": true
   },
   "origName": "“庞贝”",
   "abilities": [
@@ -513,8 +5084,574 @@
   "power": 1907
  },
  {
+  "key": "enemy_15026_dqmtrf",
+  "orig": "enemy_1035_haxe_2",
+  "model": "enemy_1035_haxe_2",
+  "tag": "tag_single",
+  "name": "“大斧”",
+  "desc": "最大的斧头，最初的恐怖，最纯粹的压迫感。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 18000,
+  "atk": 1500,
+  "def": 800,
+  "res": 30,
+  "bat": 3.5,
+  "aspd": 100,
+  "ms": 0.65,
+  "range": 0.8,
+  "mass": 3,
+  "score": 26,
+  "talents": {},
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "高级武装人员",
+  "abilities": [],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.9,
+   "hit": 0.933
+  },
+  "power": 3940
+ },
+ {
+  "key": "enemy_15018_dqskzc",
+  "orig": "enemy_2067_skzcy",
+  "model": "enemy_2067_skzcy",
+  "tag": "tag_single",
+  "name": "“门”",
+  "desc": "如果一扇被门关上了，一定会有另一扇被门打开，就是指不定开在什么地方。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "arts",
+  "hp": 50000,
+  "atk": 1000,
+  "def": 300,
+  "res": 10,
+  "bat": 3.5,
+  "aspd": 100,
+  "ms": 0.7,
+  "range": 0.8,
+  "mass": 5,
+  "score": 27,
+  "talents": {
+   "1.effect_duration": 10
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": true,
+   "frozen": true,
+   "silence": true
+  },
+  "origName": "“门”",
+  "abilities": [
+   {
+    "text": "“门”在消失时带走一名干员，使其暂离队伍",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.333,
+   "hit": 0.5
+  },
+  "power": 4108
+ },
+ {
+  "key": "enemy_15079_dqkodo",
+  "orig": "enemy_1271_nhkodo",
+  "model": "enemy_1271_nhkodo",
+  "tag": "tag_single",
+  "name": "极饿先锋",
+  "desc": "饥饿会让人走向绝路，换个说法就是——他们真的什么都吃得下。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 25000,
+  "atk": 1050,
+  "def": 0,
+  "res": 20,
+  "bat": 3.5,
+  "aspd": 100,
+  "ms": 0.5,
+  "range": 0.8,
+  "mass": 4,
+  "score": 27,
+  "talents": {
+   "Stronger.def": 700,
+   "Stronger.move_speed": -0.3
+  },
+  "skills": [
+   "Devour"
+  ],
+  "skillData": {
+   "Devour": {
+    "sp": 0,
+    "cd": -1,
+    "init": 0,
+    "bb": {}
+   }
+  },
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "萨卡兹枯朽吞噬者",
+  "abilities": [
+   {
+    "text": "首次被阻挡时吞噬阻挡者，防御力大幅提升但移动速度下降",
+    "title": false
+   },
+   {
+    "text": "被击倒时被吞噬的干员返回",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack_A",
+   "dur": 1.833,
+   "hit": 0.833
+  },
+  "power": 2487
+ },
+ {
+  "key": "enemy_15083_dqymot",
+  "orig": "enemy_1163_hvymot",
+  "model": "enemy_1163_hvymot",
+  "tag": "tag_single",
+  "name": "匪帮欢乐船",
+  "desc": "单人船艇的出现大幅增加了这些水上流氓参与比赛时的刺激感。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 18000,
+  "atk": 1300,
+  "def": 700,
+  "res": 0,
+  "bat": 5,
+  "aspd": 100,
+  "ms": 1.2,
+  "range": 0.8,
+  "mass": 4,
+  "score": 28,
+  "talents": {
+   "Crash.atk_scale": 1
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "水手重艇",
+  "abilities": [
+   {
+    "text": "只能被阻挡数大于等于3的单位阻挡，经过我方单位时冲撞造成物理伤害",
+    "title": false
+   },
+   {
+    "text": "载具损毁后会继续作战。",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1,
+   "hit": 0.5
+  },
+  "power": 2758
+ },
+ {
+  "key": "enemy_15087_dqkkt",
+  "orig": "enemy_1423_lrfkkt",
+  "model": "enemy_1423_lrfkkt",
+  "tag": "tag_single",
+  "name": "“染血之盾”",
+  "desc": "为照顾部分观众，盾上的图案一律只能用颜料绘制。",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 5000,
+  "atk": 1000,
+  "def": 5000,
+  "res": 90,
+  "bat": 5,
+  "aspd": 100,
+  "ms": 0.6,
+  "range": 0.8,
+  "mass": 4,
+  "score": 28,
+  "talents": {},
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "萨卡兹枯朽宿卫",
+  "abilities": [],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 2.667,
+   "hit": 1.333
+  },
+  "power": 3186
+ },
+ {
+  "key": "enemy_15092_dqudg",
+  "orig": "enemy_2026_syudg",
+  "model": "enemy_2026_syudg",
+  "tag": "tag_single",
+  "name": "圣徒卡门",
+  "desc": "他的梦想是拥有一把能无限供弹的铳械，很可惜活了这么久还是没找到。",
+  "rank": "BOSS",
+  "levelType": "BOSS",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 38000,
+  "atk": 1200,
+  "def": 300,
+  "res": 20,
+  "bat": 4,
+  "aspd": 100,
+  "ms": 0.5,
+  "range": 1.8,
+  "mass": 4,
+  "score": 28,
+  "talents": {
+   "Stun.stun": 10,
+   "Reload.sp_ratio": 0,
+   "Reload.interval": 35
+  },
+  "skills": [
+   "Charge",
+   "Fire"
+  ],
+  "skillData": {
+   "Charge": {
+    "sp": 0,
+    "cd": 0,
+    "init": 0,
+    "bb": {}
+   },
+   "Fire": {
+    "sp": 1,
+    "cd": 0,
+    "init": 0,
+    "bb": {
+     "atk_scale": 2
+    }
+   }
+  },
+  "spData": {
+   "type": "INCREASE_WITH_TIME",
+   "max": 3,
+   "init": 3,
+   "inc": 0
+  },
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "圣徒卡门",
+  "abilities": [
+   {
+    "text": "携带弹药时变为远程攻击并造成高额物理伤害，弹药上限：3",
+    "title": false
+   },
+   {
+    "text": "装弹被打断时会被额外晕眩一段时间",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack_1",
+   "dur": 1.5,
+   "hit": 0.867
+  },
+  "power": 3756
+ },
+ {
+  "key": "enemy_15014_dqmmka",
+  "orig": "enemy_1415_mmkabi",
+  "model": "enemy_1415_mmkabi",
+  "tag": "tag_single",
+  "name": "安逸的驮兽",
+  "desc": "赢了也好，输了也罢——这样的性格怎么能赢，我可是送了礼物的！",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 65000,
+  "atk": 1800,
+  "def": 50,
+  "res": 50,
+  "bat": 5,
+  "aspd": 100,
+  "ms": 0.6,
+  "range": 0.8,
+  "mass": 5,
+  "score": 30,
+  "talents": {
+   "RopeTriggerAbility.stun_duration": 10,
+   "RopeTriggerAbility.stun_cd": 12,
+   "RopeTriggerAbility.aoe_scale": 2
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "温顺的武装驮兽",
+  "abilities": [
+   {
+    "text": "遇到稳固锁链时会大摔一跤并眩晕，同时对周围其他敌方单位造成物理伤害",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 2.033,
+   "hit": 1.167
+  },
+  "power": 4875
+ },
+ {
+  "key": "enemy_15043_dqrckm",
+  "orig": "enemy_2003_rockman",
+  "model": "enemy_2003_rockman",
+  "tag": "tag_single",
+  "name": "“配重投石机”",
+  "desc": "没错，只有自己足够重才能投得更远。",
+  "rank": "BOSS",
+  "levelType": "BOSS",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 75000,
+  "atk": 1500,
+  "def": 600,
+  "res": 0,
+  "bat": 4.4,
+  "aspd": 100,
+  "ms": 0.5,
+  "range": 1,
+  "mass": 4,
+  "score": 30,
+  "talents": {},
+  "skills": [
+   "StunAttack"
+  ],
+  "skillData": {
+   "StunAttack": {
+    "sp": 0,
+    "cd": 13,
+    "init": 13,
+    "bb": {
+     "atk_scale": 0.7,
+     "stun": 25
+    }
+   }
+  },
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "迷路的巨像",
+  "abilities": [
+   {
+    "text": "可以投掷具有超长晕眩时间的石头（不会以已经被晕眩的单位作为目标）",
+    "title": false
+   }
+  ],
+  "scale": 0.8889,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 5.167,
+   "hit": 2.767
+  },
+  "power": 6193
+ },
+ {
+  "key": "enemy_15032_dqhrgr",
+  "orig": "enemy_4014_mugnfu",
+  "model": "enemy_4014_mugnfu",
+  "tag": "tag_single",
+  "name": "大力锤球手",
+  "desc": "它们仍然没有找到最适合自己的锤锤。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 40000,
+  "atk": 1500,
+  "def": 500,
+  "res": 20,
+  "bat": 2,
+  "aspd": 100,
+  "ms": 1,
+  "range": 0.8,
+  "mass": 0,
+  "score": 32,
+  "talents": {
+   "periodic_damage.damage": 0,
+   "Reborn.duration": 10,
+   "searchtarget.range_radius": 3
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": {
+   "type": "INCREASE_WHEN_ATTACK",
+   "max": 2,
+   "init": 0,
+   "inc": 1
+  },
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "阵地击人手",
+  "abilities": [
+   {
+    "text": "优先攻击我方干员",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.767,
+   "hit": 1.267
+  },
+  "power": 6736
+ },
+ {
+  "key": "enemy_15089_dqbgpa",
+  "orig": "enemy_1255_lybgpa",
+  "model": "enemy_1255_lybgpa",
+  "tag": "tag_single",
+  "name": "神拳机甲",
+  "desc": "别害怕，允许参赛的是已经大幅削减了性能的民用版本。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 25000,
+  "atk": 1600,
+  "def": 1000,
+  "res": 20,
+  "bat": 4,
+  "aspd": 100,
+  "ms": 0.3,
+  "range": 0.8,
+  "mass": 5,
+  "score": 32,
+  "talents": {},
+  "skills": [
+   "Punch"
+  ],
+  "skillData": {
+   "Punch": {
+    "sp": 0,
+    "cd": 20,
+    "init": 0,
+    "bb": {
+     "stun": 2,
+     "atk_scale": 0.75,
+     "duration": 10,
+     "unmovable_duration": 1
+    }
+   }
+  },
+  "spData": null,
+  "immune": {
+   "stun": true,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "R-31重型动力装甲",
+  "abilities": [
+   {
+    "text": "【超负载】：对目标连续攻击造成一定比例的物理伤害，并使目标晕眩",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.333,
+   "hit": 0.6
+  },
+  "power": 4690
+ },
+ {
   "key": "enemy_5055_dqkill",
   "orig": "enemy_1516_jakill",
+  "model": "enemy_1516_jakill",
+  "tag": "tag_single",
   "name": "杰斯顿·威廉姆斯",
   "desc": "维持体面形象时会使对手晕眩，露出真面目后就不会手下留情了。",
   "rank": "BOSS",
@@ -532,11 +5669,6 @@
   "range": 3,
   "mass": 6,
   "score": 35,
-  "pool": {
-   "normal": 50,
-   "small": 0,
-   "boss": 0
-  },
   "talents": {
    "reborn.sp": -1,
    "reborn.duration": 4,
@@ -570,9 +5702,16 @@
     }
    }
   },
+  "spData": {
+   "type": "INCREASE_WHEN_ATTACK",
+   "max": 3,
+   "init": 0,
+   "inc": 1
+  },
   "immune": {
    "stun": false,
-   "frozen": false
+   "frozen": false,
+   "silence": true
   },
   "origName": "杰斯顿·威廉姆斯",
   "abilities": [
@@ -624,8 +5763,872 @@
   "power": 2453
  },
  {
+  "key": "enemy_15021_dqdurg",
+  "orig": "enemy_1264_durgrd_2",
+  "model": "enemy_1264_durgrd_2",
+  "tag": "tag_single",
+  "name": "超级洗地机",
+  "desc": "到底是谁给洗地机加了这么厚的装甲和这么大的功率？！",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 18000,
+  "atk": 1500,
+  "def": 1500,
+  "res": 10,
+  "bat": 3,
+  "aspd": 100,
+  "ms": 0.7,
+  "range": 0.8,
+  "mass": 5,
+  "score": 36,
+  "talents": {
+   "Rage.attack_speed": 150,
+   "Rage.move_speed": 1.5,
+   "Rage.duration": 30
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "烈酒级醒酒助手",
+  "abilities": [
+   {
+    "text": "首次受到伤害后攻击速度与移动速度大幅提升，持续一段时间",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1,
+   "hit": 0.433
+  },
+  "power": 4981
+ },
+ {
+  "key": "enemy_15088_dqterm",
+  "orig": "enemy_1332_cbterm",
+  "model": "enemy_1332_cbterm",
+  "tag": "tag_single",
+  "name": "“交通亭”量产型",
+  "desc": "虽然没人想在街道上遇到这些机甲，在赛场上它们的人气却意外地高。",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 20000,
+  "atk": 1200,
+  "def": 2500,
+  "res": 70,
+  "bat": 5,
+  "aspd": 100,
+  "ms": 0.8,
+  "range": 1.4,
+  "mass": 5,
+  "score": 39,
+  "talents": {
+   "passive.max_stack_cnt": 110,
+   "passive.magic_resistance": -110,
+   "passive.def": -5500,
+   "passive.change1_stack_cnt": 15,
+   "passive.change2_stack_cnt": 45,
+   "Boom.atk_scale": 2,
+   "passive.change3_stack_cnt": 65
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "“交通亭”量产型",
+  "abilities": [
+   {
+    "text": "只能被阻挡数大于等于4的单位阻挡",
+    "title": false
+   },
+   {
+    "text": "每次受到伤害后降低护甲与法抗",
+    "title": false
+   },
+   {
+    "text": "被摧毁后弹射并自爆，对周围造成物理伤害",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 2.5,
+   "hit": 1.2
+  },
+  "power": 5011
+ },
+ {
+  "key": "enemy_15023_dqwlfm",
+  "orig": "enemy_1535_wlfmster",
+  "model": "enemy_1535_wlfmster",
+  "tag": "tag_single",
+  "name": "依然“狼之主”",
+  "desc": "由于代打选手总是没法合他心意，这一次他决定自己上场。",
+  "rank": "BOSS",
+  "levelType": "BOSS",
+  "way": "ALL",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 50000,
+  "atk": 1000,
+  "def": 1300,
+  "res": 60,
+  "bat": 4,
+  "aspd": 100,
+  "ms": 0.6,
+  "range": 0.8,
+  "mass": 5,
+  "score": 300,
+  "talents": {
+   "Passive.sp": 1,
+   "Reborn.duration": 10,
+   "Passive2.atk": 0.5,
+   "Passive2.base_attack_time": -1.5,
+   "Passive.damage_resistance": 0.3,
+   "Passive2.invincible_time": 10
+  },
+  "skills": [
+   "WildCalling",
+   "FearCage"
+  ],
+  "skillData": {
+   "WildCalling": {
+    "sp": 0,
+    "cd": 40,
+    "init": 5,
+    "bb": {
+     "duration": 5.5,
+     "sp": 35
+    }
+   },
+   "FearCage": {
+    "sp": 55,
+    "cd": 0,
+    "init": 0,
+    "bb": {
+     "max_target": 3,
+     "attack_speed": -70,
+     "duration_s": 5,
+     "sp": 5,
+     "hp_ratio": 0.3,
+     "duration_bleed": 40,
+     "hp_ratio_offset": -0.2,
+     "duration_wait": 7
+    }
+   }
+  },
+  "spData": {
+   "type": "INCREASE_WITH_TIME",
+   "max": 55,
+   "init": 0,
+   "inc": 1
+  },
+  "immune": {
+   "stun": false,
+   "frozen": true,
+   "silence": true
+  },
+  "origName": "扎罗，“狼之主”",
+  "abilities": [
+   {
+    "text": "使血债账款逐渐增加",
+    "title": false
+   },
+   {
+    "text": "第一形态",
+    "title": true
+   },
+   {
+    "text": "受到伤害降低，不可被晕眩",
+    "title": false
+   },
+   {
+    "text": "【溶血骇惧】使三名我方单位被恐惧吞噬，不可主动撤退，攻速大幅降低，并逐渐加速失去生命值；受影响单位在“狼之主”损失一定比例生命时，会恢复正常",
+    "title": false
+   },
+   {
+    "text": "第一形态生命值降为0后，获得【远古威慑】，周围我方单位降低攻击速度，并缓慢回复生命值",
+    "title": false
+   },
+   {
+    "text": "第二形态",
+    "title": true
+   },
+   {
+    "text": "不再拥有减伤，且不再释放【溶血骇惧】",
+    "title": false
+   },
+   {
+    "text": "攻击变为远程二连击，且攻击力提升",
+    "title": false
+   },
+   {
+    "text": "每隔一段时间释放，【狂暴怒嗥】，使血债账款快速上升",
+    "title": false
+   }
+  ],
+  "scale": 1.1111,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "A_Attack",
+   "dur": 1.433,
+   "hit": 0.467
+  },
+  "power": 6212
+ },
+ {
+  "key": "enemy_15024_dqreid",
+  "orig": "enemy_1539_reid",
+  "model": "enemy_1539_reid",
+  "tag": "tag_single",
+  "name": "“火与钢”",
+  "desc": "你知道他的刀刃燃起火焰意味着什么。",
+  "rank": "BOSS",
+  "levelType": "BOSS",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 57500,
+  "atk": 800,
+  "def": 650,
+  "res": 60,
+  "bat": 3,
+  "aspd": 200,
+  "ms": 0.65,
+  "range": 0.8,
+  "mass": 3,
+  "score": 300,
+  "talents": {
+   "AtkUp.atk": 2.8,
+   "atkup.hp_ratio": 0.5,
+   "AtkUp.damage_resistance": 0.6,
+   "Reborn.duration": 5,
+   "Reborn.hp_ratio": 0.5,
+   "Reborn.invincible": 10
+  },
+  "skills": [
+   "Rush"
+  ],
+  "skillData": {
+   "Rush": {
+    "sp": 0,
+    "cd": 99999,
+    "init": 0,
+    "bb": {
+     "duration": 4.5,
+     "move_speed": 2,
+     "range_radius": 1.5
+    }
+   }
+  },
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "“复仇者”",
+  "abilities": [
+   {
+    "text": "生命值降至一半以下时攻击力大幅度提升",
+    "title": false
+   },
+   {
+    "text": "【冲锋】锁定前方路径范围内的一名目标，一定时间内移动速度大幅提升",
+    "title": false
+   },
+   {
+    "text": "首次被击倒后重生，恢复一半生命值",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.733,
+   "hit": 0.667
+  },
+  "power": 7893
+ },
+ {
+  "key": "enemy_15068_dqsui",
+  "orig": "enemy_1526_sfsui",
+  "model": "enemy_1526_sfsui",
+  "tag": "tag_single",
+  "name": "岁相",
+  "desc": "主办方在观众席前加装了许多层隔热玻璃，这才说服人们安心前来观赛。",
+  "rank": "BOSS",
+  "levelType": "BOSS",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 130000,
+  "atk": 1200,
+  "def": 550,
+  "res": 30,
+  "bat": 2.5,
+  "aspd": 100,
+  "ms": 0.1,
+  "range": 0.8,
+  "mass": 9,
+  "score": 300,
+  "talents": {
+   "AppearMode.mode": 1,
+   "AppearS1.hp_ratio": 0.5,
+   "AppearS1.hp_ratio_per_fire": 0.05,
+   "Bristleback.damage_resistance": 0.5,
+   "NormalAttackS3.attack@max_target": 2,
+   "TimeUp.duration": 540,
+   "DevourMsfsui.sp": 5,
+   "wait_other_finish": 20,
+   "TileSpawn.tile_col_end": -1,
+   "enemy_level_type": 1
+  },
+  "skills": [
+   "ThunderS1",
+   "ThunderS2",
+   "ThunderS3",
+   "PowerSlashS2",
+   "PowerSlashS3",
+   "DragonBreath"
+  ],
+  "skillData": {
+   "ThunderS1": {
+    "sp": 0,
+    "cd": 18,
+    "init": 10,
+    "bb": {
+     "atk_scale": 0.13,
+     "projectile_life_time": 15
+    }
+   },
+   "ThunderS2": {
+    "sp": 0,
+    "cd": 40,
+    "init": 20,
+    "bb": {
+     "atk_scale": 0.2,
+     "projectile_life_time": 15
+    }
+   },
+   "ThunderS3": {
+    "sp": 0,
+    "cd": 30,
+    "init": 10,
+    "bb": {
+     "atk_scale": 0.2,
+     "projectile_life_time": 21
+    }
+   },
+   "PowerSlashS2": {
+    "sp": 0,
+    "cd": 18,
+    "init": 5,
+    "bb": {
+     "max_target": 1,
+     "atk_scale": 1.2,
+     "atk_scale_init": 0.25,
+     "atk_scale_add": 0.25,
+     "times": 3,
+     "duration": 20
+    }
+   },
+   "PowerSlashS3": {
+    "sp": 0,
+    "cd": 18,
+    "init": 5,
+    "bb": {
+     "max_target": 1,
+     "atk_scale": 1.2,
+     "atk_scale_init": 0.25,
+     "atk_scale_add": 0.25,
+     "times": 3,
+     "duration": 15
+    }
+   },
+   "DragonBreath": {
+    "sp": 0,
+    "cd": 30,
+    "init": 30,
+    "bb": {
+     "anim_duration": 7,
+     "projectile_life_time": 7,
+     "atk_scale_ex": 1,
+     "atk_scale": 0.5
+    }
+   }
+  },
+  "spData": null,
+  "immune": {
+   "stun": true,
+   "frozen": true,
+   "silence": true
+  },
+  "origName": "岁相",
+  "abilities": [
+   {
+    "text": "受到来自上下两侧的伤害降低",
+    "title": false
+   },
+   {
+    "text": "战斗经过较长时间后扣除所有目标生命",
+    "title": false
+   },
+   {
+    "text": "第一形态",
+    "title": true
+   },
+   {
+    "text": "【远山惊雷】对3个远程单位十字范围的持续法术伤害",
+    "title": false
+   },
+   {
+    "text": "被击倒后一段时间，在右侧一定距离重新出现并进入下一形态",
+    "title": false
+   },
+   {
+    "text": "第二形态",
+    "title": true
+   },
+   {
+    "text": "【天坠】对近战单位两次物理伤害并附加持续递增法术伤害（可被抵抗）",
+    "title": false
+   },
+   {
+    "text": "被击倒后一段时间，在右侧一定距离重新出现并进入下一形态",
+    "title": false
+   },
+   {
+    "text": "第三形态",
+    "title": true
+   },
+   {
+    "text": "【十方吐纳】对右侧大范围的持续伤害并使地面无法部署，范围内左侧的干员可以为右侧减弱伤害并抵挡地面破坏效果",
+    "title": false
+   },
+   {
+    "text": "吸收可恢复自身技力",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 3.267,
+   "hit": 0.933
+  },
+  "power": 10157
+ },
+ {
+  "key": "enemy_15069_dqdeer",
+  "orig": "enemy_2054_smdeer",
+  "model": "enemy_2054_smdeer",
+  "tag": "tag_single",
+  "name": "“萨米的意志”",
+  "desc": "有它出场的比赛观众总能坚持观看到最后一局，因为离场通道被它堵住了。",
+  "rank": "BOSS",
+  "levelType": "BOSS",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 100000,
+  "atk": 800,
+  "def": 800,
+  "res": 40,
+  "bat": 6,
+  "aspd": 100,
+  "ms": 1,
+  "range": 0.8,
+  "mass": 10,
+  "score": 300,
+  "talents": {
+   "Madness.damage_resistance": 0.6,
+   "Madness.enemy_smdeer_mad[attack].max_cnt": 2,
+   "Madness.enemy_smdeer_mad[skill].max_target": 2,
+   "Madness.attack@max_cnt": 1,
+   "enemy_level_type": 1
+  },
+  "skills": [
+   "Lasso",
+   "Doom"
+  ],
+  "skillData": {
+   "Lasso": {
+    "sp": 0,
+    "cd": 60,
+    "init": 40,
+    "bb": {
+     "atk_scale": 0.2,
+     "projectile_life_time": 10,
+     "max_target": 1
+    }
+   },
+   "Doom": {
+    "sp": 0,
+    "cd": 600,
+    "init": 600,
+    "bb": {
+     "value": -30,
+     "atk_scale": 1.5
+    }
+   }
+  },
+  "spData": null,
+  "immune": {
+   "stun": true,
+   "frozen": true,
+   "silence": true
+  },
+  "origName": "“萨米的意志”",
+  "abilities": [
+   {
+    "text": "【冰凌】攻击时对整列的我方单位造成物理伤害",
+    "title": false
+   },
+   {
+    "text": "【自然涌动】使一名我方单位晕眩并持续受到法术伤害",
+    "title": false
+   },
+   {
+    "text": "生命值低于一半时，受到的物理和法术伤害降低，【冰凌】和【自然涌动】额外选择一个目标",
+    "title": false
+   },
+   {
+    "text": "战斗经过较长时间后，对全场我方单位造成法术伤害，并扣除30目标生命",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 3,
+   "hit": 1
+  },
+  "power": 5292
+ },
+ {
+  "key": "enemy_15072_dqlbgg",
+  "orig": "enemy_2114_dylbgg",
+  "model": "enemy_2114_dylbgg",
+  "tag": "tag_multi",
+  "name": "侠客三人行",
+  "desc": "【协同】该敌人以组合形式出场\\n比赛如同江湖行事，独来独往无法解决所有问题，侠客们对此心知肚明。",
+  "rank": "BOSS",
+  "levelType": "BOSS",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "arts",
+  "hp": 38000,
+  "atk": 700,
+  "def": 300,
+  "res": 35,
+  "bat": 4,
+  "aspd": 100,
+  "ms": 0.5,
+  "range": 1.5,
+  "mass": 5,
+  "score": 300,
+  "talents": {
+   "GlobalDyBuff.damage_resistance": 0.4
+  },
+  "skills": [
+   "StartBattle",
+   "FirstAid"
+  ],
+  "skillData": {
+   "StartBattle": {
+    "sp": 0,
+    "cd": 999,
+    "init": 135,
+    "bb": {}
+   },
+   "FirstAid": {
+    "sp": 0,
+    "cd": 15,
+    "init": 15,
+    "bb": {
+     "heal_scale": 5
+    }
+   }
+  },
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "玉双剑",
+  "abilities": [
+   {
+    "text": "在场时，提升与的天赋或技能效果",
+    "title": false
+   },
+   {
+    "text": "与在场时，自身受到的物理和法术伤害降低",
+    "title": false
+   },
+   {
+    "text": "每隔一段时间，治疗与及自身三者中生命值最低的一位，并清除目标的异常状态",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "B_Attack",
+   "dur": 1.2,
+   "hit": 0.467
+  },
+  "power": 2965
+ },
+ {
+  "key": "enemy_15073_dqkght",
+  "orig": "enemy_1513_dekght",
+  "model": "enemy_1513_dekght",
+  "tag": "tag_multi",
+  "name": "并驾骑士",
+  "desc": "【协同】该敌人以组合形式出场\\n事先说明，他们参赛前使用药物不算违反赛事规定。",
+  "rank": "BOSS",
+  "levelType": "BOSS",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 70000,
+  "atk": 1500,
+  "def": 1000,
+  "res": 30,
+  "bat": 4,
+  "aspd": 100,
+  "ms": 0.65,
+  "range": 0.8,
+  "mass": 6,
+  "score": 300,
+  "talents": {
+   "aoe.attack@dekght[aoe].atk_scale": 1,
+   "aoe.attack@dekght[aoe].range_id": 0,
+   "triggerrage.atk": 0.8,
+   "triggerrage.attack_speed": 100,
+   "triggerrage.move_speed": 1.5
+  },
+  "skills": [
+   "ChargeAttack"
+  ],
+  "skillData": {
+   "ChargeAttack": {
+    "sp": 0,
+    "cd": 22,
+    "init": 22,
+    "bb": {
+     "atk_scale": 3,
+     "dekght[aoe].atk_scale": 3,
+     "dekght[aoe].range_id": "x-5",
+     "duration": 4
+    }
+   }
+  },
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": true
+  },
+  "origName": "腐败骑士",
+  "abilities": [
+   {
+    "text": "攻击时使目标与周围四格的单位受到物理伤害",
+    "title": false
+   },
+   {
+    "text": "蓄力攻击，对目标与周围四格的单位造成高额物理伤害",
+    "title": false
+   },
+   {
+    "text": "当死亡时，攻击力、攻击速度、移动速度大幅提升",
+    "title": false
+   }
+  ],
+  "scale": 1.0741,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 2.367,
+   "hit": 1.1
+  },
+  "power": 7770
+ },
+ {
+  "key": "enemy_15075_dqzklz",
+  "orig": "enemy_2076_skzklz",
+  "model": "enemy_2076_skzklz",
+  "tag": "tag_multi",
+  "name": "调停的意志",
+  "desc": "【协同】该敌人以组合形式出场\\n成绩如何暂且不论，对手只需知道，她们终结过无数故事就行了。",
+  "rank": "BOSS",
+  "levelType": "BOSS",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 70000,
+  "atk": 1500,
+  "def": 500,
+  "res": 50,
+  "bat": 2,
+  "aspd": 100,
+  "ms": 0.5,
+  "range": 0.8,
+  "mass": 10,
+  "score": 300,
+  "talents": {
+   "HpChecker.hp_ratio": 0.5
+  },
+  "skills": [
+   "SwapM3",
+   "Boom"
+  ],
+  "skillData": {
+   "SwapM3": {
+    "sp": 0,
+    "cd": 0,
+    "init": 0,
+    "bb": {
+     "stop_attack_duration": 5
+    }
+   },
+   "Boom": {
+    "sp": 0,
+    "cd": 0,
+    "init": 0,
+    "bb": {
+     "boom_duration": 5,
+     "atk_scale": 1,
+     "range_radius": 2
+    }
+   }
+  },
+  "spData": null,
+  "immune": {
+   "stun": true,
+   "frozen": true,
+   "silence": true
+  },
+  "origName": "凯尔希",
+  "abilities": [
+   {
+    "text": "生命值低于一半时与Mon2tr交换位置并对周围所有友方单位造成物理伤害并晕眩数秒",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.667,
+   "hit": 0.633
+  },
+  "power": 9499
+ },
+ {
+  "key": "enemy_15093_dqzfkl",
+  "orig": "enemy_2099_skzfkl",
+  "model": "enemy_2099_skzfkl",
+  "tag": "tag_single",
+  "name": "奎隆，摩诃萨埵权化",
+  "desc": "据称有赞助商想要与其合作设立一家莲座运输公司，但被他一口回绝了。",
+  "rank": "BOSS",
+  "levelType": "BOSS",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 300000,
+  "atk": 3500,
+  "def": 1200,
+  "res": 70,
+  "bat": 6,
+  "aspd": 100,
+  "ms": 0.35,
+  "range": 0.8,
+  "mass": 8,
+  "score": 300,
+  "talents": {
+   "DeathSacrifice.sp": 250
+  },
+  "skills": [
+   "MultiAttack"
+  ],
+  "skillData": {
+   "MultiAttack": {
+    "sp": 0,
+    "cd": 30,
+    "init": 15,
+    "bb": {
+     "atk_scale": 0.9
+    }
+   }
+  },
+  "spData": {
+   "type": "INCREASE_WHEN_ATTACK",
+   "max": 3,
+   "init": 0,
+   "inc": 1
+  },
+  "immune": {
+   "stun": true,
+   "frozen": true,
+   "silence": true
+  },
+  "origName": "奎隆，摩诃萨埵权化",
+  "abilities": [
+   {
+    "text": "【惩五戒】对目标进行连续五次攻击",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "B_Attack",
+   "dur": 1.5,
+   "hit": 0.467
+  },
+  "power": 23056
+ },
+ {
   "key": "enemy_5054_dqxi",
   "orig": "enemy_1517_xi",
+  "model": "enemy_1517_xi",
+  "tag": "tag_single",
   "name": "“自在”",
   "desc": "你总怀疑画里的都是假的，但它打得你很痛是真的。",
   "rank": "BOSS",
@@ -643,11 +6646,6 @@
   "range": 3.5,
   "mass": 10,
   "score": 300,
-  "pool": {
-   "normal": 0,
-   "small": 0,
-   "boss": 100
-  },
   "talents": {
    "yinyang.dynamic": -1,
    "yinyang.buff_yinyang[same].atk_scale": 0.6,
@@ -707,9 +6705,11 @@
     "bb": {}
    }
   },
+  "spData": null,
   "immune": {
    "stun": true,
-   "frozen": true
+   "frozen": true,
+   "silence": true
   },
   "origName": "“自在”",
   "abilities": [
@@ -757,185 +6757,40 @@
   "power": 3659
  },
  {
-  "key": "enemy_15023_dqwlfm",
-  "orig": "enemy_1535_wlfmster",
-  "name": "依然“狼之主”",
-  "desc": "由于代打选手总是没法合他心意，这一次他决定自己上场。",
-  "rank": "BOSS",
-  "levelType": "BOSS",
-  "way": "ALL",
-  "fly": false,
-  "dmg": "phys",
-  "hp": 50000,
-  "atk": 1000,
-  "def": 1300,
-  "res": 60,
-  "bat": 4,
-  "aspd": 100,
-  "ms": 0.6,
-  "range": 0.8,
-  "mass": 5,
-  "score": 300,
-  "pool": {
-   "normal": 0,
-   "small": 0,
-   "boss": 100
-  },
-  "talents": {
-   "Passive.sp": 1,
-   "Reborn.duration": 10,
-   "Passive2.atk": 0.5,
-   "Passive2.base_attack_time": -1.5,
-   "Passive.damage_resistance": 0.3,
-   "Passive2.invincible_time": 10
-  },
-  "skills": [
-   "WildCalling",
-   "FearCage"
-  ],
-  "skillData": {
-   "WildCalling": {
-    "sp": 0,
-    "cd": 40,
-    "init": 5,
-    "bb": {
-     "duration": 5.5,
-     "sp": 35
-    }
-   },
-   "FearCage": {
-    "sp": 55,
-    "cd": 0,
-    "init": 0,
-    "bb": {
-     "max_target": 3,
-     "attack_speed": -70,
-     "duration_s": 5,
-     "sp": 5,
-     "hp_ratio": 0.3,
-     "duration_bleed": 40,
-     "hp_ratio_offset": -0.2,
-     "duration_wait": 7
-    }
-   }
-  },
-  "immune": {
-   "stun": false,
-   "frozen": true
-  },
-  "origName": "扎罗，“狼之主”",
-  "abilities": [
-   {
-    "text": "使血债账款逐渐增加",
-    "title": false
-   },
-   {
-    "text": "第一形态",
-    "title": true
-   },
-   {
-    "text": "受到伤害降低，不可被晕眩",
-    "title": false
-   },
-   {
-    "text": "【溶血骇惧】使三名我方单位被恐惧吞噬，不可主动撤退，攻速大幅降低，并逐渐加速失去生命值；受影响单位在“狼之主”损失一定比例生命时，会恢复正常",
-    "title": false
-   },
-   {
-    "text": "第一形态生命值降为0后，获得【远古威慑】，周围我方单位降低攻击速度，并缓慢回复生命值",
-    "title": false
-   },
-   {
-    "text": "第二形态",
-    "title": true
-   },
-   {
-    "text": "不再拥有减伤，且不再释放【溶血骇惧】",
-    "title": false
-   },
-   {
-    "text": "攻击变为远程二连击，且攻击力提升",
-    "title": false
-   },
-   {
-    "text": "每隔一段时间释放，【狂暴怒嗥】，使血债账款快速上升",
-    "title": false
-   }
-  ],
-  "scale": 1.1111,
-  "scaleY": 1,
-  "mirrorX": false,
-  "attackAnim": {
-   "clip": "A_Attack",
-   "dur": 1.433,
-   "hit": 0.467
-  },
-  "power": 6212
- },
- {
-  "key": "enemy_15024_dqreid",
-  "orig": "enemy_1539_reid",
-  "name": "“火与钢”",
-  "desc": "你知道他的刀刃燃起火焰意味着什么。",
-  "rank": "BOSS",
-  "levelType": "BOSS",
+  "key": "enemy_15020_dqplas",
+  "orig": "enemy_1137_plasm",
+  "model": "enemy_1137_plasm",
+  "tag": "tag_single",
+  "name": "畸变赘生物",
+  "desc": "在辐射变异与源石感染双重作用下诞生的扭曲生物。",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
   "way": "MELEE",
   "fly": false,
   "dmg": "phys",
-  "hp": 57500,
-  "atk": 800,
-  "def": 650,
-  "res": 60,
-  "bat": 3,
-  "aspd": 200,
-  "ms": 0.65,
+  "hp": 1000,
+  "atk": 150,
+  "def": 0,
+  "res": 0,
+  "bat": 2,
+  "aspd": 100,
+  "ms": 1.9,
   "range": 0.8,
-  "mass": 3,
-  "score": 300,
-  "pool": {
-   "normal": 0,
-   "small": 0,
-   "boss": 100
-  },
-  "talents": {
-   "AtkUp.atk": 2.8,
-   "atkup.hp_ratio": 0.5,
-   "AtkUp.damage_resistance": 0.6,
-   "Reborn.duration": 5,
-   "Reborn.hp_ratio": 0.5,
-   "Reborn.invincible": 10
-  },
-  "skills": [
-   "Rush"
-  ],
-  "skillData": {
-   "Rush": {
-    "sp": 0,
-    "cd": 99999,
-    "init": 0,
-    "bb": {
-     "duration": 4.5,
-     "move_speed": 2,
-     "range_radius": 1.5
-    }
-   }
-  },
+  "mass": 0,
+  "score": 999999,
+  "talents": {},
+  "skills": [],
+  "skillData": {},
+  "spData": null,
   "immune": {
    "stun": false,
-   "frozen": false
+   "frozen": false,
+   "silence": true
   },
-  "origName": "“复仇者”",
+  "origName": "畸变赘生物",
   "abilities": [
    {
-    "text": "生命值降至一半以下时攻击力大幅度提升",
-    "title": false
-   },
-   {
-    "text": "【冲锋】锁定前方路径范围内的一名目标，一定时间内移动速度大幅提升",
-    "title": false
-   },
-   {
-    "text": "首次被击倒后重生，恢复一半生命值",
+    "text": "进入目标点损失1目标生命",
     "title": false
    }
   ],
@@ -944,9 +6799,65 @@
   "mirrorX": false,
   "attackAnim": {
    "clip": "Attack",
-   "dur": 1.733,
-   "hit": 0.667
+   "dur": 2.667,
+   "hit": 0.4
   },
-  "power": 7893
+  "power": 237
+ },
+ {
+  "key": "enemy_5050_dqomg",
+  "orig": "enemy_1221_dzomg",
+  "model": "enemy_1221_dzomg",
+  "tag": "tag_single",
+  "name": "大君之赐",
+  "desc": "",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "MELEE",
+  "fly": false,
+  "dmg": "phys",
+  "hp": 3000,
+  "atk": 680,
+  "def": 200,
+  "res": 20,
+  "bat": 4,
+  "aspd": 100,
+  "ms": 0.7,
+  "range": 0.8,
+  "mass": 3,
+  "score": 999999,
+  "talents": {
+   "dmg_res.damage_resistance": 0.9,
+   "buff_to_blocker.max_valid_stack_cnt": 6,
+   "buff_to_blocker.block_cnt": 1
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "大君之赐",
+  "abilities": [
+   {
+    "text": "重生造物（受到的物理和法术伤害大幅降低）",
+    "title": false
+   },
+   {
+    "text": "阻挡该敌人的单位阻挡数上限+1（最多+6）",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 1.6,
+   "hit": 0.7
+  },
+  "power": 749
  }
 ]

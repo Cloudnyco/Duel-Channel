@@ -24,12 +24,14 @@ try { new Function(body); } catch (e) { fails.push('web sources do not parse tog
 try { new Function(rd('web/src/loader.js')); } catch (e) { fails.push('web/src/loader.js does not parse: ' + e.message); }
 // data
 const cfg = JSON.parse(rd('data/duelcfg.json')), roster = JSON.parse(rd('data/fighters.json'));
-for (const k of ['modes', 'rounds', 'npcs', 'npcSelector', 'consts', 'env', 'tips']) check(cfg[k], `data/duelcfg.json: missing ${k}`);
+for (const k of ['modes', 'rounds', 'npcs', 'npcSelector', 'consts', 'env', 'tips', 'roster', 'pools']) check(cfg[k], `data/duelcfg.json: missing ${k}`);
+// the three events' rounds, each marked with its event
+for (const [id, r] of Object.entries(cfg.rounds || {})) check(r.roundId === id && /@act\d+enemyduel$/.test(id) && r.act, `data/duelcfg.json round ${id}: not an event's round (<roundId>@<act>)`);
 for (const k of ['zoneFirst', 'zoneEvery', 'zoneCentre', 'zones', 'atkMul', 'hpMul', 'moveMultiplier']) check(cfg.env && cfg.env[k] !== undefined, `data/duelcfg.json env: missing ${k}`);
 check(Array.isArray(roster) && roster.length > 0, 'data/fighters.json: empty');
 for (const f of roster) {
-  for (const k of ['key', 'name', 'hp', 'atk', 'def', 'res', 'bat', 'aspd', 'ms', 'range', 'score', 'pool', 'talents']) check(f[k] !== undefined, `data/fighters.json ${f.key}: missing ${k}`);
-  check(!('spine' in f) && !('icon' in f), `data/fighters.json ${f.key}: models / portraits belong in the asset pack (assets/models.json)`);
+  for (const k of ['key', 'model', 'name', 'hp', 'atk', 'def', 'res', 'bat', 'aspd', 'ms', 'range', 'score', 'talents']) check(f[k] !== undefined, `data/fighters.json ${f.key}: missing ${k}`);
+  check(!('spine' in f) && !('icon' in f), `data/fighters.json ${f.key}: models / portraits belong in the asset pack (assets/models/)`);
 }
 const fx = JSON.parse(rd('web/fx-map.json'));
 for (const [k, v] of Object.entries(fx)) if (k !== '_comment') check(/^[\w.-]+\.(png|jpg)$/.test(v), `web/fx-map.json ${k}: not a plain file name`);
@@ -47,7 +49,7 @@ for (const f of tracked) {
 // a tracked asset pack is a complete one (what tools/build-page.mjs needs; the fonts are fetched)
 const packFiles = tracked.filter((f) => f.startsWith('assets/'));
 if (packFiles.length) {
-  for (const f of ['assets/ui.json', 'assets/models.json', ...Object.entries(fx).filter(([k]) => k !== '_comment').map(([, v]) => `assets/fx/${v}`)]) {
+  for (const f of ['assets/ui.json', ...new Set(roster.map((x) => `assets/models/${x.model}.json`)), ...Object.entries(fx).filter(([k]) => k !== '_comment').map(([, v]) => `assets/fx/${v}`)]) {
     check(packFiles.includes(f), `asset pack: ${f} is not tracked`);
   }
   check(packFiles.some((f) => f.startsWith('assets/audio/') && f.endsWith('.ogg')), 'asset pack: no sound tracked');
