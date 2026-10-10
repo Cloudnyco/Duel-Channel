@@ -66,11 +66,11 @@ function canvasTex(w, h, draw) { const c = document.createElement('canvas'); c.w
 function initArena() {
   arenaApp = new PIXI.Application({ view: $('arena'), width: 1280, height: 720, backgroundColor: 0x070909, antialias: true, autoStart: false });
   arena = {
-    root: new PIXI.Container(), back: new PIXI.Container(), floor: new PIXI.Container(), pools: new PIXI.Container(), zoneL: new PIXI.Container(),
+    root: new PIXI.Container(), back: new PIXI.Container(), floor: new PIXI.Container(), pools: new PIXI.Container(), zoneL: new PIXI.Container(), groundG: new PIXI.Graphics(),
     unitsC: new PIXI.Container(), fx: new PIXI.Container(), air: new PIXI.Container(), W: null, acc: 0, ff: 1, running: false, t: 0, spots: [], built: false,
   };
   arenaApp.stage.addChild(arena.root);
-  arena.root.addChild(arena.back, arena.floor, arena.zoneL, arena.pools, arena.unitsC, arena.fx, arena.air);
+  arena.root.addChild(arena.back, arena.floor, arena.zoneL, arena.groundG, arena.pools, arena.unitsC, arena.fx, arena.air);
   arena.zoneShown = -2; arena.flashT = 0;
   arena.unitsC.sortableChildren = true;
   FX.layer = arena.fx;
@@ -390,14 +390,15 @@ function fxDie(u) {
   for (let i = 0; i < 12; i++) FX.spawn('point', cx + (Math.random() - 0.5) * 34 * k, cy + (Math.random() - 0.5) * 40 * k, { life: 0.7 + Math.random() * 0.5, s0: 0.05, s1: 0.015, a0: 0.9, tint: TEAM_COL[u.side], vy: -40 - Math.random() * 50, drag: 1.2 });
 }
 function fxBoom(u) {
-  const [x, y, k] = proj(u.x, u.y), ice = !!u.f.talents['boom.freeze'], col = ice ? COL.ice : 0xffa040, R = 1.3 * FLOOR.T * k;
+  const B = BOOM[u.f.key], ice = !!(B && B.cold), col = ice ? COL.ice : 0xffa040;
+  const [x, y, k] = proj(u.x, u.y), R = (B ? B.r : u.f.key === 'enemy_15076_dqzmst' ? 2 : 1.25) * FLOOR.T * k;
   FX.spawn('disc', x, y - 14 * k, { life: 0.22, s0: R / 260 * 0.5, s1: R / 260 * 1.4, a0: 0.75, tint: col });
   FX.spawn('ring', x, y, { life: 0.42, s0: 0.1, s1: R * 2 / 256, sy: 0.42, a0: 0.9, tint: col });
   for (let i = 0; i < 5; i++) FX.spawn(i % 2 ? 'smokeA' : 'smokeB', x + (Math.random() - 0.5) * R, y - 10 - Math.random() * 20, { normal: true, life: 1.1, s0: 0.3 * k, s1: 0.75 * k, a0: 0.42, tint: ice ? 0xbcd6e6 : 0x5b5552, vy: -24, vr: (Math.random() - 0.5) });
   for (let i = 0; i < 14; i++) { const a = Math.random() * Math.PI * 2, sp = 160 + Math.random() * 220; FX.spawn(ice ? 'rhombus' : 'spark', x, y - 16 * k, { life: 0.5, s0: (ice ? 0.6 : 0.6) * k, s1: 0.15, sy: ice ? 1 : 1.8, tint: col, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp * 0.5 - 90, g: 420, face: !ice, vr: ice ? 6 : 0 }); }
 }
 function fxBlast(u) {
-  const [x, y, k] = proj(u.x, u.y), R = u.reach * FLOOR.T * k;
+  const [x, y, k] = proj(u.x, u.y), R = 1.4 * FLOOR.T * k;
   FX.spawn('ring', x, y, { life: 0.5, s0: 0.1, s1: R * 2 / 256, sy: 0.42, a0: 0.85, tint: COL.arts });
   FX.spawn('glow', x, y - 30 * k, { life: 0.3, s0: 0.4 * k, s1: 0.9 * k, a0: 0.6, tint: COL.arts });
 }
@@ -437,6 +438,94 @@ function fxSpawn(u) {
   FX.spawn('glow', x, y - 30 * k, { life: 0.25, s0: 0.2 * k, s1: 0.45 * k, a0: 0.5, tint: TEAM_COL[u.side] });
 }
 
+// the other enemies' skills (sim.js ENEMIES / GIANTS): an area (a range shape's tiles or a radius) flashing in the
+// attacker's damage colour, a chain's spark, an element burst (灼燃 orange, 凋亡 violet), a heal, a unit taken off the
+// field (swallowed, through the door), a 惊喜 drop (a beam in its side's colour), icicles down a column, the dragon's
+// breath along the rows, a whirl, 刺背兽's quills, the saxophone's four grudges
+function fxArea(a, at) {
+  const col = a.arts ? COL.arts : COL.phys, tiles = at.id ? (RANGES[at.id] || [[0, 0]]).map(([c, r]) => [tileX(at.x) + c + 0.5, tileY(at.y) + r + 0.5]) : null;
+  if (tiles) {
+    for (const [tx, ty] of tiles) {
+      if (tx < 0 || tx > AW || ty < 0 || ty > AH) continue;
+      const [x, y, k] = proj(tx, ty);
+      FX.spawn('disc', x, y - 4 * k, { life: 0.3, s0: 0.1, s1: FLOOR.T * k / 260 * 0.9, sy: 0.42, a0: 0.55, tint: col });
+    }
+  } else {
+    const [x, y, k] = proj(at.x, at.y), R = (at.r || 1) * FLOOR.T * k;
+    FX.spawn('ring', x, y, { life: 0.4, s0: 0.1, s1: R * 2 / 256, sy: 0.42, a0: 0.85, tint: col });
+  }
+}
+function fxChain(v) {
+  const [x, y, k] = chest(v, 0.5);
+  FX.spawn('burst', x, y, { life: 0.22, s0: 0.2 * k, s1: 0.45 * k, tint: COL.arts, r: Math.random() * 6 });
+}
+function fxElem(u, kind) {
+  const [x, y, k] = chest(u, 0.5), burn = kind === 'burn', col = burn ? 0xff7a2a : 0x7a3cc8;
+  FX.spawn('disc', x, y, { life: 0.35, s0: 0.2 * k, s1: 0.9 * k, a0: 0.8, tint: col });
+  for (let i = 0; i < 10; i++) FX.spawn(burn ? 'spark' : 'rhombus', x, y, { life: 0.6, s0: 0.6 * k, s1: 0.1, sy: burn ? 1.8 : 1, tint: col, vx: (Math.random() - 0.5) * 220, vy: -60 - Math.random() * 160, g: 300, face: burn, vr: burn ? 0 : 4 });
+}
+function fxHeal(u) {
+  const [x, y, k] = chest(u, 0.6);
+  FX.spawn('glow', x, y, { life: 0.5, s0: 0.3 * k, s1: 0.8 * k, a0: 0.6, tint: 0x7ee08a });
+  for (let i = 0; i < 6; i++) FX.spawn('point', x + (Math.random() - 0.5) * 30 * k, y + 10 * k, { life: 0.8, s0: 0.05, s1: 0.015, a0: 0.9, tint: 0x9cf0a6, vy: -50, drag: 0.5 });
+}
+function fxGone(u) {
+  const [x, y, k] = proj(u.x, u.y);
+  FX.spawn('ring', x, y, { life: 0.5, s0: 0.6 * k, s1: 0.05, sy: 0.42, a0: 0.9, tint: 0x8a4ab0 });
+  FX.spawn('glow', x, y - 30 * k, { life: 0.4, s0: 0.6 * k, s1: 0.1 * k, a0: 0.7, tint: 0x8a4ab0 });
+}
+function fxDrop(u) {
+  const [x, y, k] = proj(u.x, u.y);
+  FX.spawn('beam', x, y, { ay: 1, life: 0.5, s0: 0.45 * k, s1: 0.8 * k, sy: 2.2, a0: 0.85, tint: TEAM_COL[u.side] });
+  FX.spawn('ring', x, y, { life: 0.4, s0: 0.1, s1: 1.2 * FLOOR.T * k / 256 * 2, sy: 0.42, a0: 0.9, tint: TEAM_COL[u.side] });
+}
+function fxIcicle(col) {
+  for (let r = 0; r < AH; r++) {
+    const [x, y, k] = proj(col + 0.5, r + 0.5);
+    FX.spawn('rhombus', x, y - 6 * k, { life: 0.35 + r * 0.2, s0: 0.05, s1: 0.8 * k, a0: 0, a1: 0.9, tint: COL.ice, vr: 2 });
+  }
+}
+function fxBreath() {
+  for (let r = 0; r < AH; r++) for (let c = 1; c < AW; c += 2) {
+    const [x, y, k] = proj(c + 0.5, r + 0.5);
+    FX.spawn(Math.random() < 0.5 ? 'smokeA' : 'smokeB', x, y - 10 * k, { normal: true, life: 0.9, s0: 0.25 * k, s1: 0.6 * k, a0: 0.3, tint: 0x8fd0ff, vx: 60, vr: 0.5 });
+  }
+}
+function fxWhirl(u, R) {
+  const [x, y, k] = proj(u.x, u.y);
+  FX.spawn('ring', x, y, { life: 0.35, s0: 0.1, s1: R * FLOOR.T * k * 2 / 256, sy: 0.42, a0: 0.8, tint: COL.phys });
+}
+function fxQuill(u) {
+  const [x, y, k] = chest(u, 0.4);
+  for (let i = 0; i < 12; i++) { const a = (Math.random() - 0.5) * Math.PI, sp = 220 + Math.random() * 120; FX.spawn('spark', x, y, { life: 0.4, s0: 0.8 * k, s1: 0.3 * k, sy: 2, tint: COL.phys, vx: -u.facing * Math.cos(a) * sp, vy: Math.sin(a) * sp * 0.5, face: true }); }
+}
+function fxFourDir(u) {
+  const [x, y, k] = chest(u, 0.5);
+  for (const [vx, vy] of [[1, 0], [-1, 0], [0, 0.5], [0, -0.5]]) for (let i = 0; i < 3; i++) FX.spawn('spark', x, y, { life: 0.6, s0: 1.0 * k, s1: 0.4 * k, sy: 2, tint: 0xd8a0ff, vx: vx * (420 + i * 80), vy: vy * (420 + i * 80), face: true });
+}
+// the effects on the ground: a pollution (dirty green), the rum spot (amber), the thunder fields (violet, a flash on
+// each strike)
+function drawGround(W) {
+  const g = arena.groundG;
+  g.clear();
+  for (const z of W.ground) {
+    const a = Math.min(1, z.k / 8) * Math.min(1, (z.s - z.k) / 12);
+    if (z.r) {
+      const col = z.kind === 'pollute' ? 0x6f8f2a : z.kind === 'rum' ? 0xd99a2a : COL.arts, pts = [];
+      for (let i = 0; i < 24; i++) { const ang = i / 24 * Math.PI * 2, [x, y] = proj(z.x + Math.cos(ang) * z.r, z.y + Math.sin(ang) * z.r); pts.push(x, y); }
+      g.beginFill(col, 0.22 * a); g.lineStyle(2, col, 0.6 * a); g.drawPolygon(pts); g.endFill(); g.lineStyle(0);
+    } else if (z.id) {
+      const pulse = z.E > 1 ? 1 - (z.k % z.E) / z.E : 0.5;
+      for (const [c, r] of RANGES[z.id] || []) {
+        const tx = z.cx + c, ty = z.cy + r;
+        if (tx < 0 || tx >= AW || ty < 0 || ty >= AH) continue;
+        const q = [proj(tx, ty), proj(tx + 1, ty), proj(tx + 1, ty + 1), proj(tx, ty + 1)];
+        g.beginFill(COL.arts, (0.12 + 0.3 * pulse * pulse) * a); g.drawPolygon(q.flatMap((p) => [p[0], p[1]])); g.endFill();
+      }
+    }
+  }
+}
+
 // ---- the visible arena: the sim's world (sim.js) with Spine views --------------------------------------------------------
 function setupRound(lineups, seed) {
   clearArena();
@@ -452,6 +541,7 @@ function setupRound(lineups, seed) {
 function clearArena() {
   if (arena.W) { for (const u of arena.W.units) if (u.view) u.view.destroy({ children: true }); for (const s of arena.W.shots) if (s.g) s.g.destroy({ children: true }); }
   FX.clear();
+  arena.groundG.clear();
   arena.W = null; arena.running = false;
   arena.flashT = 0;
   drawRing(0);
@@ -462,6 +552,7 @@ function startBattle() {
   return new Promise((res) => { arena.onEnd = res; });
 }
 function attachView(u) {
+  if (u.view) return;
   u.view = new PIXI.Container();
   u.shadow = new PIXI.Sprite(tex('glow')); u.shadow.anchor.set(0.5); u.shadow.tint = 0x000000; u.shadow.alpha = 0.6;
   u.ringG = new PIXI.Graphics(); u.bar = new PIXI.Graphics();
@@ -521,7 +612,7 @@ function renderUnit(u, dt) {
     u.sk.update(u.stun > 0 ? 0 : dt);
     if (!u.headH) u.headH = Math.max(40, -u.sk.getLocalBounds().y);
     if (u.flash > 0) u.flash -= dt;
-    u.sk.tint = u.flash > 0 ? 0xffc4b8 : u.stun > 0 && u.stunKind === 'frozen' ? 0xb8dcf0 : u.fear ? 0xd88aa8
+    u.sk.tint = u.flash > 0 ? 0xffc4b8 : u.stun > 0 && u.stunKind === 'frozen' ? 0xb8dcf0 : u.fear ? 0xd88aa8 : u.cold > 0 ? 0xcfe6ff
       : u.invT > 0 && Math.sin(arena.t * 18) > 0 ? 0xfff0b0 : 0xffffff;
     if (u.dead) { u.deadT = (u.deadT || 0) + dt; u.view.alpha = clamp(1.4 - u.deadT * 1.2, 0, 1); }
   }
@@ -665,7 +756,8 @@ function unitHud(u, dt, k, s) {
     if (barrier) { const r = Math.max(60, (u.headH || 120) * s) * 1.25; u.barrierFx.scale.set(r / 128, r / 128 * 0.95); u.barrierFx.y = -r * 0.42; u.barrierFx.alpha = 0.55 + 0.15 * Math.sin(arena.t * 5); }
   }
   // the ground ring: the barrier (violet, with the dome's outline), a seized unit (red, pulsing), invincible (gold)
-  const ring = !show ? null : barrier ? COL.arts : u.fear ? COL.fear : u.invT > 0 ? COL.gold : null;
+  // (and a 惊喜 drop's first 5 s in its side's colour, PRTS: 携带相应阵营颜色的特效)
+  const ring = !show ? null : barrier ? COL.arts : u.fear ? COL.fear : u.invT > 0 ? COL.gold : u.dropped && u.buffs.some((b) => b.id === 'drop') ? TEAM_COL[u.side] : null;
   if (ring !== u.ringCol || ring) {
     const g = u.ringG; g.clear(); u.ringCol = ring;
     if (ring) {
@@ -743,6 +835,19 @@ function arenaFrame(dt) {
     for (const [kind, u, a] of W.events) {
       if (kind === 'hit') { if (!busy && u.view) fxHit(u, a); if (u.view) u.flash = 0.1; }
       else if (kind === 'die') fxDie(u);
+      else if (kind === 'gone') fxGone(u);
+      else if (kind === 'spawn') { attachView(u); fxSpawn(u); if (u.dropped && !u.dropShown) { u.dropShown = true; fxDrop(u); } }
+      else if (kind === 'chan' || kind === 'liberty' || kind === 'swap' || kind === 'unload') { if (u.view) u.wantSkill = true; }
+      else if (kind === 'spin') { if (!busy) fxWhirl(u, u.f.key === 'enemy_15070_dqhlgy' ? 1.2 : 1); }
+      else if (kind === 'area') { if (!busy) fxArea(u, a); }
+      else if (kind === 'chain') { if (!busy) fxChain(u); }
+      else if (kind === 'elem') fxElem(u, a);
+      else if (kind === 'heal') { if (!busy) fxHeal(u); }
+      else if (kind === 'icicle') fxIcicle(a.col);
+      else if (kind === 'breath') { if (!busy) fxBreath(); }
+      else if (kind === 'quill') { if (!busy) fxQuill(u); }
+      else if (kind === 'fourdir') fxFourDir(u);
+      else if (kind === 'eat' || kind === 'door') { if (a && a.view) a.wantSkill = true; }
       else if (kind === 'boom') fxBoom(u);
       else if (kind === 'blast') { fxBlast(u); u.wantSkill = true; }
       else if (kind === 'zone') { if (W.zone >= 0) { sfx('b_ui_dqsafearea'); arena.flashT = 1; } }
@@ -761,6 +866,7 @@ function arenaFrame(dt) {
   }
   const adt = dt * (arena.running ? rate : 1);
   if (W) {
+    drawGround(W);
     for (const u of W.units) if (u.view) renderUnit(u, adt);
     // projectiles: physical — a white-yellow streak; arts — a violet orb; both leave a short trail
     for (const s of W.shots) {

@@ -9,15 +9,17 @@
 //     env           the level's rules (the multiplayer stage's runes) of all three, merged, and the safe zone
 //                   (data/sources/env_025_act1enemyduel.json, the env every event uses)
 //     the rest      modes, constants, texts, emoticon themes of the latest event (place names left out of the texts)
-//   data/fighters.json           every duel enemy of the events: stats, duel score (numOfExtraDrops), talents, skills
-//                                (enemy_database), the original enemy's handbook abilities and damage type, the model's
-//                                drawn scale and attack clip (hit frame)
+//   data/fighters.json           every duel enemy of the events: stats, duel score (numOfExtraDrops) and the extra cost of
+//                                each further unit of the type (data/sources/prts-extra-cost.json, from PRTS), talents,
+//                                skills (enemy_database, at the level the latest event's stage uses: 绿藤城 runs seven
+//                                enemies at level 1), the original enemy's handbook abilities and damage type, the model's
+//                                drawn scale and attack clip (hit frame); 协同 groups and death spawns
 //   assets/models/<orig>.json    an original enemy's model: { icon, spine: { skel, atlas, pages, pma, anims } } (base64;
 //                                every duel enemy is drawn as its original, originalEnemyId)
 //
 // Sources (downloaded once into .cache/sources/, tools/lib/fetch.mjs):
 //   Kengxxiao/ArknightsGameData   zh_CN/gamedata: excel/activity_table.json, excel/enemy_handbook_table.json,
-//                                 excel/display_meta_table.json, levels/enemydata/enemy_database.json,
+//                                 excel/display_meta_table.json, excel/range_table.json, levels/enemydata/enemy_database.json,
 //                                 levels/activities/<act>/level_<stage>.json
 //   isHarryh/Ark-Models           models_data.json and models_enemies/<key>/ (the enemies' Spine models)
 //   yuanyan3060/ArknightsGameResource   enemy/<id>.png (portraits)
@@ -40,9 +42,20 @@ const json = (...p) => JSON.parse(readFileSync(join(...p), 'utf8'));
 const write = (p, o, pretty = true) => { mkdirSync(dirname(p), { recursive: true }); writeFileSync(p, (pretty ? JSON.stringify(o, null, 1) : JSON.stringify(o)) + (pretty ? '\n' : '')); };
 
 console.log('game data …');
-const [activity, handbook, meta, enemyDb] = await Promise.all([gd('excel/activity_table.json'), gd('excel/enemy_handbook_table.json'),
-  gd('excel/display_meta_table.json'), gd('levels/enemydata/enemy_database.json')]);
-const db = Object.fromEntries(enemyDb.enemies.map((x) => [x.Key, x.Value[0].enemyData]));
+const [activity, handbook, meta, enemyDb, rangeTable] = await Promise.all([gd('excel/activity_table.json'), gd('excel/enemy_handbook_table.json'),
+  gd('excel/display_meta_table.json'), gd('levels/enemydata/enemy_database.json'), gd('excel/range_table.json')]);
+const dbAll = Object.fromEntries(enemyDb.enemies.map((x) => [x.Key, x.Value]));
+// an enemy at a level: enemy_database keeps a level above 0 as overrides of level 0 — the fields it defines, its talents,
+// skills and SP when it gives them
+function enemyAt(key, lv) {
+  const vs = dbAll[key], base = vs[0].enemyData, o = lv ? (vs.find((v) => v.level === lv) || vs[0]).enemyData : base;
+  if (o === base) return base;
+  const pick = (a, b) => (b && b.m_defined ? b : a);
+  const out = { ...base, attributes: Object.fromEntries(Object.keys(base.attributes).map((k) => [k, pick(base.attributes[k], o.attributes[k])])) };
+  for (const k of Object.keys(base)) if (o[k] && typeof o[k] === 'object' && 'm_defined' in o[k]) out[k] = pick(base[k], o[k]);
+  for (const k of ['talentBlackboard', 'skills', 'spData']) if (o[k]) out[k] = o[k];
+  return out;
+}
 const HB = handbook.enemyData, emo = meta.emoticonData;
 const zone = json(ROOT, 'data', 'sources', 'env_025_act1enemyduel.json');
 
@@ -50,7 +63,7 @@ const zone = json(ROOT, 'data', 'sources', 'env_025_act1enemyduel.json');
 // the pools the rounds draw from (roundData enemyPoolLeft / Right) → the weight's short name
 const POOLS = { poolNormal: 'normal', poolSmallEnemy: 'small', poolBoss: 'boss', poolMusic: 'music', poolNoSurpriseEnemy: 'nosurprise', poolGiantBoss: 'giant', poolAntiGiantBoss: 'antigiant' };
 const bbOf = (r) => Object.fromEntries((r ? r.blackboard : []).map((b) => [b.key, b.valueStr ?? b.value]));
-const events = [], allEnemies = new Map();
+const events = [], allEnemies = new Map(), levelOf = {};
 for (const id of ACTS) {
   const cfg = activity.activity.ENEMY_DUEL[id], act = activity.basicInfo[id];
   // the multiplayer modes' stage (its level carries the runes; the solo stage has the same ones)
@@ -58,6 +71,8 @@ for (const id of ACTS) {
   const level = await gd(`levels/activities/${id}/level_${stage}.json`);
   const runes = level.runes || [], rune = (key) => runes.find((r) => r.key === key);
   const mul = bbOf(rune('enemy_attribute_mul')), envr = bbOf(rune('env_system_new'));
+  // the enemy levels the stage uses (a later event's win: 绿藤城's balance changes)
+  for (const r of level.enemyDbRefs || []) if (r.useDb) levelOf[r.id] = r.level || 0;
   const verify = runes.filter((r) => r.key === 'env_gbuff_new_with_verify').map(bbOf);
   const listOf = (b) => String(b.enemy || '').split('|').filter(Boolean);
   const env = {
@@ -65,15 +80,23 @@ for (const id of ACTS) {
     ringHpRatio: envr.hp_ratio, ringAtk: envr.atk, ringAspd: envr.attack_speed, ringMove: envr.move_speed,
     zoneFirst: zone.firstSafeZoneInterval, zoneEvery: zone.interval, zoneCentre: zone.position, zones: zone.zones,
     statusResist: verify.filter((b) => b.key === 'enemy_status_resistance').flatMap(listOf),
-    // the later events' level rules: the 惊喜 enemies' way onto the field, and the damage report (sim.js)
+    // the later events' level rules: the 惊喜 enemies' way onto the field (who; their drop-in's odds, env_system_new
+    // enemy_duel_*; their entry buff), and the damage report (sim.js)
     surprise: verify.filter((b) => b.key === 'enemyduel_surprise_attacker_born').flatMap(listOf),
+    surpriseRule: envr.enemy_duel_surprise_attacker_interval ? {
+      interval: envr.enemy_duel_surprise_attacker_interval, delay: envr.enemy_duel_surprise_attacker_spawn_delay,
+      baseProb: envr.enemy_duel_surprise_attacker_base_prob, hurtProb: envr.enemy_duel_surprise_attacker_prob_add_when_hurt,
+      lossProb: envr.enemy_duel_surprise_attacker_prob_add_battle_loss_ratio, valueProb: envr.enemy_duel_surprise_attacker_prob_add_battle_value_ratio,
+      teamRatio: envr.enemy_duel_team_count_ratio, lossRatio: envr.enemy_duel_battle_loss_ratio, valueRatio: envr.enemy_duel_battle_value_ratio,
+    } : null,
+    surpriseBorn: verify.filter((b) => b.key === 'enemyduel_surprise_attacker_born').map((b) => ({ moveSpeed: b.move_speed, attackSpeed: b.attack_speed, duration: b.duration }))[0] || null,
     globalBuffs: runes.filter((r) => r.key === 'env_gbuff_new').map((r) => bbOf(r).key),
     envKey: envr.key,
   };
   const pools = {};
   for (const [eid, p] of Object.entries(cfg.poolData)) pools[eid] = Object.fromEntries(Object.entries(POOLS).map(([k, s]) => [s, p[k] || 0]).filter(([, w]) => w > 0));
-  for (const [eid, e] of Object.entries(cfg.enemyData)) if (db[eid]) allEnemies.set(eid, e);
-  events.push({ id, act, cfg, env, pools, roster: Object.keys(cfg.enemyData).filter((e) => db[e]) });
+  for (const [eid, e] of Object.entries(cfg.enemyData)) if (dbAll[eid]) allEnemies.set(eid, e);
+  events.push({ id, act, cfg, env, pools, roster: Object.keys(cfg.enemyData).filter((e) => dbAll[e]) });
   console.log(`  ${id} ${act.name}: ${Object.keys(cfg.enemyData).length} enemies, ${Object.keys(cfg.roundData).length} rounds`);
 }
 // ---- the three events as one ----------------------------------------------------------------------------------------------
@@ -95,7 +118,7 @@ for (const ev of events) for (const [nid, t] of Object.entries(ev.cfg.npcSelecto
   for (const d of t.data) scores[d.enemyId] = d.score;
   npcSelector[id] = { npcId: id, data: Object.entries(scores).map(([enemyId, score]) => ({ enemyId, score })) };
 }
-const env = { ...latest.env, statusResist: [...new Set(events.flatMap((e) => e.env.statusResist))], surprise: [...new Set(events.flatMap((e) => e.env.surprise))],
+const env = { ...events.reduce((o, e) => ({ ...o, ...Object.fromEntries(Object.entries(e.env).filter(([, v]) => v != null)) }), {}), statusResist: [...new Set(events.flatMap((e) => e.env.statusResist))], surprise: [...new Set(events.flatMap((e) => e.env.surprise))],
   globalBuffs: [...new Set(events.flatMap((e) => e.env.globalBuffs))] };
 const consts = Object.fromEntries(Object.entries(L.constData).map(([k, v]) => [k, typeof v === 'string' ? v.replace(city, '') : v]));
 const duelcfg = {
@@ -104,6 +127,9 @@ const duelcfg = {
   extraScore: L.extraScoreData, basicScores: L.basicScores, announce: L.announceData.map((x) => x.announceText),
   comments: L.commentData, tips: L.tipsData.map((t) => t.txt), consts, env,
   roster: [...allEnemies.keys()], pools,
+  // the range shapes the duel enemies' skills name (range_table: x-1 the diamond of radius 2, x-4 the 3 × 3 square, x-5
+  // the cross of five): [column, row] offsets from the centre tile
+  ranges: Object.fromEntries(['x-1', 'x-4', 'x-5'].map((id) => [id, rangeTable[id].grids.map((g) => [g.col, g.row])])),
   // the emoji panel's themes (enabledEmoticonThemeIdList): each theme's pictures in their sortId order
   emoticons: L.enabledEmoticonThemeIdList.filter((t) => emo.emoticonThemeDataDict[t]).map((t) => ({ id: t, pics: emo.emoticonThemeDataDict[t].map((e) => emo.emojiDataDict[e]).sort((a, b) => a.sortId - b.sortId).map((e) => e.picId) })),
 };
@@ -151,20 +177,32 @@ for (const f of readdirSync(modelDir)) if (f.endsWith('.json') && !origs.include
 
 // ---- the roster -----------------------------------------------------------------------------------------------------------
 const DMG = { PHYSIC: 'phys', MAGIC: 'arts', HEAL: 'heal', NO_DAMAGE: 'none', TRUE: 'true' };
+// the extra cost of each further unit of a type (PRTS; the tables carry the base only)
+const EXTRA = json(ROOT, 'data', 'sources', 'prts-extra-cost.json').extraCost;
+// 绿藤城's 协同 enemies (PRTS 争锋频道/选手信息/领袖, 关系=协同; the head is the tag_multi entry of the pools): a group
+// enters as one type, costed by its head
+const GROUPS = { enemy_15072_dqlbgg: ['enemy_15070_dqhlgy', 'enemy_15071_dqyrzf'], enemy_15073_dqkght: ['enemy_15074_dqdght'], enemy_15075_dqzklz: ['enemy_15076_dqzmst'] };
+// what an enemy leaves when it falls: its own data (deathrattle.*), or, where the duel version leaves it to its original,
+// PRTS's text — 匪帮欢乐船 “死亡0.8s后…召唤1个过气水手”, “交通亭”量产型 “死亡1s后…弹出1个速胜卫士”
+const DEATH_SPAWN = { enemy_15083_dqymot: { key: 'enemy_15022_dqhvys', cnt: 1, delay: 0.8 }, enemy_15088_dqterm: { key: 'enemy_15086_dqcbld', cnt: 1, delay: 1 } };
+const deathSpawnOf = (eid, T) => DEATH_SPAWN[eid] || (typeof T['deathrattle.enemy_key'] === 'string'
+  ? { key: T['deathrattle.enemy_key'], cnt: T['deathrattle.cnt'] || 1, delay: T['deathrattle.delay'] || 0, spread: T['deathrattle.offset_bound'] || 0 } : null);
 const abilitiesOf = (orig) => ((HB[orig] && HB[orig].abilityList) || []).map((a) => ({ text: a.text.replace(/<\$?[^>]*>/g, ''), title: a.textFormat === 'TITLE' }));
 const roster = [];
 for (const [eid, e] of allEnemies) {
-  const d = db[eid], orig = e.originalEnemyId, hb = HB[orig] || HB[eid], model = modelOf(orig);
+  const d = enemyAt(eid, levelOf[eid] || 0), orig = e.originalEnemyId, hb = HB[orig] || HB[eid], model = modelOf(orig);
   if (!looks[model]) continue;
   const at = d.attributes, v = (k, dflt) => (at[k] && at[k].m_defined ? at[k].m_value : dflt);
   const hp = v('maxHp', 1000), atk = v('atk', 100), bat = v('baseAttackTime', 2), aspd = v('attackSpeed', 100);
   const dmgs = ((hb && hb.damageType) || []).map((x) => DMG[x] || 'phys');
+  const talents = Object.fromEntries((d.talentBlackboard || []).map((t) => [t.key, t.valueStr ?? t.value]));
   roster.push({
     key: eid, orig, model, tag: e.tagType, name: val(d.name), desc: val(d.description), rank: val(d.levelType) || 'NORMAL', levelType: val(d.levelType) || 'NORMAL',
     way: val(d.applyWay) || 'MELEE', fly: val(d.motion) === 'FLY', dmg: dmgs.includes('arts') && !dmgs.includes('phys') ? 'arts' : dmgs[0] === 'arts' ? 'arts' : 'phys',
     hp, atk, def: v('def', 0), res: v('magicResistance', 0), bat, aspd, ms: v('moveSpeed', 1), range: val(d.rangeRadius) || 0.8,
-    mass: v('massLevel', 0), score: val(d.numOfExtraDrops),
-    talents: Object.fromEntries((d.talentBlackboard || []).map((t) => [t.key, t.value])),
+    mass: v('massLevel', 0), regen: v('hpRecoveryPerSec', 0), score: val(d.numOfExtraDrops), scoreAdd: EXTRA[eid] ?? 0, level: levelOf[eid] || 0,
+    tags: val(d.enemyTags) || [], group: GROUPS[eid] || null, deathSpawn: deathSpawnOf(eid, talents),
+    talents,
     skills: (d.skills || []).map((s) => s.prefabKey),
     skillData: Object.fromEntries((d.skills || []).map((s) => [s.prefabKey, { sp: s.spCost, cd: s.cooldown, init: s.initCooldown, bb: Object.fromEntries((s.blackboard || []).map((b) => [b.key, b.valueStr ?? b.value])) }])),
     spData: d.spData ? { type: d.spData.spType, max: d.spData.maxSp, init: d.spData.initSp, inc: d.spData.increment } : null,

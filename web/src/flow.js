@@ -578,8 +578,13 @@ function enemyInfo(g) {
     `生命 <b>${Math.round(f.hp * ENV.hpMul)}</b>   攻击 <b>${Math.round(f.atk * ENV.atkMul)}</b>`,
     `防御 <b>${f.def}</b>   法术抗性 <b>${f.res}</b>`,
     `攻击间隔 <b>${(f.bat * 100 / f.aspd).toFixed(1)}s</b>   移速 <b>${+(f.ms * ENV.moveMultiplier).toFixed(2)}</b>   范围 <b>${f.range}</b>`,
-    `分值 <b>${f.score}</b> × ${g.n} = <b>${f.score * g.n}</b>`,
+    // the n-th unit of a type costs its base + (n − 1) × its extra (PRTS 分配规则)
+    `分值 <b>${f.score}</b>${f.scoreAdd ? dim(`（每多一名 +${f.scoreAdd}）`) : ''} × ${g.n} = <b>${+groupCost(g).toFixed(1)}</b>`,
   ];
+  // the duel's own ways onto the field (sim.js): a 协同 group, a 惊喜 drop-in, a 巨型 leader
+  if (f.group) lines.push(`<color=#f3d23a>协同</color> 与${f.group.map((k) => FIGHTER[k].name).join('、')}一同出场，只占一个兵种`);
+  if (SURPRISE.has(f.key)) lines.push(`<color=#f3d23a>奇袭</color> 有队友掩护时不随队入场，比赛中空降到对手身后`);
+  if (GIANT.has(f.key)) lines.push(`<color=#f3d23a>巨型</color> 占据左侧起点列，不移动，攻击遍及全场`);
   const ab = f.abilities || [];
   if (ab.length) {
     lines.push(`<color=#f3d23a>能力</color>${f.origName && f.origName !== f.name ? dim(`（图鉴原型：${f.origName}）`) : ''}`);

@@ -31,12 +31,22 @@ test('the golden battles replay identically (rules or numbers changed? run tools
   }
 });
 
-test('line-ups stay within each round\'s score tolerance', () => {
-  for (const rd of rounds) for (let i = 0; i < 25; i++) {
-    for (const side of SIM.makeLineups(rd, SIM.mulberry32(i * 7919 + rd.round))) {
-      const s = SIM.sideScore(side);
-      assert.ok(Math.abs(s - rd.enemyScore) <= rd.enemyScoreRandom, `round ${rd.round}: score ${s} vs ${rd.enemyScore} ± ${rd.enemyScoreRandom}`);
-    }
+// PRTS 争锋频道/分配规则: the budget (enemyScore ± random) split point by point among the round's types; a type sends
+// units while its share pays (the n-th costs base + (n − 1) × extra), one more by chance, at least one
+test('line-ups follow PRTS\'s allocation: types per round, none on both sides, each unit paid for (the last by chance)', () => {
+  assert.equal(SIM.unitCost(byKey('enemy_5031_dqrtar_2'), 0), 15); assert.equal(SIM.unitCost(byKey('enemy_5031_dqrtar_2'), 2), 25);
+  for (const rd of Object.values(SIM.DCFG.rounds)) for (let i = 0; i < 12; i++) {
+    const L = SIM.makeLineups(rd, SIM.mulberry32(i * 7919 + rd.round));
+    const keys = L.map((s) => s.map((g) => g.f.key));
+    assert.ok(!keys[0].some((k) => keys[1].includes(k)), `${rd.roundId}: a type on both sides`);
+    L.forEach((side, sd) => {
+      const kmin = sd ? rd.enemySideMinRight : rd.enemySideMinLeft, kmax = sd ? rd.enemySideMaxRight : rd.enemySideMaxLeft;
+      assert.ok(side.length >= Math.min(kmin, 1) && side.length <= kmax, `${rd.roundId}: ${side.length} types`);
+      // without each type's last unit (the one that may come by chance), the side fits its budget
+      let paid = 0;
+      for (const g of side) { assert.ok(g.n >= 1); for (let k = 0; k < g.n - 1; k++) paid += SIM.unitCost(g.f, k); }
+      assert.ok(paid <= rd.enemyScore + rd.enemyScoreRandom + 1e-9, `${rd.roundId}: ${paid}`);
+    });
   }
 });
 
@@ -105,7 +115,7 @@ test("竞猜对决: up to 30 seats; every round in the three events' versions; �
     const [left, right] = SIM.makeLineups(r5, SIM.mulberry32(i + 1));
     assert.equal(right.length, 1); assert.ok(right[0].f.pool.boss > 0, right[0].f.key);
     if (right[0].f.score >= 300) assert.equal(right[0].n, 1);
-    assert.ok(left.every((g) => g.f.pool.small > 0)); assert.ok(Math.abs(SIM.sideScore(left) - 175) <= 75);
+    assert.ok(left.every((g) => g.f.pool.small > 0));
   }
 });
 

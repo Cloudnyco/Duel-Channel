@@ -6889,7 +6889,23 @@
   "globalBuffs": [
    "enemyduel_report_hurt"
   ],
-  "envKey": "env_025_act1enemyduel"
+  "envKey": "env_025_act1enemyduel",
+  "surpriseRule": {
+   "interval": 1,
+   "delay": 60,
+   "baseProb": 0.016,
+   "hurtProb": 0.2,
+   "lossProb": 0.3,
+   "valueProb": 0.2,
+   "teamRatio": 0.5,
+   "lossRatio": 0.5,
+   "valueRatio": 0.6
+  },
+  "surpriseBorn": {
+   "moveSpeed": 1.5,
+   "attackSpeed": 0,
+   "duration": 5
+  }
  },
  "roster": [
   "enemy_5028_dqlime_2",
@@ -7742,6 +7758,122 @@
    "antigiant": 10
   },
   "enemy_15076_dqzmst": {}
+ },
+ "ranges": {
+  "x-1": [
+   [
+    0,
+    2
+   ],
+   [
+    -1,
+    1
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    -2,
+    0
+   ],
+   [
+    -1,
+    0
+   ],
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    -1,
+    -1
+   ],
+   [
+    0,
+    -1
+   ],
+   [
+    1,
+    -1
+   ],
+   [
+    0,
+    -2
+   ]
+  ],
+  "x-4": [
+   [
+    -1,
+    1
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    -1,
+    0
+   ],
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    -1,
+    -1
+   ],
+   [
+    0,
+    -1
+   ],
+   [
+    1,
+    -1
+   ]
+  ],
+  "x-5": [
+   [
+    0,
+    1
+   ],
+   [
+    -1,
+    0
+   ],
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    0,
+    -1
+   ]
+  ]
  },
  "emoticons": [
   {

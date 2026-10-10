@@ -11,7 +11,7 @@
   "way": "MELEE",
   "fly": false,
   "dmg": "phys",
-  "hp": 3000,
+  "hp": 3600,
   "atk": 290,
   "def": 120,
   "res": 10,
@@ -20,7 +20,15 @@
   "ms": 1.1,
   "range": 0.8,
   "mass": 1,
+  "regen": 0,
   "score": 2,
+  "scoreAdd": 0,
+  "level": 1,
+  "tags": [
+   "animated"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "yinyang.dynamic": -1,
    "yinyang.buff_yinyang[same].atk_scale": 0.6,
@@ -44,7 +52,7 @@
    "dur": 1,
    "hit": 0.4
   },
-  "power": 641
+  "power": 702
  },
  {
   "key": "enemy_15036_dqalme",
@@ -67,7 +75,15 @@
   "ms": 1,
   "range": 0.8,
   "mass": 0,
+  "regen": 0,
   "score": 2,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [
+   "infection"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "rarity": 1
   },
@@ -117,7 +133,13 @@
   "ms": 1.9,
   "range": 0.8,
   "mass": 1,
+  "regen": 0,
   "score": 2,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {},
   "skills": [
    "TL"
@@ -180,7 +202,15 @@
   "ms": 1,
   "range": 2.75,
   "mass": 0,
+  "regen": 0,
   "score": 2,
+  "scoreAdd": 0.1,
+  "level": 0,
+  "tags": [
+   "infection"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "defdown.def": -15
   },
@@ -230,7 +260,13 @@
   "ms": 0.8,
   "range": 2.8,
   "mass": 0,
+  "regen": 0,
   "score": 2,
+  "scoreAdd": 0.1,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "EpDamage.attack@ep_damage_ratio": 1
   },
@@ -280,7 +316,15 @@
   "ms": 1.9,
   "range": 0.8,
   "mass": 0,
+  "regen": 0,
   "score": 2,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [
+   "infection"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {},
   "skills": [],
   "skillData": {},
@@ -323,7 +367,15 @@
   "ms": 1,
   "range": 0.8,
   "mass": 0,
+  "regen": 0,
   "score": 3,
+  "scoreAdd": 0.1,
+  "level": 0,
+  "tags": [
+   "infection"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "boom.atk_scale": 4
   },
@@ -373,7 +425,13 @@
   "ms": 1,
   "range": 0.8,
   "mass": 0,
+  "regen": 0,
   "score": 3,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "rarity": 1
   },
@@ -423,7 +481,13 @@
   "ms": 1,
   "range": 3.4,
   "mass": 1,
+  "regen": 0,
   "score": 3,
+  "scoreAdd": 0.1,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "rarity": 1
   },
@@ -473,7 +537,13 @@
   "ms": 0.6,
   "range": 2,
   "mass": 0,
+  "regen": 0,
   "score": 3,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {},
   "skills": [],
   "skillData": {},
@@ -525,7 +595,13 @@
   "ms": 0.8,
   "range": 3.8,
   "mass": 1,
+  "regen": 0,
   "score": 3,
+  "scoreAdd": 0.1,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {},
   "skills": [
    "stunattack"
@@ -589,7 +665,15 @@
   "ms": 1,
   "range": 0.8,
   "mass": 0,
+  "regen": 0,
   "score": 4,
+  "scoreAdd": 0.1,
+  "level": 0,
+  "tags": [
+   "infection"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "boom.atk_scale": 2,
    "boom.freeze": 10
@@ -631,7 +715,7 @@
   "way": "RANGED",
   "fly": false,
   "dmg": "arts",
-  "hp": 7000,
+  "hp": 5000,
   "atk": 380,
   "def": 250,
   "res": 50,
@@ -640,7 +724,13 @@
   "ms": 0.7,
   "range": 4.5,
   "mass": 2,
+  "regen": 0,
   "score": 5,
+  "scoreAdd": 0.5,
+  "level": 1,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "PowerAttack.attack@max_target": 3
   },
@@ -667,71 +757,7 @@
    "dur": 1,
    "hit": 0.5
   },
-  "power": 1051
- },
- {
-  "key": "enemy_15048_dqdivi",
-  "orig": "enemy_1436_dsdivi",
-  "model": "enemy_1436_dsdivi",
-  "tag": "tag_single",
-  "name": "高敏感积藏者",
-  "desc": "一旦受到惊吓就会分裂的海嗣，并且很容易受惊。",
-  "rank": "NORMAL",
-  "levelType": "NORMAL",
-  "way": "RANGED",
-  "fly": false,
-  "dmg": "arts",
-  "hp": 8000,
-  "atk": 190,
-  "def": 150,
-  "res": 35,
-  "bat": 1.6,
-  "aspd": 100,
-  "ms": 1,
-  "range": 2.8,
-  "mass": 2,
-  "score": 5,
-  "talents": {
-   "0.interval": 0.3,
-   "0.hp_ratio": 0.5,
-   "0.offset_bound": 0.2
-  },
-  "skills": [
-   "0"
-  ],
-  "skillData": {
-   "0": {
-    "sp": 0,
-    "cd": 0,
-    "init": 0,
-    "bb": {
-     "enemy_key": "enemy_15048_dqdivi",
-     "offset_bound": 0.3
-    }
-   }
-  },
-  "spData": null,
-  "immune": {
-   "stun": false,
-   "frozen": false,
-   "silence": false
-  },
-  "origName": "诡核集养者",
-  "abilities": [
-   {
-    "text": "生命值首次低于一半时，分裂自身",
-    "title": false
-   }
-  ],
-  "scale": 1,
-  "scaleY": 1,
-  "mirrorX": false,
-  "attackAnim": {
-   "clip": "Attack",
-   "dur": 0.567,
-   "hit": 0.267
-  },
-  "power": 1023
+  "power": 888
  },
  {
   "key": "enemy_5038_dqiprr_2",
@@ -754,7 +780,13 @@
   "ms": 0.9,
   "range": 3,
   "mass": 1,
+  "regen": 0,
   "score": 5,
+  "scoreAdd": 0.2,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "liberty.atk": 0.5,
    "confinement.times": 4,
@@ -816,7 +848,13 @@
   "ms": 0.9,
   "range": 3,
   "mass": 1,
+  "regen": 0,
   "score": 5,
+  "scoreAdd": 0.2,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "buff.duration": 30,
    "buff.def": 3000,
@@ -868,7 +906,15 @@
   "ms": 0.9,
   "range": 3.4,
   "mass": 2,
+  "regen": 0,
   "score": 5,
+  "scoreAdd": 0.5,
+  "level": 0,
+  "tags": [
+   "seamonster"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "Attack.duration": 20,
    "Attack.def": 300
@@ -919,7 +965,13 @@
   "ms": 0.7,
   "range": 3.8,
   "mass": 2,
+  "regen": 0,
   "score": 6,
+  "scoreAdd": 0.1,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "rarity": 1
   },
@@ -973,6 +1025,78 @@
   "power": 1988
  },
  {
+  "key": "enemy_15048_dqdivi",
+  "orig": "enemy_1436_dsdivi",
+  "model": "enemy_1436_dsdivi",
+  "tag": "tag_single",
+  "name": "高敏感积藏者",
+  "desc": "一旦受到惊吓就会分裂的海嗣，并且很容易受惊。",
+  "rank": "NORMAL",
+  "levelType": "NORMAL",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "arts",
+  "hp": 8000,
+  "atk": 190,
+  "def": 150,
+  "res": 35,
+  "bat": 1.6,
+  "aspd": 100,
+  "ms": 1,
+  "range": 2.8,
+  "mass": 2,
+  "regen": 0,
+  "score": 6,
+  "scoreAdd": 0.1,
+  "level": 1,
+  "tags": [
+   "seamonster"
+  ],
+  "group": null,
+  "deathSpawn": null,
+  "talents": {
+   "0.interval": 0.3,
+   "0.hp_ratio": 0.5,
+   "0.offset_bound": 0.2
+  },
+  "skills": [
+   "0"
+  ],
+  "skillData": {
+   "0": {
+    "sp": 0,
+    "cd": 0,
+    "init": 0,
+    "bb": {
+     "enemy_key": "enemy_15048_dqdivi",
+     "offset_bound": 0.3
+    }
+   }
+  },
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "诡核集养者",
+  "abilities": [
+   {
+    "text": "生命值首次低于一半时，分裂自身",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 0.567,
+   "hit": 0.267
+  },
+  "power": 1023
+ },
+ {
   "key": "enemy_5043_dqgscr",
   "orig": "enemy_1192_krgscr",
   "model": "enemy_1192_krgscr",
@@ -993,7 +1117,13 @@
   "ms": 0.7,
   "range": 3.2,
   "mass": 2,
+  "regen": 0,
   "score": 6,
+  "scoreAdd": 0.2,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {},
   "skills": [
    "coldattack"
@@ -1065,7 +1195,15 @@
   "ms": 1,
   "range": 0.8,
   "mass": 1,
+  "regen": 0,
   "score": 6,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [
+   "collapsal"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "SpeedUp.move_speed": 3,
    "SpeedUp.duration": 2,
@@ -1117,7 +1255,13 @@
   "ms": 0.7,
   "range": 0.8,
   "mass": 3,
+  "regen": 0,
   "score": 7,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "growth.add_max_hp_ratio": 4,
    "growth.time": 30,
@@ -1169,7 +1313,13 @@
   "ms": 0.7,
   "range": 0.8,
   "mass": 2,
+  "regen": 0,
   "score": 7,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "Weakness.damage_resistance": 0.8,
    "WeaknessUI.value": 0
@@ -1220,7 +1370,15 @@
   "ms": 0.85,
   "range": 0.8,
   "mass": 2,
+  "regen": 0,
   "score": 7,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [
+   "sarkaz"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {},
   "skills": [],
   "skillData": {},
@@ -1263,7 +1421,13 @@
   "ms": 0.75,
   "range": 0.8,
   "mass": 3,
+  "regen": 0,
   "score": 7,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {},
   "skills": [],
   "skillData": {},
@@ -1306,7 +1470,13 @@
   "ms": 1.6,
   "range": 0.8,
   "mass": 2,
+  "regen": 0,
   "score": 7,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "liberty.atk": 0.5,
    "confinement.times": 4,
@@ -1365,7 +1535,13 @@
   "ms": 0.8,
   "range": 0.8,
   "mass": 2,
+  "regen": 0,
   "score": 7,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "defdown.def": -10
   },
@@ -1415,7 +1591,13 @@
   "ms": 0.95,
   "range": 0.8,
   "mass": 2,
+  "regen": 0,
   "score": 7,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "Evade.prob": 1,
    "Evade.duration": 10,
@@ -1467,7 +1649,15 @@
   "ms": 0.75,
   "range": 1.7,
   "mass": 3,
+  "regen": 0,
   "score": 8,
+  "scoreAdd": 0.5,
+  "level": 0,
+  "tags": [
+   "seamonster"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {},
   "skills": [],
   "skillData": {},
@@ -1515,7 +1705,13 @@
   "ms": 0.7,
   "range": 0.8,
   "mass": 1,
+  "regen": 0,
   "score": 8,
+  "scoreAdd": 0.1,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "boom.atk_scale": 1.5,
    "boom.freeze": 5,
@@ -1573,7 +1769,13 @@
   "ms": 0.7,
   "range": 1,
   "mass": 2,
+  "regen": 0,
   "score": 8,
+  "scoreAdd": 0.1,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "switchMode.enemy_act29side[buff_depressed].attack_speed": -50,
    "switchMode.enemy_act29side[buff_depressed].atk": 0.2,
@@ -1655,7 +1857,13 @@
   "ms": 0.9,
   "range": 1,
   "mass": 2,
+  "regen": 0,
   "score": 9,
+  "scoreAdd": 1.5,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "Combat.attack@atk_scale": 2,
    "MoveSpeedUp.move_speed": 2
@@ -1710,7 +1918,13 @@
   "ms": 0.7,
   "range": 1,
   "mass": 3,
+  "regen": 0,
   "score": 9,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "Weakness.damage_resistance": 0.75,
    "QuillSpray.hp_ratio": 0.12,
@@ -1768,7 +1982,15 @@
   "ms": 0.8,
   "range": 3.5,
   "mass": 2,
+  "regen": 0,
   "score": 10,
+  "scoreAdd": 2,
+  "level": 0,
+  "tags": [
+   "sarkaz"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "empty.attack@ep_damage_ratio": 0.25
   },
@@ -1835,7 +2057,13 @@
   "ms": 0.7,
   "range": 0.8,
   "mass": 4,
+  "regen": 0,
   "score": 10,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {},
   "skills": [
    "cuttree"
@@ -1899,7 +2127,13 @@
   "ms": 0.8,
   "range": 0.8,
   "mass": 5,
+  "regen": 0,
   "score": 10,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "ReduceCost.max_cost": 10,
    "rarity": 1
@@ -1949,8 +2183,8 @@
   "way": "MELEE",
   "fly": false,
   "dmg": "phys",
-  "hp": 25000,
-  "atk": 600,
+  "hp": 20000,
+  "atk": 700,
   "def": 20,
   "res": 0,
   "bat": 4,
@@ -1958,7 +2192,13 @@
   "ms": 0.35,
   "range": 0.8,
   "mass": 2,
+  "regen": 0,
   "score": 10,
+  "scoreAdd": 0,
+  "level": 1,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "Rush.mhboar_t[trigger].move_speed": 0.333,
    "Rush.mhboar_t[trigger].interval": 0.333,
@@ -1995,7 +2235,7 @@
    "dur": 0.8,
    "hit": 0.233
   },
-  "power": 1705
+  "power": 1647
  },
  {
   "key": "enemy_5033_dqmstr_2",
@@ -2018,7 +2258,15 @@
   "ms": 0.65,
   "range": 0.8,
   "mass": 2,
+  "regen": 250,
   "score": 10,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [
+   "mutant"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {},
   "skills": [],
   "skillData": {},
@@ -2066,7 +2314,13 @@
   "ms": 0.8,
   "range": 3,
   "mass": 3,
+  "regen": 0,
   "score": 10,
+  "scoreAdd": 1,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {},
   "skills": [
    "Guide"
@@ -2128,7 +2382,13 @@
   "ms": 1.4,
   "range": 0.8,
   "mass": 2,
+  "regen": 0,
   "score": 11,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "Bleeding.attack@bleeding_damage": 100,
    "Bleeding.attack@duration": 10
@@ -2179,7 +2439,15 @@
   "ms": 0.7,
   "range": 0.8,
   "mass": 3,
+  "regen": 0,
   "score": 11,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [
+   "machine"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "Rage.attack_speed": 100,
    "Rage.move_speed": 1
@@ -2230,7 +2498,13 @@
   "ms": 0.65,
   "range": 0.8,
   "mass": 2,
+  "regen": 0,
   "score": 11,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "atkup.atk": 1.8
   },
@@ -2280,7 +2554,13 @@
   "ms": 0.7,
   "range": 3.2,
   "mass": 4,
+  "regen": 0,
   "score": 12,
+  "scoreAdd": 1.5,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {},
   "skills": [
    "ChargeAttack"
@@ -2345,7 +2625,13 @@
   "ms": 0.6,
   "range": 0.8,
   "mass": 6,
+  "regen": 0,
   "score": 12,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "rarity": 1
   },
@@ -2416,7 +2702,15 @@
   "ms": 0.5,
   "range": 0.8,
   "mass": 4,
+  "regen": 0,
   "score": 12,
+  "scoreAdd": 1,
+  "level": 0,
+  "tags": [
+   "animated"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {},
   "skills": [],
   "skillData": {},
@@ -2464,7 +2758,13 @@
   "ms": 0.7,
   "range": 0.8,
   "mass": 4,
+  "regen": 0,
   "score": 13,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "Drown.damage": 1000
   },
@@ -2534,7 +2834,13 @@
   "ms": 0.7,
   "range": 1,
   "mass": 2,
+  "regen": 0,
   "score": 13,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "Weakness.damage_resistance": 0.8,
    "WeaknessUI.value": 0
@@ -2585,7 +2891,15 @@
   "ms": 0.5,
   "range": 0.9,
   "mass": 3,
+  "regen": 0,
   "score": 13,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [
+   "animated"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "Reborning.duration": 5,
    "Reborning.value": -10,
@@ -2643,7 +2957,15 @@
   "ms": 0.8,
   "range": 2.5,
   "mass": 3,
+  "regen": 0,
   "score": 13,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [
+   "animated"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "yinyang.dynamic": 1,
    "yinyang.buff_yinyang[same].atk_scale": 0.6,
@@ -2707,7 +3029,13 @@
   "ms": 0.9,
   "range": 8,
   "mass": 10,
+  "regen": 0,
   "score": 13,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {},
   "skills": [],
   "skillData": {},
@@ -2755,7 +3083,13 @@
   "ms": 0.3,
   "range": 0.8,
   "mass": 3,
+  "regen": 0,
   "score": 14,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "SpeedUp.move_speed": 3,
    "SpeedUp.duration": 5,
@@ -2816,7 +3150,15 @@
   "ms": 0.7,
   "range": 2.2,
   "mass": 4,
+  "regen": 0,
   "score": 14,
+  "scoreAdd": 0.5,
+  "level": 0,
+  "tags": [
+   "machine"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "Empty.attack@chuang_atk_scale": 2,
    "Empty.sp": 2
@@ -2895,7 +3237,13 @@
   "ms": 0.7,
   "range": 1,
   "mass": 4,
+  "regen": 0,
   "score": 15,
+  "scoreAdd": 2,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "FirstAttack.attack@first_atk_scale": 1.5
   },
@@ -2949,9 +3297,22 @@
   "ms": 0.8,
   "range": 3,
   "mass": 4,
+  "regen": 0,
   "score": 15,
+  "scoreAdd": 2,
+  "level": 0,
+  "tags": [
+   "infection"
+  ],
+  "group": null,
+  "deathSpawn": {
+   "key": "enemy_15020_dqplas",
+   "cnt": 4,
+   "delay": 0.2,
+   "spread": 0.2
+  },
   "talents": {
-   "deathrattle.enemy_key": 0,
+   "deathrattle.enemy_key": "enemy_15020_dqplas",
    "deathrattle.cnt": 4,
    "deathrattle.offset_bound": 0.2,
    "deathrattle.delay": 0.2
@@ -3018,7 +3379,13 @@
   "ms": 0.9,
   "range": 0.8,
   "mass": 2,
+  "regen": 0,
   "score": 15,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "shield.dynamic": 3334,
    "shield.def": 1750,
@@ -3074,7 +3441,13 @@
   "ms": 0.5,
   "range": 0.8,
   "mass": 3,
+  "regen": 0,
   "score": 15,
+  "scoreAdd": 5,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "1.move_speed": 3
   },
@@ -3122,61 +3495,6 @@
   "power": 2301
  },
  {
-  "key": "enemy_15040_dqrdmn",
-  "orig": "enemy_1114_rgrdmn_2",
-  "model": "enemy_1114_rgrdmn_2",
-  "tag": "tag_single",
-  "name": "虹吸巨刃",
-  "desc": "他们模糊的意识中只剩一句命令：“不许倒下！”",
-  "rank": "ELITE",
-  "levelType": "ELITE",
-  "way": "RANGED",
-  "fly": false,
-  "dmg": "arts",
-  "hp": 14000,
-  "atk": 700,
-  "def": 220,
-  "res": 60,
-  "bat": 5,
-  "aspd": 100,
-  "ms": 0.8,
-  "range": 1.6,
-  "mass": 3,
-  "score": 15,
-  "talents": {
-   "vampire.heal_scale": 1.5,
-   "vampire.attack@max_target": 3
-  },
-  "skills": [],
-  "skillData": {},
-  "spData": null,
-  "immune": {
-   "stun": false,
-   "frozen": false,
-   "silence": false
-  },
-  "origName": "萨卡兹宿主卫巢百夫长",
-  "abilities": [
-   {
-    "text": "同时攻击三个目标",
-    "title": false
-   },
-   {
-    "text": "恢复攻击总伤害一定比例的生命值",
-    "title": false
-   }
-  ],
-  "scale": 1,
-  "scaleY": 1,
-  "mirrorX": false,
-  "attackAnim": {
-   "clip": "Attack",
-   "dur": 3.5,
-   "hit": 1.133
-  },
-  "power": 1616
- },
- {
   "key": "enemy_15066_dqdudu",
   "orig": "enemy_1417_mmdudu",
   "model": "enemy_1417_mmdudu",
@@ -3197,7 +3515,15 @@
   "ms": 0.8,
   "range": 2.6,
   "mass": 4,
+  "regen": 0,
   "score": 15,
+  "scoreAdd": 0.1,
+  "level": 0,
+  "tags": [
+   "sarkaz"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {},
   "skills": [
    "RockYou"
@@ -3258,7 +3584,15 @@
   "ms": 2,
   "range": 0.8,
   "mass": 4,
+  "regen": 0,
   "score": 15,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [
+   "machine"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "Bus.max_cnt": 3
   },
@@ -3312,7 +3646,13 @@
   "ms": 0.8,
   "range": 7,
   "mass": 2,
+  "regen": 0,
   "score": 15,
+  "scoreAdd": 5,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {},
   "skills": [],
   "skillData": {},
@@ -3364,10 +3704,16 @@
   "ms": 0.6,
   "range": 3.2,
   "mass": 2,
+  "regen": 0,
   "score": 15,
+  "scoreAdd": 3,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "AOEDamage.atk_scale": 1,
-   "AOEDamage.range_id": 0
+   "AOEDamage.range_id": "x-4"
   },
   "skills": [],
   "skillData": {},
@@ -3419,7 +3765,13 @@
   "ms": 0.9,
   "range": 1.5,
   "mass": 5,
+  "regen": 0,
   "score": 16,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "AtkUp.atk": 0.3,
    "DefDown.def": -100
@@ -3478,7 +3830,13 @@
   "ms": 0.75,
   "range": 0.8,
   "mass": 3,
+  "regen": 0,
   "score": 16,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "def_reduce.max_stack_cnt": 80,
    "def_reduce.def": -4000,
@@ -3532,7 +3890,13 @@
   "ms": 0.75,
   "range": 0.8,
   "mass": 1,
+  "regen": 0,
   "score": 16,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "unbalanced_bleed.damage": 400,
    "unbalanced_bleed.interval": 0.066
@@ -3583,7 +3947,15 @@
   "ms": 0.6,
   "range": 0.8,
   "mass": 4,
+  "regen": 0,
   "score": 16,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [
+   "originiumartscraft"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "taunt.value": 300
   },
@@ -3613,6 +3985,69 @@
   "power": 1718
  },
  {
+  "key": "enemy_15040_dqrdmn",
+  "orig": "enemy_1114_rgrdmn_2",
+  "model": "enemy_1114_rgrdmn_2",
+  "tag": "tag_single",
+  "name": "虹吸巨刃",
+  "desc": "他们模糊的意识中只剩一句命令：“不许倒下！”",
+  "rank": "ELITE",
+  "levelType": "ELITE",
+  "way": "RANGED",
+  "fly": false,
+  "dmg": "arts",
+  "hp": 14000,
+  "atk": 700,
+  "def": 220,
+  "res": 60,
+  "bat": 5,
+  "aspd": 100,
+  "ms": 0.8,
+  "range": 1.6,
+  "mass": 3,
+  "regen": 0,
+  "score": 17,
+  "scoreAdd": 0.5,
+  "level": 1,
+  "tags": [
+   "mutant"
+  ],
+  "group": null,
+  "deathSpawn": null,
+  "talents": {
+   "vampire.heal_scale": 1.5,
+   "vampire.attack@max_target": 3
+  },
+  "skills": [],
+  "skillData": {},
+  "spData": null,
+  "immune": {
+   "stun": false,
+   "frozen": false,
+   "silence": false
+  },
+  "origName": "萨卡兹宿主卫巢百夫长",
+  "abilities": [
+   {
+    "text": "同时攻击三个目标",
+    "title": false
+   },
+   {
+    "text": "恢复攻击总伤害一定比例的生命值",
+    "title": false
+   }
+  ],
+  "scale": 1,
+  "scaleY": 1,
+  "mirrorX": false,
+  "attackAnim": {
+   "clip": "Attack",
+   "dur": 3.5,
+   "hit": 1.133
+  },
+  "power": 1616
+ },
+ {
   "key": "enemy_15049_dqfrog",
   "orig": "enemy_10058_cjfrog",
   "model": "enemy_10058_cjfrog",
@@ -3633,7 +4068,15 @@
   "ms": 0.7,
   "range": 1,
   "mass": 4,
+  "regen": 0,
   "score": 17,
+  "scoreAdd": 1,
+  "level": 0,
+  "tags": [
+   "animated"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "Attack.attack@atk_scale": 2
   },
@@ -3698,7 +4141,13 @@
   "ms": 0.8,
   "range": 0.8,
   "mass": 4,
+  "regen": 0,
   "score": 18,
+  "scoreAdd": 1,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {},
   "skills": [
    "FourDirAttack"
@@ -3757,12 +4206,25 @@
   "ms": 0.7,
   "range": 3.2,
   "mass": 3,
+  "regen": 0,
   "score": 18,
+  "scoreAdd": 3,
+  "level": 0,
+  "tags": [
+   "sarkaz"
+  ],
+  "group": null,
+  "deathSpawn": {
+   "key": "enemy_5050_dqomg",
+   "cnt": 1,
+   "delay": 1,
+   "spread": 0
+  },
   "talents": {
    "epdamage.attack@ep_damage_ratio": 0.3,
    "epdamage.attack@max_target": 4,
    "epdamage.attack@chain.atk_scale": 0.85,
-   "deathrattle.enemy_key": 0,
+   "deathrattle.enemy_key": "enemy_5050_dqomg",
    "deathrattle.delay": 1,
    "epdamage.attack@projectile_range": 1.6
   },
@@ -3807,16 +4269,24 @@
   "way": "MELEE",
   "fly": false,
   "dmg": "arts",
-  "hp": 4000,
+  "hp": 5000,
   "atk": 1000,
   "def": 2000,
   "res": 80,
   "bat": 4,
   "aspd": 100,
-  "ms": 0.7,
+  "ms": 0.9,
   "range": 0.8,
   "mass": 4,
+  "regen": 0,
   "score": 18,
+  "scoreAdd": 0,
+  "level": 1,
+  "tags": [
+   "infection"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {},
   "skills": [],
   "skillData": {},
@@ -3836,7 +4306,7 @@
    "dur": 2.133,
    "hit": 1.1
   },
-  "power": 2133
+  "power": 2385
  },
  {
   "key": "enemy_15045_dqrbty",
@@ -3859,7 +4329,13 @@
   "ms": 0.8,
   "range": 1,
   "mass": 4,
+  "regen": 0,
   "score": 18,
+  "scoreAdd": 1,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "shotbuff.attack@headshot_atk_scale": 1.5,
    "shotbuff.attack@headshot_disarmed_duration": 15,
@@ -3921,7 +4397,15 @@
   "ms": 0.8,
   "range": 2.6,
   "mass": 4,
+  "regen": 0,
   "score": 18,
+  "scoreAdd": 0.5,
+  "level": 0,
+  "tags": [
+   "sarkaz"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {},
   "skills": [
    "RockYou"
@@ -3982,7 +4466,15 @@
   "ms": 0.7,
   "range": 1.9,
   "mass": 3,
+  "regen": 0,
   "score": 18,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [
+   "animated"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "yinyang.dynamic": 1,
    "yinyang.buff_yinyang[same].atk_scale": 0.6,
@@ -4035,7 +4527,13 @@
   "ms": 0.5,
   "range": 0.8,
   "mass": 4,
+  "regen": 0,
   "score": 20,
+  "scoreAdd": 30,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {},
   "skills": [],
   "skillData": {},
@@ -4078,9 +4576,15 @@
   "ms": 0.6,
   "range": 1,
   "mass": 2,
+  "regen": 0,
   "score": 20,
+  "scoreAdd": 5,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
-   "InitEat.token_key": 0,
+   "InitEat.token_key": "trap_173_slfrut",
    "InitEat.cnt": 2
   },
   "skills": [
@@ -4156,7 +4660,15 @@
   "ms": 0.8,
   "range": 0.8,
   "mass": 3,
+  "regen": 0,
   "score": 20,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [
+   "sarkaz"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "shield.dynamic": 2000,
    "shield.max_hp": 0.5,
@@ -4212,7 +4724,15 @@
   "ms": 0.7,
   "range": 0.8,
   "mass": 4,
+  "regen": 0,
   "score": 20,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [
+   "animated"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "WindDamage.atk_scale": 0.8,
    "WindDamage.range_radius": 1.2,
@@ -4291,7 +4811,15 @@
   "ms": 0.9,
   "range": 0.8,
   "mass": 4,
+  "regen": 0,
   "score": 20,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [
+   "animated"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "1.damage_scale": 1.5,
    "1.lb_damage_scale": 2
@@ -4355,7 +4883,15 @@
   "ms": 0.65,
   "range": 2.5,
   "mass": 6,
+  "regen": 0,
   "score": 20,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [
+   "sarkaz"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "triggerrage.atk": 0.8,
    "triggerrage.attack_speed": 100,
@@ -4428,7 +4964,13 @@
   "ms": 0.5,
   "range": 0.8,
   "mass": 5,
+  "regen": 0,
   "score": 20,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "1.atk_scale": 1.5,
    "1.boom_duration": 5
@@ -4501,7 +5043,15 @@
   "ms": 1.5,
   "range": 0.8,
   "mass": 3,
+  "regen": 0,
   "score": 20,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [
+   "animated"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "DeadSpawn.cnt": 4,
    "Atkup.atk": 0.7,
@@ -4557,7 +5107,15 @@
   "ms": 1.2,
   "range": 1.5,
   "mass": 4,
+  "regen": 0,
   "score": 21,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [
+   "seamonster"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "Combat.atk_scale": 2,
    "Attack.atk_scale": 1,
@@ -4620,7 +5178,13 @@
   "ms": 0.7,
   "range": 0.8,
   "mass": 3,
+  "regen": 0,
   "score": 21,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "enhance.atk": 0.1,
    "enhance.attack_speed": 5,
@@ -4672,7 +5236,13 @@
   "ms": 0.7,
   "range": 0.8,
   "mass": 2,
+  "regen": 0,
   "score": 22,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "ProtectionTime.protection_duration": 1,
    "EndRotate.rotate_duration": 60,
@@ -4753,7 +5323,15 @@
   "ms": 1.2,
   "range": 0.8,
   "mass": 2,
+  "regen": 0,
   "score": 22,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [
+   "mutant"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "periodic_damage.damage": 300
   },
@@ -4803,7 +5381,15 @@
   "ms": 2.5,
   "range": 0.8,
   "mass": 3,
+  "regen": 0,
   "score": 25,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [
+   "collapsal"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {},
   "skills": [],
   "skillData": {},
@@ -4846,7 +5432,15 @@
   "ms": 0.9,
   "range": 0.8,
   "mass": 3,
+  "regen": 0,
   "score": 25,
+  "scoreAdd": 50,
+  "level": 0,
+  "tags": [
+   "wildanimal"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "Trace.view_radius": 1.5,
    "TraceTime.duration": 20
@@ -4897,7 +5491,13 @@
   "ms": 0.7,
   "range": 0.8,
   "mass": 4,
+  "regen": 0,
   "score": 25,
+  "scoreAdd": 3,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "taunt.taunt_level": 1
   },
@@ -4947,7 +5547,15 @@
   "ms": 0.3,
   "range": 5,
   "mass": 5,
+  "regen": 0,
   "score": 25,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [
+   "machine"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "Passive.attack@ranged.atk_scale": 0.5
   },
@@ -4997,7 +5605,15 @@
   "ms": 0.4,
   "range": 0.8,
   "mass": 5,
+  "regen": 0,
   "score": 25,
+  "scoreAdd": 100,
+  "level": 0,
+  "tags": [
+   "originiumartscraft"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {},
   "skills": [],
   "skillData": {},
@@ -5040,7 +5656,15 @@
   "ms": 0.65,
   "range": 4.5,
   "mass": 4,
+  "regen": 0,
   "score": 25,
+  "scoreAdd": 15,
+  "level": 0,
+  "tags": [
+   "infection"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "selfbuff.attack_speed": 40,
    "selfbuff.hp_ratio": 0.5,
@@ -5104,7 +5728,13 @@
   "ms": 0.65,
   "range": 0.8,
   "mass": 3,
+  "regen": 0,
   "score": 26,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {},
   "skills": [],
   "skillData": {},
@@ -5147,7 +5777,13 @@
   "ms": 0.7,
   "range": 0.8,
   "mass": 5,
+  "regen": 0,
   "score": 27,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "1.effect_duration": 10
   },
@@ -5197,7 +5833,15 @@
   "ms": 0.5,
   "range": 0.8,
   "mass": 4,
+  "regen": 0,
   "score": 27,
+  "scoreAdd": 0.5,
+  "level": 0,
+  "tags": [
+   "sarkaz"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "Stronger.def": 700,
    "Stronger.move_speed": -0.3
@@ -5261,7 +5905,19 @@
   "ms": 1.2,
   "range": 0.8,
   "mass": 4,
+  "regen": 0,
   "score": 28,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [
+   "machine"
+  ],
+  "group": null,
+  "deathSpawn": {
+   "key": "enemy_15022_dqhvys",
+   "cnt": 1,
+   "delay": 0.8
+  },
   "talents": {
    "Crash.atk_scale": 1
   },
@@ -5315,7 +5971,15 @@
   "ms": 0.6,
   "range": 0.8,
   "mass": 4,
+  "regen": 0,
   "score": 28,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [
+   "sarkaz"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {},
   "skills": [],
   "skillData": {},
@@ -5358,7 +6022,13 @@
   "ms": 0.5,
   "range": 1.8,
   "mass": 4,
+  "regen": 0,
   "score": 28,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "Stun.stun": 10,
    "Reload.sp_ratio": 0,
@@ -5429,15 +6099,21 @@
   "fly": false,
   "dmg": "phys",
   "hp": 65000,
-  "atk": 1800,
-  "def": 50,
+  "atk": 1500,
+  "def": 0,
   "res": 50,
   "bat": 5,
   "aspd": 100,
   "ms": 0.6,
   "range": 0.8,
   "mass": 5,
+  "regen": 0,
   "score": 30,
+  "scoreAdd": 0,
+  "level": 1,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "RopeTriggerAbility.stun_duration": 10,
    "RopeTriggerAbility.stun_cd": 12,
@@ -5466,7 +6142,7 @@
    "dur": 2.033,
    "hit": 1.167
   },
-  "power": 4875
+  "power": 4276
  },
  {
   "key": "enemy_15043_dqrckm",
@@ -5489,7 +6165,15 @@
   "ms": 0.5,
   "range": 1,
   "mass": 4,
+  "regen": 0,
   "score": 30,
+  "scoreAdd": 20,
+  "level": 0,
+  "tags": [
+   "originiumartscraft"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {},
   "skills": [
    "StunAttack"
@@ -5549,7 +6233,13 @@
   "ms": 1,
   "range": 0.8,
   "mass": 0,
+  "regen": 0,
   "score": 32,
+  "scoreAdd": 6,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "periodic_damage.damage": 0,
    "Reborn.duration": 10,
@@ -5606,7 +6296,15 @@
   "ms": 0.3,
   "range": 0.8,
   "mass": 5,
+  "regen": 0,
   "score": 32,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [
+   "machine"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {},
   "skills": [
    "Punch"
@@ -5668,7 +6366,13 @@
   "ms": 0.6,
   "range": 3,
   "mass": 6,
+  "regen": 0,
   "score": 35,
+  "scoreAdd": 100,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "reborn.sp": -1,
    "reborn.duration": 4,
@@ -5783,7 +6487,15 @@
   "ms": 0.7,
   "range": 0.8,
   "mass": 5,
+  "regen": 0,
   "score": 36,
+  "scoreAdd": 10,
+  "level": 0,
+  "tags": [
+   "machine"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "Rage.attack_speed": 150,
    "Rage.move_speed": 1.5,
@@ -5835,7 +6547,19 @@
   "ms": 0.8,
   "range": 1.4,
   "mass": 5,
+  "regen": 0,
   "score": 39,
+  "scoreAdd": 5,
+  "level": 0,
+  "tags": [
+   "machine"
+  ],
+  "group": null,
+  "deathSpawn": {
+   "key": "enemy_15086_dqcbld",
+   "cnt": 1,
+   "delay": 1
+  },
   "talents": {
    "passive.max_stack_cnt": 110,
    "passive.magic_resistance": -110,
@@ -5899,7 +6623,13 @@
   "ms": 0.6,
   "range": 0.8,
   "mass": 5,
+  "regen": 0,
   "score": 300,
+  "scoreAdd": 999999,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "Passive.sp": 1,
    "Reborn.duration": 10,
@@ -6019,7 +6749,13 @@
   "ms": 0.65,
   "range": 0.8,
   "mass": 3,
+  "regen": 0,
   "score": 300,
+  "scoreAdd": 999999,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "AtkUp.atk": 2.8,
    "atkup.hp_ratio": 0.5,
@@ -6095,7 +6831,15 @@
   "ms": 0.1,
   "range": 0.8,
   "mass": 9,
+  "regen": 0,
   "score": 300,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [
+   "animated"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "AppearMode.mode": 1,
    "AppearS1.hp_ratio": 0.5,
@@ -6266,7 +7010,13 @@
   "ms": 1,
   "range": 0.8,
   "mass": 10,
+  "regen": 0,
   "score": 300,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "Madness.damage_resistance": 0.6,
    "Madness.enemy_smdeer_mad[attack].max_cnt": 2,
@@ -6355,7 +7105,18 @@
   "ms": 0.5,
   "range": 1.5,
   "mass": 5,
+  "regen": 0,
   "score": 300,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [
+   "animated"
+  ],
+  "group": [
+   "enemy_15070_dqhlgy",
+   "enemy_15071_dqyrzf"
+  ],
+  "deathSpawn": null,
   "talents": {
    "GlobalDyBuff.damage_resistance": 0.4
   },
@@ -6431,10 +7192,20 @@
   "ms": 0.65,
   "range": 0.8,
   "mass": 6,
+  "regen": 0,
   "score": 300,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [
+   "sarkaz"
+  ],
+  "group": [
+   "enemy_15074_dqdght"
+  ],
+  "deathSpawn": null,
   "talents": {
    "aoe.attack@dekght[aoe].atk_scale": 1,
-   "aoe.attack@dekght[aoe].range_id": 0,
+   "aoe.attack@dekght[aoe].range_id": "x-5",
    "triggerrage.atk": 0.8,
    "triggerrage.attack_speed": 100,
    "triggerrage.move_speed": 1.5
@@ -6507,7 +7278,15 @@
   "ms": 0.5,
   "range": 0.8,
   "mass": 10,
+  "regen": 0,
   "score": 300,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": [
+   "enemy_15076_dqzmst"
+  ],
+  "deathSpawn": null,
   "talents": {
    "HpChecker.hp_ratio": 0.5
   },
@@ -6579,7 +7358,15 @@
   "ms": 0.35,
   "range": 0.8,
   "mass": 8,
+  "regen": 0,
   "score": 300,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [
+   "sarkaz"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "DeathSacrifice.sp": 250
   },
@@ -6645,7 +7432,15 @@
   "ms": 0.5,
   "range": 3.5,
   "mass": 10,
+  "regen": 0,
   "score": 300,
+  "scoreAdd": 999999,
+  "level": 0,
+  "tags": [
+   "animated"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "yinyang.dynamic": -1,
    "yinyang.buff_yinyang[same].atk_scale": 0.6,
@@ -6777,7 +7572,15 @@
   "ms": 1.9,
   "range": 0.8,
   "mass": 0,
+  "regen": 0,
   "score": 999999,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [
+   "infection"
+  ],
+  "group": null,
+  "deathSpawn": null,
   "talents": {},
   "skills": [],
   "skillData": {},
@@ -6825,7 +7628,13 @@
   "ms": 0.7,
   "range": 0.8,
   "mass": 3,
+  "regen": 0,
   "score": 999999,
+  "scoreAdd": 0,
+  "level": 0,
+  "tags": [],
+  "group": null,
+  "deathSpawn": null,
   "talents": {
    "dmg_res.damage_resistance": 0.9,
    "buff_to_blocker.max_valid_stack_cnt": 6,

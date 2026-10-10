@@ -21,4 +21,5 @@ Code:
 Data and models:
 
 - `data/*.json` are generated from [ArknightsGameData](https://github.com/Kengxxiao/ArknightsGameData) (game data © Hypergryph; see NOTICE.md §2).
+- `data/sources/prts-extra-cost.json` lists each duel enemy's per-unit extra cost as given on [PRTS](https://prts.wiki/) (争锋频道/选手信息; PRTS text is CC BY-NC-SA 3.0); the game's tables do not carry it.
 - `assets/models/` holds enemy Spine models from [isHarryh/Ark-Models](https://github.com/isHarryh/Ark-Models) and portraits from [yuanyan3060/ArknightsGameResource](https://github.com/yuanyan3060/ArknightsGameResource) (game art © Hypergryph; see NOTICE.md §2).
