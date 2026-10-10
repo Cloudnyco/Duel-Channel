@@ -146,3 +146,83 @@ test('竞猜对决: NPCs guess right at most 3 times; the end; the standings', (
     seat('d', true, { pass: 2, out: true, outRound: 3 }), seat('e', false, { pass: 2, out: true, outRound: 3 }), seat('f', false, { pass: 2, out: true, outRound: 4 })];
   assert.deepEqual({ ...SIM.standRanks(ps) }, { c: 1, b: 2, a: 3, f: 4, d: 5, e: 5 });
 });
+
+// the 竞猜对决 leaders (sim.js LEADERS): a leader against a few plain enemies, placed by hand
+const duel = (key, n = 1, other = 'enemy_5032_dqmon') => {
+  const W = SIM.makeWorld([[{ f: byKey(key), n: 1 }], [{ f: byKey(other), n }]], 7, false);
+  return { W, u: W.units[0], foes: W.units.slice(1) };
+};
+const steps = (W, sec) => { for (let i = 0; i < Math.round(sec / SIM.DT); i++) SIM.simStep(W); };
+
+test('领袖 “火与钢”: 冲锋 4.5 s; at half HP ATK +280 % and damage −60 %; reborn once at half HP, invincible 10 s', () => {
+  const { W, u } = duel('enemy_15024_dqreid');
+  assert.equal(u.rushT, 4.5);
+  steps(W, 1); assert.ok(u.rushT > 3.4 && u.rushT < 3.6);
+  u.hp = u.maxHp * 0.5; steps(W, 0.1);
+  assert.equal(u.atkMul, 3.8); assert.equal(u.dr, 0.6);
+  const hp = u.hp; SIM.strike(W, u, 1000); assert.equal(hp - u.hp, 400);
+  SIM.hurt(W, u, 1e9);
+  assert.equal(u.rebornT, 5);
+  steps(W, 5.1);
+  assert.equal(u.enhanced, true); assert.equal(u.hp, u.maxHp * 0.5); assert.ok(u.invT > 9.8);
+  SIM.hurt(W, u, 1e9); assert.equal(u.hp, u.maxHp * 0.5);
+});
+
+test('领袖 依然“狼之主”: damage −30 % and no stun; 溶血骇惧 on three, ended by 20 % of its HP; second form after 10 s', () => {
+  const { W, u, foes } = duel('enemy_15023_dqwlfm', 4);
+  for (const v of foes) { v.x = 6; v.y = 4.5; }
+  u.x = 1; u.y = 4.5;
+  let hp = u.hp; SIM.strike(W, u, 1000); assert.equal(hp - u.hp, 700);
+  SIM.disable(W, u, 3, 'stun'); assert.equal(u.stun, 0);
+  // the charge fills in 55 s; a 7 s wind-up standing still; three enemies seized
+  u.fsp = 55; steps(W, 0.1);
+  assert.equal(u.charge > 6.8, true);
+  const x0 = u.x; steps(W, 6.7);
+  assert.equal(u.x, x0); assert.equal(u.fearOn, null);
+  steps(W, 0.4);
+  assert.equal(u.fearOn.length, 3);
+  const seized = foes.filter((v) => v.fear);
+  assert.equal(seized.length, 3);
+  // the HP loss rises with time
+  const h0 = seized.map((v) => v.hp); steps(W, 1); const d1 = seized.map((v, i) => h0[i] - v.hp);
+  const h1 = seized.map((v) => v.hp); steps(W, 1); const d2 = seized.map((v, i) => h1[i] - v.hp);
+  for (let i = 0; i < 3; i++) if (!seized[i].dead) assert.ok(d2[i] > d1[i], `${d1[i]} → ${d2[i]}`);
+  // 20 % of its max HP lost: every effect ends, 5 of the charge back for each, a 7 s pause
+  SIM.hurt(W, u, u.maxHp * 0.21); steps(W, 0.05);
+  assert.equal(u.fearOn, null); assert.equal(foes.filter((v) => v.fear).length, 0);
+  assert.ok(u.fsp >= 15 - 1e-9 && u.fsp < 15.1, String(u.fsp)); assert.ok(u.fearWait > 6.9);
+  // the second form
+  const atk = u.atk, bat = u.bat;
+  SIM.hurt(W, u, 1e9); assert.equal(u.rebornT, 10);
+  steps(W, 10.05);
+  assert.equal(u.enhanced, true); assert.equal(u.atk, atk * 1.5); assert.equal(u.bat, bat - 1.5);
+  assert.equal(u.dr, 0); assert.equal(u.noStun, false); assert.ok(u.invT > 9.9);
+});
+
+test('领袖 “自在”: the barrier absorbs, then goes off (or breaks and ends); 纬地经天 hits an enemy once a cast; second form', () => {
+  // the barrier: 7500 (PRTS), 8 s standing; still up at the end → ATK × 800 % arts within 3 tiles
+  let { W, u, foes } = duel('enemy_5054_dqxi', 1);
+  u.x = 5.5; u.y = 4.5; foes[0].x = 7.5; foes[0].y = 4.5; foes[0].hp = foes[0].maxHp = 1e9;
+  u.crossT = 1e9; u.burstT = 0; steps(W, SIM.DT);
+  assert.equal(u.barrier, 7500); assert.ok(u.hold > 7.9);
+  let hp = u.hp; SIM.strike(W, u, 5000); assert.equal(u.hp, hp); assert.equal(u.barrier, 2500);
+  const f0 = foes[0].hp; steps(W, 8.1);
+  assert.equal(u.barrier, 0);
+  const burst = u.atk * 8 * Math.max(0.05, 1 - foes[0].res / 100);
+  assert.ok(f0 - foes[0].hp >= burst - 1e-6, `${f0 - foes[0].hp} vs ${burst}`);
+  // broken: the rest goes to HP, the skill ends
+  u.burstT = 0; steps(W, SIM.DT);
+  hp = u.hp; SIM.strike(W, u, 8000);
+  assert.equal(u.barrier, 0); assert.equal(u.hold, 0); assert.equal(hp - u.hp, 500);
+  // 纬地经天: two enemies on one tile, both among the targets: each hit once
+  ({ W, u, foes } = duel('enemy_5054_dqxi', 2));
+  u.x = 2.5; u.y = 4.5; u.burstT = 1e9;
+  for (const v of foes) { v.x = 4.5; v.y = 4.5; v.hp = v.maxHp = 1e9; v.speed = 0; v.aspd = 1e-9; }
+  u.crossT = 0; u.cd = 1e9; steps(W, 1);
+  const one = u.atk * 2 * Math.max(0.05, 1 - foes[0].res / 100);
+  for (const v of foes) assert.ok(Math.abs((1e9 - v.hp) - one) < 1e-3, `${1e9 - v.hp} vs ${one}`);
+  // second form: ATK +10 %, invincible 5 s
+  const atk = u.atk; SIM.hurt(W, u, 1e9); assert.equal(u.rebornT, 5);
+  steps(W, 5.05);
+  assert.equal(u.enhanced, true); assert.ok(Math.abs(u.atk - atk * 1.1) < 1e-9); assert.ok(u.invT > 4.9);
+});

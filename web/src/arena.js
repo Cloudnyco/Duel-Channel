@@ -15,7 +15,7 @@ function proj(x, y) {
 const TEAM_COL = [0xe8473d, 0x2f86e8];
 // the HUD's own HP colours: enemy_hp_slider's fill (left, the red start side) and char_hp_slider's (right, blue)
 const TEAM_HP = [0xea4700, 0x49b2e3];
-const COL = { yellow: 0xf6e033, spot: 0xffe68a, phys: 0xfff0b8, arts: 0xb98cff, zone: 0xffa63d, ice: 0x9fd8ff, gold: 0xffd060 };
+const COL = { yellow: 0xf6e033, spot: 0xffe68a, phys: 0xfff0b8, arts: 0xb98cff, zone: 0xffa63d, ice: 0x9fd8ff, gold: 0xffd060, fear: 0xc0306a };
 let arenaApp = null, arena = null;
 const spineData = new Map();
 const b64bytes = (s) => { const bin = atob(s), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u; };
@@ -389,6 +389,30 @@ function fxBlast(u) {
   FX.spawn('ring', x, y, { life: 0.5, s0: 0.1, s1: R * 2 / 256, sy: 0.42, a0: 0.85, tint: COL.arts });
   FX.spawn('glow', x, y - 30 * k, { life: 0.3, s0: 0.4 * k, s1: 0.9 * k, a0: 0.6, tint: COL.arts });
 }
+// the leaders' skills (sim.js LEADERS): 纬地经天's cross of arts flashes, 破桎而出's barrier going up / breaking / going
+// off (a 3-tile shock ring), 溶血骇惧 seizing a unit
+function fxCross(a) {
+  for (const [dx, dy] of [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]]) {
+    const [x, y, k] = proj(a.x + dx, a.y + dy);
+    FX.spawn('disc', x, y - 6 * k, { life: 0.34, s0: 0.1, s1: FLOOR.T * k / 260 * 0.95, sy: 0.42, a0: 0.7, tint: COL.arts });
+    FX.spawn('glow', x, y - 22 * k, { life: 0.26, s0: 0.2 * k, s1: 0.55 * k, a0: 0.55, tint: COL.arts });
+  }
+}
+function fxBarrier(u, kind) {
+  const [x, y, k] = chest(u, 0.5);
+  if (kind === 'barrier') FX.spawn('ring', x, y, { life: 0.5, s0: 0.1, s1: 1.2 * FLOOR.T * k / 256 * 2, a0: 0.8, tint: COL.arts });
+  else if (kind === 'barrierbreak') for (let i = 0; i < 12; i++) { const a = Math.random() * Math.PI * 2, sp = 120 + Math.random() * 160; FX.spawn('rhombus', x, y, { life: 0.5, s0: 0.7 * k, s1: 0.15, tint: COL.arts, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp * 0.6 - 60, g: 360, vr: 5 }); }
+  else {
+    const [gx, gy] = proj(u.x, u.y), R = 3 * FLOOR.T * k;
+    FX.spawn('disc', gx, gy - 10 * k, { life: 0.3, s0: R / 260 * 0.4, s1: R / 260 * 1.6, sy: 0.42, a0: 0.6, tint: COL.arts });
+    FX.spawn('ring', gx, gy, { life: 0.6, s0: 0.1, s1: R * 2 / 256, sy: 0.42, a0: 0.95, tint: COL.arts });
+    FX.spawn('glow', x, y, { life: 0.4, s0: 0.5 * k, s1: 1.4 * k, a0: 0.7, tint: 0xe2d0ff });
+  }
+}
+function fxFear(v, on) {
+  const [x, y, k] = chest(v, 0.75);
+  FX.spawn(on ? 'burst' : 'glow', x, y, { life: on ? 0.4 : 0.3, s0: 0.2 * k, s1: (on ? 0.7 : 0.45) * k, a0: on ? 0.85 : 0.5, tint: on ? COL.fear : 0xb0b0b0, r: Math.random() * 6 });
+}
 function fxRevive(u) {
   const [x, y, k] = proj(u.x, u.y);
   FX.spawn('beam', x, y, { ay: 1, life: 0.6, s0: 0.5 * k, s1: 0.9 * k, sy: 1.8, a0: 0.8, tint: COL.gold });
@@ -482,7 +506,8 @@ function renderUnit(u, dt) {
     u.sk.update(u.stun > 0 ? 0 : dt);
     if (!u.headH) u.headH = Math.max(40, -u.sk.getLocalBounds().y);
     if (u.flash > 0) u.flash -= dt;
-    u.sk.tint = u.flash > 0 ? 0xffc4b8 : u.stun > 0 && u.stunKind === 'frozen' ? 0xb8dcf0 : 0xffffff;
+    u.sk.tint = u.flash > 0 ? 0xffc4b8 : u.stun > 0 && u.stunKind === 'frozen' ? 0xb8dcf0 : u.fear ? 0xd88aa8
+      : u.invT > 0 && Math.sin(arena.t * 18) > 0 ? 0xfff0b0 : 0xffffff;
     if (u.dead) { u.deadT = (u.deadT || 0) + dt; u.view.alpha = clamp(1.4 - u.deadT * 1.2, 0, 1); }
   }
   // a soft shadow under the feet
@@ -615,6 +640,28 @@ function unitHud(u, dt, k, s) {
     u.fervorFx.visible = fervor;
     if (fervor) { u.fervorFx.position.set(0, headY - 14 * k + Math.sin(arena.t * 4 + u.x) * 2 * k); u.fervorFx.scale.set(k); u.fervorFx.children[0].alpha = 0.4 + 0.2 * Math.sin(arena.t * 6 + u.y); }
   }
+  // 破桎而出: a bubble while the barrier holds; 溶血骇惧: blood motes leaving a seized unit; 冲锋: dust at the feet
+  const barrier = show && u.barrier > 0;
+  if (barrier && !u.barrierFx) {
+    const b = new PIXI.Sprite(tex('halo')); b.anchor.set(0.5); b.blendMode = ADD(); b.tint = COL.arts; u.view.addChild(b); u.barrierFx = b;
+  }
+  if (u.barrierFx) {
+    u.barrierFx.visible = barrier;
+    if (barrier) { const r = Math.max(60, (u.headH || 120) * s) * 1.25; u.barrierFx.scale.set(r / 128, r / 128 * 0.95); u.barrierFx.y = -r * 0.42; u.barrierFx.alpha = 0.55 + 0.15 * Math.sin(arena.t * 5); }
+  }
+  // the ground ring: the barrier (violet, with the dome's outline), a seized unit (red, pulsing), invincible (gold)
+  const ring = !show ? null : barrier ? COL.arts : u.fear ? COL.fear : u.invT > 0 ? COL.gold : null;
+  if (ring !== u.ringCol || ring) {
+    const g = u.ringG; g.clear(); u.ringCol = ring;
+    if (ring) {
+      const rx = 0.55 * FLOOR.T * k, pulse = u.fear ? 0.55 + 0.35 * Math.sin(arena.t * 8) : 0.85;
+      g.lineStyle(2.5 * k, ring, pulse); g.drawEllipse(0, 0, rx, rx * 0.42);
+      if (barrier) { const r = Math.max(60, (u.headH || 120) * s) * 1.25; g.lineStyle(2 * k, ring, 0.75); g.drawEllipse(0, -r * 0.42, r * 0.5, r * 0.55); }
+      if (u.fear) { g.lineStyle(0); g.beginFill(ring, 0.18 + 0.12 * Math.sin(arena.t * 8)); g.drawEllipse(0, 0, rx, rx * 0.42); g.endFill(); }
+    }
+  }
+  if (show && u.fear && Math.random() < dt * 14) { const [cx, cy] = chest(u, 0.5); FX.spawn('point', cx + (Math.random() - 0.5) * 20 * k, cy, { life: 0.8, s0: 0.05, s1: 0.012, a0: 0.9, tint: COL.fear, vy: -50, drag: 0.6 }); }
+  if (show && u.rushT > 0 && u.state === 'move' && Math.random() < dt * 14) { const [gx, gy] = proj(u.x, u.y); FX.spawn(Math.random() < 0.5 ? 'smokeA' : 'smokeB', gx - u.facing * 12 * k, gy - 4, { normal: true, life: 0.45, s0: 0.12 * k, s1: 0.3 * k, a0: 0.35, tint: 0xa89a8a, vy: -10 }); }
   // stun: the swirl and its sparkle
   const stun = show && u.stun > 0 && u.stunKind === 'stun';
   if (stun && !u.stunFx) {
@@ -686,6 +733,10 @@ function arenaFrame(dt) {
       else if (kind === 'zone') { if (W.zone >= 0) { sfx('b_ui_dqsafearea'); arena.flashT = 1; } }
       else if (kind === 'stun' || kind === 'frozen') { if (!busy && u.view) { const [x, y, k] = chest(u, 1); FX.spawn('flare', x, y, { life: 0.3, s0: 0.3 * k, s1: 0.6 * k, a0: 0.8, tint: kind === 'frozen' ? COL.ice : 0xfff0a0 }); } }
       else if (kind === 'revive') fxRevive(u);
+      else if (kind === 'cross') { if (!busy) fxCross(a); }
+      else if (kind === 'barrier' || kind === 'barrierbreak' || kind === 'barrierblast') { fxBarrier(u, kind); if (kind !== 'barrierbreak') u.wantSkill = true; }
+      else if (kind === 'fearcharge') u.wantSkill = true;
+      else if (kind === 'fear' || kind === 'fearend') { if (u.view) fxFear(u, kind === 'fear'); }
     }
     W.events.length = 0;
     if (W.done) {

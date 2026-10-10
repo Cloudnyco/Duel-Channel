@@ -13,7 +13,7 @@ export function loadSim() {
   vm.runInContext(load('shared/sim.js') + `
 ;globalThis.SIM = { makeLineups, predict, npcPick, npcEmote, settleOne, mulberry32, sideScore, makeWorld, simStep, zoneAt, zoneRect,
   outsideZone, POOL, DCFG, ENV, DT, BATTLE_MAX, EMOJI_PICS, isStand, STAND, standRow, standSeat, standShields, npcStandPick, settleStand,
-  standLeave, standOver, standRanks };`, ctx);
+  standLeave, standOver, standRanks, hurt, strike, disable, tileX, tileY };`, ctx);
   return ctx.SIM;
 }
 // a mode's rounds in order (default: the 礼物对决 match)
