@@ -639,6 +639,11 @@ async function betPhase(r, rd, lineups, winner, net = null) {
   // way btn_normal_bet's is (scale x −1.5), so its hole points away from the button and the arena shows through:
   // mirror it to match the button
   for (const side of ['left_btn', 'right_btn']) { const gl = scr.one(`${side}/btn_ex_bet/btn_bet/select/normal_bet_select_glow`); if (gl) gl.rt.scale[0] = -Math.abs(gl.rt.scale[0]); }
+  // the countdown's 88 px digits (our Novecento) reach down to the tip line's top: the digits 5 px up and the tip lines 5
+  // px down open a gap of about 12 px, the pair still centred where the prefab has it
+  for (const [k, dy] of [['text_time', 5], ['text_time_out', 5], ['text_info', -5], ['text_info_private', -5]]) { const t = scr.one(`panel_contdown_middle/${k}`); if (t) t.rt.pos[1] += dy; }
+  // the alarm clock rings only in the window's last seconds (with the red countdown): hidden until then
+  scr.show('panel_contdown_middle/group_clock', false);
   scr.text('turn_info/text_turn', pad2(r));
   scr.text('panel_assets/text_assets', String(me.pts).padStart(8, '0'));
   scr.text('panel_rank/content/text_rank', String(rankOf(me)));
@@ -686,7 +691,7 @@ async function betPhase(r, rd, lineups, winner, net = null) {
     if (row) { row.onclick = toggle; row.title = '查看敌人信息'; }
     scr.tap(`${side}/panel_info/main/staff_info_top/hotspot`, toggle);
   }
-  playLoops(scr, scr.root, /countdown_red/);
+  playLoops(scr, scr.root, /countdown_red|clock_loop/);
   scr.play('manager_mode_view', 'battle_ui_bet_in');
   // the round number's boom and fire
   scr.show('group_turn/ui_particle_boom', true);
@@ -779,7 +784,10 @@ async function betPhase(r, rd, lineups, winner, net = null) {
     const left = Math.max(0, BET_TIME - t);
     scr.text('panel_contdown_middle/text_time', mmss(Math.ceil(left)));
     if (handle) { handle.rt.amin[0] = handle.rt.amax[0] = clamp(t / BET_TIME, 0, 1); }
-    if (!red && left <= RED) { red = true; scr.play('panel_contdown_middle', 'battle_ui_countdown_red', { loop: true }); }
+    if (!red && left <= RED) {
+      red = true; scr.play('panel_contdown_middle', 'battle_ui_countdown_red', { loop: true });
+      scr.show('panel_contdown_middle/group_clock', true); scr.play('panel_contdown_middle/group_clock', 'battle_ui_clock_loop', { loop: true });
+    }
     if (left <= (net && net.secretMs ? net.secretMs / 1000 : RED) && !solo) goSecret();
     if (left <= RED && left > 0 && Math.ceil(left) !== lastTick) { lastTick = Math.ceil(left); sfx('b_ui_dqcountdown'); }
     let changed = false;
