@@ -40,18 +40,20 @@ html, body { height: 100%; margin: 0; background: #000; overflow: hidden; color:
 .inj.avatar { inset: 12px; border-radius: 50%; box-shadow: 0 0 0 3px rgba(255, 255, 255, .85), 0 6px 18px rgba(0, 0, 0, .5); background-color: #182120; }
 canvas.video { position: absolute; inset: 0; width: 100%; height: 100%; }
 /* the round's line-up over each team's info button (the game fills this row with enemy cards from another package): a
-   stack of portraits, each card over the right of the one before; its count on its top left, the part never covered
+   stack of portraits fanning out towards the middle, the two sides mirrored — on the left each card over the right of the
+   one before and its count on its top left, on the right the other way round: the count sits where nothing covers it
    (the name is in the enemy panel and the card's tooltip) */
 .lineup { position: absolute; left: 0; right: 0; top: 14px; display: flex; justify-content: center; }
 /* (the info button's magnifier sits at the row's outer end: the cards keep clear of it) */
-.lineup.l { padding: 0 8px 0 70px; } .lineup.r { padding: 0 46px 0 32px; }
+.lineup.l { padding: 0 8px 0 70px; } .lineup.r { padding: 0 70px 0 8px; flex-direction: row-reverse; }
 .lineup { pointer-events: auto; cursor: pointer; }
 .lineup .card { position: relative; width: 92px; height: 100px; margin-left: -24px; border-radius: 6px; background: #121a19 center / 94% no-repeat;
   border: 2px solid #e8473d; box-shadow: 0 4px 14px rgba(0, 0, 0, .6); }
-.lineup.r .card { border-color: #2f86e8; }
+.lineup.r .card { border-color: #2f86e8; margin-left: 0; margin-right: -24px; }
 .lineup .card:nth-child(2) { z-index: 1; transform: translateY(4px); } .lineup .card:nth-child(3) { z-index: 2; transform: translateY(8px); }
 .lineup .card b { position: absolute; left: 3px; top: 3px; padding: 2px 5px 1px; border-radius: 3px; background: rgba(8, 10, 10, .78);
   font: 700 17px/1 var(--nove); color: #fff; }
+.lineup.r .card b { left: auto; right: 3px; }
 #toast { position: absolute; left: 50%; top: 96px; transform: translate(-50%, -8px); z-index: 1000; padding: 8px 18px; border-radius: 4px;
   background: rgba(10, 12, 12, .88); border: 1px solid var(--line); font: 500 16px/1.4 var(--cn); opacity: 0; transition: opacity .2s, transform .2s; pointer-events: none; }
 #toast.on { opacity: 1; transform: translate(-50%, 0); }
