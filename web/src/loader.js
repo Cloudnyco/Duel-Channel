@@ -52,6 +52,8 @@
     globalThis.DUEL = pack.ui; globalThis.FIGHTERS = pack.fighters; globalThis.AUDIO = pack.audio; globalThis.FXTEX = pack.fx; globalThis.TRAP_MESH = pack.traps || {};
     // the enemy models: fetched one by one when a battle needs them (arena.js loadFighter)
     globalThis.MODEL_FILES = pack.models || {};
+    // the enemies' attack effects: fetched once the game runs (arena.js efxLoad); the generic ones until then
+    globalThis.ENEMY_FX_URL = pack.efx || '';
     removeEventListener('resize', fit);
     if (skel) { skel.classList.remove('loading'); bars.forEach((b) => b.style.removeProperty('--fill')); }
     status.removeAttribute('aria-busy'); go.removeAttribute('aria-busy');

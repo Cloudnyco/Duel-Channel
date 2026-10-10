@@ -54,5 +54,16 @@ if (packFiles.length) {
   }
   check(packFiles.some((f) => f.startsWith('assets/audio/') && f.endsWith('.ogg')), 'asset pack: no sound tracked');
 }
+// the enemies' attack effects (optional): every fighter named is on the roster, every effect named is there, every
+// texture an effect draws with is there
+if (packFiles.includes('assets/enemyfx.json')) {
+  const E = JSON.parse(rd('assets/enemyfx.json')), keys = new Set(roster.map((x) => x.key));
+  for (const [k, v] of Object.entries(E.by || {})) {
+    check(keys.has(k), `assets/enemyfx.json: ${k} is not on the roster`);
+    for (const n of [v.s, v.t, v.h]) if (n) check(E.fx[n], `assets/enemyfx.json ${k}: no effect ${n}`);
+  }
+  for (const n of Object.values(E.common || {})) check(E.fx[n], `assets/enemyfx.json: no common effect ${n}`);
+  for (const [n, e] of Object.entries(E.fx || {})) for (const p of [...e.ps, ...e.tr]) for (const t of [p.tex, p.diss && p.diss.tex]) if (t) check(E.tex[t], `assets/enemyfx.json ${n}: no texture ${t}`);
+}
 if (fails.length) { console.error(fails.map((m) => '✗ ' + m).join('\n')); process.exit(1); }
 console.log(`ok: template, ${body.split('\n').length} lines of page code, ${roster.length} fighters, ${Object.values(cfg.rounds).flat().length} rounds, ${tracked.length} tracked files`);

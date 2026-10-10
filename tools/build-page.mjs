@@ -18,6 +18,8 @@
 //     audio/*.ogg        the event's UI sounds (+ the BGM tracks, m_nobetnolife.ogg and m_all.ogg, if present)
 //     fx/*               the textures listed in web/fx-map.json
 //     traps.json         the field traps' meshes (障碍物, 源石祭坛): { trap key: { tex (an fx role), v, uv, f } }
+//     enemyfx.json       the enemies' own attack effects (start, projectile trail, hit; the common hit effects): optional,
+//                        inlined in the single file, served apart as public/fx/enemyfx.<hash>.json
 //     fonts/             Bender and Novecento wide: not the game's and not in the repository (their authors' free-font
 //                        terms); a local copy (.woff2 / .otf) is used, else they are fetched once (FONTS below) and kept
 //                        here; without them the page falls back to system fonts
@@ -95,6 +97,7 @@ const audio = Object.fromEntries(readdirSync(join(A, 'audio')).filter((f) => f.e
 const fxtex = Object.fromEntries(Object.entries(FX).map(([k, f]) => [k, `data:image/${f.endsWith('.jpg') ? 'jpeg' : 'png'};base64,${b64(join(A, 'fx', f))}`]));
 const ui = rd(join(A, 'ui.json'));
 const trapMesh = existsSync(join(A, 'traps.json')) ? rd(join(A, 'traps.json')) : '{}';
+const enemyFx = existsSync(join(A, 'enemyfx.json')) ? rd(join(A, 'enemyfx.json')) : null;
 // what this build is (shown in the settings panel, written into error reports): the version, the commit (marked
 // -dirty when the page's sources differ from it; 'source' outside a git checkout, e.g. a release's source archive)
 const git = (args) => { try { return execFileSync('git', args, { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim(); } catch (e) { return null; } };
@@ -138,7 +141,7 @@ const write = (p, text) => {
 };
 
 // the single file: the pack inlined, the game started at once
-const single = page(safe(`const DUEL = ${ui};\nconst FIGHTERS = ${JSON.stringify(fighters)};\nconst MODELS = ${JSON.stringify(MODELS)};\nconst AUDIO = ${JSON.stringify(audio)};\nconst FXTEX = ${JSON.stringify(fxtex)};\nconst TRAP_MESH = ${trapMesh};\nduelMain();`));
+const single = page(safe(`const DUEL = ${ui};\nconst FIGHTERS = ${JSON.stringify(fighters)};\nconst MODELS = ${JSON.stringify(MODELS)};\nconst AUDIO = ${JSON.stringify(audio)};\nconst FXTEX = ${JSON.stringify(fxtex)};\nconst TRAP_MESH = ${trapMesh};\n${enemyFx ? `const ENEMY_FX = ${enemyFx};\n` : ''}duelMain();`));
 writeFileSync(join(OUT, 'duel-flow.html'), single);
 console.log(`${rel(join(OUT, 'duel-flow.html'))}  ${mb(single.length)}  (${fighters.length} fighters, ${Object.keys(MODELS).length} models, ${Object.keys(audio).length} sounds, ${Object.keys(fxtex).length} textures)`);
 
@@ -156,8 +159,18 @@ const keep = new Set(Object.values(modelFiles).map((f) => f.slice(7)));
 for (const f of readdirSync(join(OUT, 'models'))) if (!keep.has(f.replace(/\.(br|gz)$/, ''))) rmSync(join(OUT, 'models', f));
 console.log(`${rel(join(OUT, 'models'))}/  ${Object.keys(modelFiles).length} models, ${mb(modelBytes)}`);
 
+// the enemies' effects: one file under its content hash (older ones removed), fetched once the game runs
+mkdirSync(join(OUT, 'fx'), { recursive: true });
+let efxFile = null;
+if (enemyFx) {
+  efxFile = `enemyfx.${createHash('sha256').update(enemyFx).digest('hex').slice(0, 16)}.json`;
+  const ef = write(join(OUT, 'fx', efxFile), enemyFx);
+  console.log(`${rel(join(OUT, 'fx', efxFile))}  ${mb(ef.raw)} (brotli ${mb(ef.br)})`);
+}
+for (const f of readdirSync(join(OUT, 'fx'))) if (/^enemyfx\.[0-9a-f]{16}\.json(\.br|\.gz)?$/.test(f) && !(efxFile && f.startsWith(efxFile))) rmSync(join(OUT, 'fx', f));
+
 // the served pair: the pack under its content hash (older packs removed), the page pointing at it
-const packText = `{"v":2,"ui":${ui},"fighters":${JSON.stringify(fighters)},"models":${JSON.stringify(modelFiles)},"audio":${JSON.stringify(audio)},"fx":${JSON.stringify(fxtex)},"traps":${trapMesh}}`;
+const packText = `{"v":2,"ui":${ui},"fighters":${JSON.stringify(fighters)},"models":${JSON.stringify(modelFiles)},"audio":${JSON.stringify(audio)},"fx":${JSON.stringify(fxtex)},"traps":${trapMesh}${efxFile ? `,"efx":"fx/${efxFile}"` : ''}}`;
 const name = `duel-pack.${createHash('sha256').update(packText).digest('hex').slice(0, 16)}.json`;
 for (const f of readdirSync(join(OUT, 'pack'))) if (/^duel-pack\.[0-9a-f]{16}\.json(\.br|\.gz)?$/.test(f) && !f.startsWith(name)) rmSync(join(OUT, 'pack', f));
 const pk = write(join(OUT, 'pack', name), packText);

@@ -1374,7 +1374,7 @@ async function boot() {
     for (;;) st = await STATES[st](FLOW.ctx);
   } catch (e) { REPORT.fatal(e); }
 }
-window.__flow = { SND, DCFG, NET, EMO, REPORT, dbg: !PAGE_DEBUG ? null : { STATES, FLOW, get playing() { return playing; }, POOL, startBattle, clearArena, Screen, roundEnd, scoreboard, settle, setupRound, makeLineups, predict, makeWorld, simStep, mulberry32, roundsOf, betPhase, battlePhase, stFinish, stShow, play, standBoard, avatarUri, get me() { return me; } }, G, get players() { return players; }, CLOCK, screens, arena: () => arena, phase: () => $('phase').textContent,
+window.__flow = { SND, DCFG, NET, EMO, REPORT, dbg: !PAGE_DEBUG ? null : { STATES, FLOW, EFX, efxPlay, get playing() { return playing; }, POOL, startBattle, clearArena, Screen, roundEnd, scoreboard, settle, setupRound, makeLineups, predict, makeWorld, simStep, mulberry32, roundsOf, betPhase, battlePhase, stFinish, stShow, play, standBoard, avatarUri, get me() { return me; } }, G, get players() { return players; }, CLOCK, screens, arena: () => arena, phase: () => $('phase').textContent,
   // test hook: click the topmost shown, clickable node whose path ends with the suffix
   tap: (suf) => { for (const scr of screens.slice().reverse()) { const s = scr.q(suf).find((x) => x.shown && x.el.onclick); if (s) { s.el.click(); return true; } } return false; } };
 boot();

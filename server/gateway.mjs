@@ -303,6 +303,9 @@ const server = http.createServer((req, res) => {
   // an enemy model, named after its content likewise
   const md = /^\/models\/(enemy_[0-9a-z_]+\.[0-9a-f]{16}\.json)$/.exec(u.pathname);
   if (md) { sendFile(req, res, join(PUBLIC, 'models', md[1]), 'application/json; charset=utf-8', 'public, max-age=31536000, immutable'); return; }
+  // the enemies' attack effects (named after their content like the pack)
+  const ef = /^\/fx\/(enemyfx\.[0-9a-f]{16}\.json)$/.exec(u.pathname);
+  if (ef) { sendFile(req, res, join(PUBLIC, 'fx', ef[1]), 'application/json; charset=utf-8', 'public, max-age=31536000, immutable'); return; }
   if (u.pathname === '/report' && req.method === 'POST') { takeReport(req, res); return; }
   if (u.pathname === '/favicon.ico') { res.writeHead(204); res.end(); return; }
   // a liveness probe for containers and CI: the gateway answers, and how many instances it can reach
