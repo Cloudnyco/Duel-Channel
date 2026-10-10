@@ -17,7 +17,11 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 // a seat's connection as the match sees it: what it is sent (with the time since t0), its message handler
 function fakeSeat(m, p) {
   const s = { got: [], t0: Date.now(), closed: null, h: {} };
-  const ws = { readyState: 1, send: (x) => { const msg = JSON.parse(x); msg.at = Date.now() - s.t0; s.got.push(msg); if (msg.t === 'battle') setTimeout(() => m.onMessage(p, { t: 'watched' }), 10); },
+  const ws = { readyState: 1, send: (x) => {
+    const msg = JSON.parse(x); msg.at = Date.now() - s.t0; s.got.push(msg);
+    if (msg.t === 'round' && s.onRound) s.onRound(msg);
+    if (msg.t === 'battle') setTimeout(() => m.onMessage(p, { t: 'watched' }), 10);
+  },
     on: (ev, fn) => { s.h[ev] = fn; }, close: (code) => { s.closed = code; } };
   m.attach(ws, p.token);
   s.say = (o) => s.h.message(JSON.stringify(o));
@@ -30,9 +34,12 @@ test('a round: no seed before the bets close; the seed and salt then match the c
   m.players.find((p) => p.npc).npc = Object.values(SIM.DCFG.npcs).find((n) => n.specialStrategy === 'CHOOSE_WIN');
   const me = m.players[0], s = fakeSeat(m, me);
   s.t0 = Date.now();
-  // a pick while picks show, changed in the secret part
-  setTimeout(() => s.say({ t: 'bet', side: 0, kind: 'normal' }), 300);
-  setTimeout(() => s.say({ t: 'bet', side: 1, kind: 'normal' }), 2000);
+  // a pick while picks show, changed in the secret part (timed from the round's message: the instance works out the
+  // battle before it sends it, which takes a while on a slow machine)
+  s.onRound = () => {
+    setTimeout(() => s.say({ t: 'bet', side: 0, kind: 'normal' }), 300);
+    setTimeout(() => s.say({ t: 'bet', side: 1, kind: 'normal' }), 2000);
+  };
   await m.playRound(SIM.roundTable('multiOperationMatch')[0][0], 1);
   const round = s.got.find((x) => x.t === 'round'), battle = s.got.find((x) => x.t === 'battle'), result = s.got.find((x) => x.t === 'result');
   assert.equal(round.seed, undefined); assert.equal(round.salt, undefined); assert.match(round.commit, /^[0-9a-f]{64}$/);
@@ -40,9 +47,10 @@ test('a round: no seed before the bets close; the seed and salt then match the c
   assert.equal(commitOf(battle.seed, battle.salt), round.commit);
   const lineups = round.lineups.map((side) => side.map(([k, n]) => ({ f: SIM.POOL.find((f) => f.key === k), n })));
   assert.equal(SIM.predict(lineups, battle.seed).winner, result.w);
-  // the secret part: from 1.5 s on, only one's own pick comes back; the NPC who knows the winner never shows before
+  // the secret part: 1.5 s after the round opens, only one's own pick comes back; the NPC who knows the winner never
+  // shows before
   const secret = s.got.find((x) => x.t === 'secret');
-  assert.ok(secret && secret.at >= 1400 && secret.at < 2000, String(secret && secret.at));
+  assert.ok(secret && secret.at - round.at >= 1400 && secret.at - round.at < 1950, String(secret && secret.at - round.at));
   const bets = s.got.filter((x) => x.t === 'bets');
   for (const b of bets.filter((x) => x.at > secret.at)) assert.deepEqual(Object.keys(b.choices), [me.id]);
   const knower = m.players.find((p) => p.npc && p.npc.specialStrategy === 'CHOOSE_WIN');
