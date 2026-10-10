@@ -1,6 +1,6 @@
 # 争锋频道 · Duel Channel
 
-《明日方舟》限时玩法「争锋频道：青草城」中**礼物对决**的**非官方同人复刻**：在浏览器里观看敌人之间的对战，每轮押注你看好的一方，8 名观众比拼礼物点数。可以单机游玩，也可以在本机或局域网开服联机。
+《明日方舟》限时玩法「争锋频道：青草城」中**礼物对决**与**竞猜对决**的**非官方同人复刻**：在浏览器里观看敌人之间的对战，每轮选择你看好的一方——礼物对决里 8 名观众比拼礼物点数，竞猜对决里最多 30 名观众猜到只剩最后一人。可以单机游玩，也可以在本机或局域网开服联机。
 
 ![version](https://img.shields.io/badge/version-0.1.0-2ea44f)
 ![license](https://img.shields.io/badge/code%20license-AGPL--3.0--or--later-blue)
@@ -34,17 +34,19 @@ English summary: [below](#english).
 
 礼物对决每局 10 轮。每轮场上的两队敌人互相对战，观众在 20 秒内选择支持一方（猜对赢得等同投入的礼物，「全力支持」两倍；也可以观望），礼物归零即被淘汰，最后按礼物点数排名。
 
+竞猜对决最多 30 人。每轮只选一边，选错即淘汰；每人有一次观众保护，前 5 轮里第一次选错时免于淘汰。不限轮数，直到只剩一人，按选对的轮数排名；每轮结束后全场 30 人在同一个榜上。
+
 - **规则和数值对照官方数据**：活动配置（模式、轮次、NPC 观众及其选边策略、常量与文本）、关卡规则、敌人属性与技能都由官方数据表生成；安全区的时机与范围来自客户端的环境预制体；数据表里没有的规则对照 PRTS 核对。具体见 [docs/MECHANICS.md](docs/MECHANICS.md)，所有按推断实现的地方都在那里列出。
 - **确定性战斗**：同样的阵容和随机种子，在 Node 和各浏览器里算出逐位相同的结果。联机时服务端先算出结果，客户端用同一份代码重放。
 - **界面**：页面用 HTML 重建了活动的 UGUI 界面（锚点布局、九宫格、模板遮罩、形状着色器、旧版动画曲线、UI 粒子、UI Spine），由 PixiJS 绘制对战场地。
 
 ## 功能一览
 
-- **完整流程**：开始界面 → 浏览器 → 选择赛事 → 匹配（人数不足时由官方 NPC 补位）或群组房间 → 即将开始 → 10 轮押注与对战 → 计分板 → 最终结算。
+- **完整流程**：开始界面 → 浏览器 → 选择赛事 → 匹配（人数不足时由官方 NPC 补位）或群组房间 → 即将开始 → 每轮押注与对战 → 计分板（竞猜对决：全场一个榜的阶段结算）→ 最终结算。
 - **押注界面**：倒计时、支持 / 全力支持 / 观望、其他观众的选择实时出现；放大镜查看敌人信息（本关实际数值、图鉴能力、描述）。
 - **对战**：14 种敌人（含 3 名领袖），技能按官方技能数据实现（晕眩、冻结、穿透、多目标、重生变身等）；60 秒后安全区每 20 秒缩小一圈，圈外获得「源石兴奋」并逐秒叠加内伤；战斗打得越久播放越快（最多 3 倍）。
 - **表情**：押注和对战时从顶栏打开表情面板发送官方的 12 个表情，表情以弹幕形式从画面上方飘落（官方的轨道、缓动和缩放参数）；可以一键屏蔽。单机时 NPC 观众也会发表情。
-- **联机**：网关 + 多个对战实例；礼物对决匹配队列（满 8 人开局，等待超时由 NPC 补位）；6 位邀请码的群组房间；断线重连（对局中 30 秒、房间 45 秒内自动接回，刷新页面也能回到比赛）；实时延迟显示；自定义头像（敌人头像或自己的图片）。
+- **联机**：网关 + 多个对战实例；礼物对决和竞猜对决各自的匹配队列（满 8 / 30 人开局，等待超时由 NPC 补位）；6 位邀请码的群组房间（最多 8 / 30 人）；只需开放网关一个端口；断线重连（对局中 30 秒、房间 45 秒内自动接回，刷新页面也能回到比赛）；实时延迟显示；自定义头像（敌人头像或自己的图片）。
 - **设置**：右下角齿轮里调整速度、音乐和音效、换曲、快进战斗、查看回合记录、更换头像，并显示当前版本。
 - **错误报告**：页面出错时提示并生成报告（版本、浏览器与显卡、对局状态、每轮的阵容与种子、错误与最近的操作记录），可以复制、打开预先填好的 GitHub Issue，或在联机时发送给服务器主机（保存在服务器的 `logs/reports/`）。也可以随时从「设置 → 反馈问题」提交。
 
@@ -73,9 +75,9 @@ npm start                                   # 网关 :8600 + 3 个对战实例 :
 
 浏览器打开 <http://127.0.0.1:8600/>，输入昵称后进入频道：
 
-- **加入赛事 → 礼物对决**：进入匹配队列。满 8 人立即开局；等待 10 秒后空位由官方 NPC 补齐。
+- **加入赛事 → 礼物对决 / 竞猜对决**：进入该模式的匹配队列。满 8 / 30 人立即开局；等待 10 秒后空位由官方 NPC 补齐（NPC 共 28 名）。
 - **创建群组**：得到 6 位邀请码，其他人用「加入群组」输入邀请码进房；房主可以勾选 NPC 补位后开局。
-- **机器人**：`npm run bots`（7 个机器人进入队列）或 `node server/bots.mjs --n 3 --room <邀请码>`。
+- **机器人**：`npm run bots`（7 个机器人进入礼物对决队列）、`node server/bots.mjs --n 29 --mode stand`（29 个进入竞猜对决队列）或 `node server/bots.mjs --n 3 --room <邀请码>`。
 
 局域网联机、Docker 部署、端口与参数、常见问题见 **[docs/DEPLOY.md](docs/DEPLOY.md)**。
 
@@ -140,6 +142,6 @@ docs/           部署、素材、机制、架构
 
 ## English
 
-**Duel Channel** is an unofficial fan re-creation of the *Gift Duel* mode of Arknights' limited event *Duel Channel*: watch enemies fight, bet on a side each round, outlast seven other viewers. It plays offline in one HTML file or online through a small Node.js server (gateway + battle instances, deterministic battles replayed by every client).
+**Duel Channel** is an unofficial fan re-creation of the *Gift Duel* and *Guess Duel* modes of Arknights' limited event *Duel Channel*: watch enemies fight, back a side each round, and outlast seven other viewers (gifts) or up to twenty-nine (last one standing). It plays offline in one HTML file or online through a small Node.js server (gateway + battle instances, deterministic battles replayed by every client).
 
 It is not affiliated with or endorsed by Hypergryph. The repository includes the asset pack the page needs (`assets/`, exported from the game client); like the game data, it is not covered by the AGPL and may be used for **non-commercial purposes only** (NOTICE.md). Clone it and run `start.cmd` (Windows) or `./start.sh` (Linux / macOS). The code is AGPL-3.0-or-later.

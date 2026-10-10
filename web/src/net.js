@@ -178,17 +178,22 @@ async function connectLobby(name) {
   PING.start();
   return w;
 }
+// a seat as the instance describes it; 竞猜对决 adds the rounds guessed right, the 观众保护 (held / taken in round
+// shieldAt / saved this round) and the standing
+const STAND_KEYS = ['pass', 'shield', 'shieldAt', 'saved', 'rank'];
+const standOf = (s) => Object.fromEntries(STAND_KEYS.filter((k) => k in s).map((k) => [k, s[k]]));
 function serverPlayer(s, you) {
   return { id: s.id, name: s.name, tag: s.tag, avatar: avatarUri(s.avatar), me: s.id === you, npc: s.npc ? {} : null, human: s.human,
     pts: s.pts, out: s.out, outRound: s.outRound, streak: s.streak, stats: s.stats, played: s.played, change: s.change, right: s.right,
-    lastForced: s.lastForced, left: s.left, choice: null };
+    lastForced: s.lastForced, left: s.left, choice: null, ...standOf(s) };
 }
 function applyServerPlayers(list) {
   for (const s of list) {
     const p = players.find((x) => x.id === s.id);
     if (p) Object.assign(p, { pts: s.pts, out: s.out, outRound: s.outRound, streak: s.streak, stats: s.stats, played: s.played, change: s.change,
-      right: s.right, lastForced: s.lastForced, left: s.left });
+      right: s.right, lastForced: s.lastForced, left: s.left, ...standOf(s) });
   }
+  if (me) me.shieldHit = !!me.saved;
 }
 // a seat in a match: connect to its instance (through the gateway), take the seating. Dropped, the connection is
 // reopened for up to consts.maxRetryTimeInBattle seconds and the instance replays what was missed (since=<last seq>), so
@@ -242,7 +247,7 @@ async function stMatchOnline(ctx) {
   const scr = new Screen('enemy_duel_match_state', { z: 8 });
   scr.show('button_match/root_mode_cancel', true); scr.show('button_match/root_mode_succ', false);
   scr.show('text_toggle/text_wait', true); scr.show('text_toggle/text_connecting', false);
-  scr.text('num_layout/text_num', '1'); scr.text('num_layout/text_num_max', '8');
+  scr.text('num_layout/text_num', '1'); scr.text('num_layout/text_num_max', String(G.mode.n));
   // the two curved arrows close into a ring (in_matching), then the ring turns once a minute (mode_matching_loop)
   scr.play('group_matching', 'in_matching').then(() => { if (!scr.dead) scr.play('group_matching', 'mode_matching_loop', { loop: true }); });
   let cancelled = false;
@@ -292,8 +297,14 @@ async function stRoomOnline(ctx) {
   const content = scr.one('scroll_view/viewport/content');
   let room = null, result = null, roomT = DCFG.consts.maxRoomTime || 900;
   const draw = (r) => {
+    // the room's own mode (a code typed in the browser may lead to either 礼物对决 or 竞猜对决)
+    const mode = MODES.find((x) => x.id === r.mode);
+    if (mode && mode !== G.mode) {
+      G.mode = mode;
+      scr.text('root_title/text_title', G.mode.name); scr.text('root_desc/text_desc1', G.mode.desc1); scr.text('root_desc/text_desc2', G.mode.desc2);
+    }
     clearKids(content);
-    const host = r.host === NET.me.id;
+    const host = r.host === NET.me.id, cards = [];
     r.members.forEach((p, i) => {
       const c = instantiate(scr, content, 'room_player_card');
       scr.show('root_empty', false, c); scr.show('root_wait', false, c); scr.show('root_main', true, c);
@@ -303,8 +314,9 @@ async function stRoomOnline(ctx) {
       scr.show('state_host', p.id === r.host, c); scr.show('state_bg_player', p.id === NET.me.id, c);
       scr.one('group_options', c).active = false;
       play(c, 'room_card_join', { delay: i * 0.03 });
-      c.rt.amin = [0, 1]; c.rt.amax = [0, 1]; c.rt.pivot = [0, 1]; c.rt.pos = [(i % 4) * (c.rt.size[0] + 10), -Math.floor(i / 4) * (c.rt.size[1] + 10)];
+      cards.push(c);
     });
+    roomGrid(scr, content, cards);
     scr.text('root_roomid/text_id', r.code);
     scr.text('layout_num/text_num', String(r.max));
     scr.text('root_text/text_num1', String(r.members.length)); scr.text('root_text/text_num2', String(r.max));
@@ -362,6 +374,7 @@ async function searchDialog() {
 // ---- the rounds, as the instance runs them -----------------------------------------------------------------------------
 async function stGameOnline() {
   let left = false;
+  const stand = standMode();
   G.log = []; G.matchOver = false;
   EMO.begin();
   for (;;) {
@@ -369,6 +382,8 @@ async function stGameOnline() {
     if (m.t !== 'round') { if (m.t === 'finish') { applyServerPlayers(m.players); G.matchOver = true; forgetSeat(); } else toast('与对战实例的连接已断开', 3); break; }
     const rd = DCFG.rounds[m.roundId], r = m.r;
     G.round = r;
+    // 竞猜对决: past round 5 nobody holds a shield (the instance does the same; its next snapshot says so)
+    if (stand) standShields(players, r);
     const lineups = m.lineups.map((s) => s.map(([k, n]) => ({ f: byKey(k), n })));
     G.log.push({ r, seed: m.seed, lineups: lineups.map((x) => x.map((g) => `${g.f.name}×${g.n}`).join(' + ')), cost: lineups.map(sideScore), len: 0 });
     setupRound(lineups, m.seed);
@@ -381,7 +396,8 @@ async function stGameOnline() {
     applyServerPlayers(res.players);
     Object.assign(G.log[G.log.length - 1], { w: res.w, len: arena.W ? arena.W.t : 0 });
     await roundEnd(r, res.w);
-    left = await scoreboard(r);
+    // 竞猜对决's board; its last one when the standings say the match is over (one viewer left, or no human)
+    left = stand ? await standBoard(r, players, { last: standOver(players) || r >= STAND.cap }) : await scoreboard(r);
     if (left) { NET.match.send({ t: 'leave' }); forgetSeat(); break; }
   }
   EMO.end();

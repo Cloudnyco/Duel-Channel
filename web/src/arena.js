@@ -2,8 +2,9 @@
 // The level's layout (15 × 11: a raised forbidden rim, the red start column, 11 duel columns, the blue end column) built
 // from the client's own battle art: the common map atlases for the tiles and the highland rim, the tile_start / tile_end
 // effects for the gates, the env's boundary line (common_V060_line_*) for the safe zone, the HUD's enemy HP bar and the
-// buff effects (excitement, stun, frozen). Around it the broadcast: an LED wall playing the 礼物对决 key art (bg1) with
-// a ticker and three yellow follow-spots that sweep while the viewers bet and track each side once the fight starts.
+// buff effects (excitement, stun, frozen). Around it the broadcast: an LED wall playing the 礼物对决 key art (bg1; for
+// 竞猜对决, whose art the package does not have, the page's stand-in banner of the mode) with a ticker naming the mode
+// and round, and three yellow follow-spots that sweep while the viewers bet and track each side once the fight starts.
 // Hit effects use the client's FX sprites (fxcommon / UI atlases): physical = white-yellow, arts = violet.
 const FLOOR = { cx: 640, top: 238, bottom: 690, farK: 0.74, T: 79 };
 function proj(x, y) {
@@ -83,8 +84,10 @@ function buildBackdrop() {
   const L = { x: 138, y: 58, w: 1004, h: 168 };
   const led = new PIXI.Container();
   const art = new PIXI.Sprite(tex('keyart'));
-  const fitArt = () => { const s = L.w / 1559; art.scale.set(s); art.position.set(L.x, L.y + L.h / 2 - 960 * s * 0.5); };
+  // the art across the wall's width, centred on its height (the key art is 1559 × 960)
+  const fitArt = (w = 1559, h = 960) => { const s = L.w / w; art.scale.set(s); art.position.set(L.x, L.y + L.h / 2 - h * s * 0.5); };
   fitArt(); art.alpha = 1;
+  arena.ledArt = { art, fit: fitArt, key: 'keyart' };
   const mask = new PIXI.Graphics(); mask.beginFill(0xffffff); mask.drawRect(L.x, L.y, L.w, L.h); mask.endFill();
   led.addChild(art, mask); art.mask = mask;
   const dots = new PIXI.TilingSprite(canvasTex(6, 6, (x) => { x.fillStyle = '#000'; x.fillRect(0, 0, 6, 6); x.clearRect(1, 1, 4, 4); }), L.w, L.h);
@@ -125,9 +128,22 @@ function buildBackdrop() {
   }
   B.addChild(crowd);
 }
+// the wall's picture for a mode: the key art, or 竞猜对决's stand-in banner
+function setLedArt(stand) {
+  const L = arena.ledArt, want = stand && typeof ART !== 'undefined' && ART.stand ? 'stand' : 'keyart';
+  if (!L || L.key === want) return;
+  L.key = want;
+  if (want === 'keyart') { L.art.texture = tex('keyart'); L.fit(); return; }
+  // the banner (1280 × 420, a data URI) sized once it has loaded
+  const t = PIXI.Texture.from(ART.stand.banner), fit = () => L.fit(t.baseTexture.width, t.baseTexture.height);
+  L.art.texture = t;
+  if (t.baseTexture.valid) fit(); else t.baseTexture.once('loaded', fit);
+}
 function setTicker(round) {
   if (!arena.tickerText) return;
-  arena.tickerText.text = `DUEL CHANNEL   ▸▸   ULTIMATE GIFT CRASH   ▸▸   礼物对决 · 直播中   ▸▸   ${round || '青草城对战中心'}   ▸▸   `;
+  const stand = typeof G !== 'undefined' && G.mode && G.mode.key === 'stand';
+  const [en, name] = stand ? [G.mode.en, G.mode.name] : ['ULTIMATE GIFT CRASH', '礼物对决'];
+  arena.tickerText.text = `DUEL CHANNEL   ▸▸   ${en}   ▸▸   ${name} · 直播中   ▸▸   ${round || '青草城对战中心'}   ▸▸   `;
   arena.tickerText.updateText(true);
   arena.ticker.texture = arena.tickerText.texture;
   // one row only: the band is as tall as the text
@@ -391,7 +407,10 @@ function setupRound(lineups, seed) {
   arena.W = makeWorld(lineups, seed, true);
   for (const u of arena.W.units) attachView(u);
   arena.acc = 0; arena.ff = 1; arena.running = false;
-  setTicker(typeof G !== 'undefined' && G.round ? `ROUND ${String(G.round).padStart(2, '0')} / ${ROUNDS}` : '');
+  // 竞猜对决 has no last round: the round alone
+  const stand = typeof G !== 'undefined' && G.mode && G.mode.key === 'stand';
+  setLedArt(stand);
+  setTicker(typeof G !== 'undefined' && G.round ? `ROUND ${String(G.round).padStart(2, '0')}${stand ? '' : ` / ${ROUNDS}`}` : '');
   drawRing();
 }
 function clearArena() {

@@ -4,7 +4,8 @@
 // strategies, select time 20 s (the last 7 s red), scoreboard 8 s (solo 3 s), win streaks shown from 3, 10000 starting
 // gifts, reward multipliers 1 (支持) / 2 (全力支持), the settlement comments and 争锋大礼花 rewards. A right guess (a draw
 // counts for both sides) wins stake × multiplier, a wrong one loses the stake (全力支持: everything); 0 gifts is out.
-// 全力支持 also opens when the gifts no longer cover the stake (PRTS). 观众保护 belongs to 竞猜对决 only.
+// 全力支持 also opens when the gifts no longer cover the stake (PRTS). 竞猜对决 (STAND, up to 30): a side each round, a
+// wrong one is OUT but for the one 观众保护 of rounds 1–5, until one viewer is left; its rules are shared/sim.js's.
 const C = DCFG.consts;
 const ROUNDS = C.modeOperationRoundNumber || 10;
 const pad2 = (n) => String(n).padStart(2, '0');
@@ -17,8 +18,7 @@ function modeOf(id) {
   const m = DCFG.modes[id];
   return { id, key: id === 'soloOperation' ? 'solo' : m.modeType === 'STAND' ? 'stand' : 'gift', name: m.modeShortName, en: m.modeEnName,
     multi: m.isMultiPlayer, room: m.isRoom, n: m.maxPlayer, channel: m.modeAvatarName, subs: m.modeAvatarText, desc1: m.modeTarget,
-    desc2: m.modeDesc, record: m.modeRecordDesc, bonus: id === 'multiOperationMatch', type: m.modeType,
-    locked: m.modeType === 'STAND' ? '本演示未实现竞猜对决' : null };
+    desc2: m.modeDesc, record: m.modeRecordDesc, bonus: id === 'multiOperationMatch', type: m.modeType, locked: null };
 }
 const byOrder = (a, b) => a.innerSortId - b.innerSortId;
 const MODES_MATCH = Object.values(DCFG.modes).filter((m) => !m.isRoom).sort(byOrder).map((m) => modeOf(m.modeId));
@@ -28,17 +28,19 @@ const roundsOf = (mode) => Object.values(DCFG.rounds).filter((r) => r.modeId ===
 const isSolo = () => G.mode.id === 'soloOperation';
 let ME_NAME = '博士', ME_TAG = '#' + (1000 + Math.floor(Math.random() * 9000));
 let players = [], me = null;
-const G = { round: 0, mode: MODES_MATCH.find((m) => m.id === 'multiOperationMatch'), log: [], best: 0 };
+const G = { round: 0, mode: MODES_MATCH.find((m) => m.id === 'multiOperationMatch'), log: [], best: 0, bestPass: 0 };
+const standMode = () => isStand(G.mode.id);
 
 function newPlayers() {
-  const icons = shuffle(POOL.filter((f) => f.icon).map(iconUri));
-  const mk = (name, tag, avatar, npc) => ({ name, tag, avatar, me: !npc, npc, pts: C.modeOperationInitialScore || 10000, out: false, outRound: 0,
-    streak: 0, stats: { all: 0, normal: 0, skip: 0, forced: 0 }, choice: null, change: 0, played: 0 });
-  me = mk(ME_NAME, ME_TAG, myAvatar.value() ? avatarUri(myAvatar.value()) : icons[0], null);
-  // the NPC viewers, drawn by their weights (npcProb) from the official 28
+  const icons = shuffle(POOL.filter((f) => f.icon).map(iconUri)), stand = standMode();
+  const mk = (id, name, tag, avatar, npc) => ({ id, name, tag, avatar, me: !npc, human: !npc, npc, pts: C.modeOperationInitialScore || 10000, out: false, outRound: 0,
+    streak: 0, stats: { all: 0, normal: 0, skip: 0, forced: 0 }, choice: null, change: 0, played: 0, left: false, ...(stand ? standSeat() : {}) });
+  me = mk('me', ME_NAME, ME_TAG, myAvatar.value() ? avatarUri(myAvatar.value()) : icons[0], null);
+  // the NPC viewers, drawn by their weights (npcProb) from the official 28: seven for 礼物对决's 8 seats, all 28 for
+  // 竞猜对决 (29 seats; the server fills the same way)
   const pool = Object.values(DCFG.npcs), chosen = [];
-  while (chosen.length < Math.min(7, pool.length)) chosen.push(pickWeighted(pool.filter((x) => !chosen.includes(x)), (x) => x.npcProb || 1, Math.random));
-  players = [me, ...chosen.map((n, i) => mk(n.name, '#' + (1000 + Math.floor(Math.random() * 9000)), icons[(i + 1) % icons.length], n))];
+  while (chosen.length < Math.min(stand ? G.mode.n - 1 : 7, pool.length)) chosen.push(pickWeighted(pool.filter((x) => !chosen.includes(x)), (x) => x.npcProb || 1, Math.random));
+  players = [me, ...chosen.map((n, i) => mk('n' + (i + 1), n.name, '#' + (1000 + Math.floor(Math.random() * 9000)), icons[(i + 1) % icons.length], n))];
 }
 const ranked = () => players.slice().sort((a, b) => (a.out !== b.out ? (a.out ? 1 : -1) : a.out ? b.outRound - a.outRound || b.pts - a.pts : b.pts - a.pts));
 const rankOf = (p) => ranked().indexOf(p) + 1;
@@ -66,14 +68,20 @@ function injectImg(s, uri, cls = 'inj') {
 function stack(items, h, gap = 4, ax = 0.5) {
   items.forEach((s, i) => { s.rt.amin = [ax, 1]; s.rt.amax = [ax, 1]; s.rt.pivot = [ax, 1]; s.rt.pos = [0, -i * (h + gap)]; });
 }
-// a ScrollRect: wheel / drag moves the content (y up: a larger y shows rows further down)
+// a ScrollRect: wheel / drag moves the content (y up: a larger y shows rows further down). total: the content's height,
+// or a function giving it (a list that changes). A drag takes the pointer only once it has moved, so taps on the rows
+// still reach them.
 function scrollable(viewport, content, total) {
-  const el = viewport.el, lim = (y) => clamp(y, 0, Math.max(0, total - (viewport.h || 0)));
+  const el = viewport.el, lim = (y) => clamp(y, 0, Math.max(0, (typeof total === 'function' ? total() : total) - (viewport.h || 0)));
   el.classList.add('hot'); el.style.cursor = 'grab';
   el.addEventListener('wheel', (e) => { e.preventDefault(); content.rt.pos[1] = lim(content.rt.pos[1] + e.deltaY * 0.5); }, { passive: false });
   let drag = null;
-  el.onpointerdown = (e) => { drag = { y: e.clientY, p: content.rt.pos[1] }; el.setPointerCapture(e.pointerId); };
-  el.onpointermove = (e) => { if (drag) content.rt.pos[1] = lim(drag.p + (drag.y - e.clientY) / stageK); };
+  el.onpointerdown = (e) => { drag = { y: e.clientY, p: content.rt.pos[1], id: e.pointerId, moved: false }; };
+  el.onpointermove = (e) => {
+    if (!drag) return;
+    if (!drag.moved && Math.abs(drag.y - e.clientY) > 6) { drag.moved = true; el.setPointerCapture(drag.id); }
+    if (drag.moved) content.rt.pos[1] = lim(drag.p + (drag.y - e.clientY) / stageK);
+  };
   el.onpointerup = el.onpointercancel = () => { drag = null; };
   return (y) => { content.rt.pos[1] = lim(y); };
 }
@@ -297,9 +305,9 @@ function fillCard(scr, c, m) {
   scr.show('root_bottom/text', m.multi, c); scr.show('root_bottom/text_single', !m.multi, c);
   scr.text('root_bottom/text', String(m.n), c); scr.text('root_bottom/text_single', String(m.n), c);
   scr.text('ver_layout/name', m.name, c); scr.text('ver_layout/en_name', m.en, c);
-  const rec = m.record && G.best > 0 && m.key !== 'stand';
+  const best = m.key === 'stand' ? G.bestPass : G.best, rec = m.record && best > 0;
   scr.show('record_toggle/root_max', rec, c); scr.show('record_toggle/text_norecord', !rec, c);
-  scr.text('root_max/text_num', String(G.best), c); if (m.record) scr.text('root_max/text_desc', m.record, c);
+  scr.text('root_max/text_num', String(best), c); if (m.record) scr.text('root_max/text_desc', m.record, c);
   scr.show('group_lock', !!m.locked, c); scr.text('group_lock/root_title/text', m.locked || '', c);
   if (ART[m.key]) scr.image('root_mask/map', ART[m.key].card, c, 'cover');
   for (const g of ['name_layout_select', 'name_layout_unselect']) { scr.text(g + '/name', m.channel, c); scr.text(g + '/desc', m.subs, c); }
@@ -388,7 +396,7 @@ async function stMatch(ctx) {
     if (t > 5.2) {
       scr.show('text_toggle/text_wait', false); scr.show('text_toggle/text_connecting', true);
       phase('匹配中 · 人数不足，NPC 补位');
-      if (t > 6 && Math.round(t * 10) % 3 === 0) { n++; }
+      if (t > 6 && Math.round(t * 10) % 3 === 0) n += Math.max(1, Math.round(players.length / 8));
     }
     scr.text('num_layout/text_num', String(Math.min(n, players.length)));
   }
@@ -399,6 +407,20 @@ async function stMatch(ctx) {
   await wait(1.3);
   scr.close(); prep.close(); ctx.prep = null;
   return 'show';
+}
+
+// the room's member cards in its list's GridLayoutGroup (the exporter skips that component; the prefab's values):
+// cells 164 × 210, spacing 16, as many columns as fit the list's width, from the top left; the list scrolls when the
+// members (30 in 竞猜对决) need more rows than it shows
+const ROOM_GRID = { cell: [164, 210], gap: [16, 16] };
+function roomGrid(scr, content, cards) {
+  const { cell, gap } = ROOM_GRID, vp = content.parent, W = vp.w || 900;
+  const cols = Math.max(1, Math.floor((W + gap[0]) / (cell[0] + gap[0])));
+  cards.forEach((c, i) => { Object.assign(c.rt, { amin: [0, 1], amax: [0, 1], pivot: [0, 1], pos: [(i % cols) * (cell[0] + gap[0]), -Math.floor(i / cols) * (cell[1] + gap[1])] }); });
+  const rows = Math.ceil(cards.length / cols);
+  content.gridTotal = rows * cell[1] + Math.max(0, rows - 1) * gap[1];
+  if (!content.scrollTo) content.scrollTo = scrollable(vp, content, () => content.gridTotal);
+  content.scrollTo(content.rt.pos[1]);
 }
 
 // ---- 3b room (创建群组): NPC fill toggle, start -----------------------------------------------------------------------
@@ -439,7 +461,7 @@ async function stRoom(ctx) {
       play(c, 'room_card_join', { delay: i * 0.04 });
       return c;
     });
-    cards.forEach((c, i) => { c.rt.amin = [0, 1]; c.rt.amax = [0, 1]; c.rt.pivot = [0, 1]; c.rt.pos = [(i % 4) * (c.rt.size[0] + 10), -Math.floor(i / 4) * (c.rt.size[1] + 10)]; });
+    roomGrid(scr, content, cards);
     scr.text('root_text/text_num1', String(list.length)); scr.text('root_text/text_num2', String(players.length));
     scr.show('button_room_host/root_host_lack', !npc); scr.show('button_room_host/root_host_start', npc); scr.show('button_room_host/root_back', false);
     scr.text('root_host_lack/text_start', `至少再邀请\n${players.length - 1}名玩家`);
@@ -512,9 +534,10 @@ async function stLoading(ctx) {
 }
 
 // ---- 6 the rounds -----------------------------------------------------------------------------------------------------
-// NPC viewers decide with the shared npcPick (sim.js); the supporters so far feed the FOLLOW_* strategies
+// NPC viewers decide with the shared npcPick / npcStandPick (sim.js); the supporters so far feed the FOLLOW_* strategies
 function npcDecide(p, rd, lineups, winner) {
   const sup = [0, 1].map((sd) => players.filter((q) => q.choice && !q.choice.skip && q.choice.side === sd).length);
+  if (standMode()) return npcStandPick(p.npc, { lineups, winner, sup, rnd: Math.random, pass: p.pass });
   return npcPick(p.npc, { pts: p.pts, rd, lineups, winner, sup, rnd: Math.random });
 }
 function plateFor(scr, list, p, side) {
@@ -595,8 +618,9 @@ function topBar(scr, holder, r) {
 }
 async function betPhase(r, rd, lineups, winner, net = null) {
   phase(`第 ${r} 轮 · 押注（选择支持的队伍）`);
-  const stake = rd.roundScore, solo = !net && isSolo();
-  const BET_TIME = net ? net.betMs / 1000 : solo ? (C.modeSoloOperationSelectTime || 300) : (C.modeOperationSelectTime || 20), RED = C.modeOperationSelectTimeLast || 7;
+  const stake = rd.roundScore, solo = !net && isSolo(), stand = standMode();
+  const BET_TIME = net ? net.betMs / 1000 : solo ? (C.modeSoloOperationSelectTime || 300) : ((stand ? C.modeStandSelectTime : C.modeOperationSelectTime) || 20);
+  const RED = (stand ? C.modeStandSelectTimeLast : C.modeOperationSelectTimeLast) || 7;
   const MUL = C.modeOperationRewardMultiplier || 1, MUL_ALL = C.modeOperationRewardMultiplierAllin || 2;
   for (const p of players) p.choice = null;
   const scr = new Screen('bet_state', { z: 20 });
@@ -611,8 +635,19 @@ async function betPhase(r, rd, lineups, winner, net = null) {
   scr.text('turn_info/text_turn', pad2(r));
   scr.text('panel_assets/text_assets', String(me.pts).padStart(8, '0'));
   scr.text('panel_rank/content/text_rank', String(rankOf(me)));
-  // 观众保护 tips belong to 竞猜对决
-  scr.show('panel_contdown_middle/group_tips', false);
+  const out = me.out;
+  // 竞猜对决: the players still in instead of the gifts, the two 支持这边 buttons, and the 观众保护 line — held: the
+  // rounds it still covers; taken: 观众保护系统已失效; past round 5: 所有人不再拥有观众保护！ (which of the three shows
+  // when is read from their wording)
+  scr.show('panel_top_group/group_info', !stand); scr.show('panel_top_group/group_info_turn', stand);
+  scr.show('panel_contdown_middle/group_tips', stand && !out);
+  if (stand) {
+    scr.text('pnl_player_num/text_least', String(players.filter((p) => !p.out).length));
+    scr.text('pnl_player_num/text_playernum', '/' + players.length);
+    const turn = C.modeStandShieldTurn ?? 5, kind = r > turn ? 'allfall' : me.shield ? 'protect' : 'disable';
+    for (const k of ['protect', 'disable', 'allfall']) scr.show(`group_tips/panel_protect${k === 'protect' ? '' : '_' + k}`, k === kind);
+    if (kind === 'protect') scr.text('panel_protect/layout_max/layout_min/text_info', `${turn - r + 1}轮内可免受一次淘汰惩罚`);
+  }
   const short = me.pts < stake, canAll = rd.canAllIn || short;
   for (const side of ['left_btn', 'right_btn']) {
     scr.show(`${side}/btn_ex_bet/btn_assets_notenough`, short);
@@ -621,10 +656,11 @@ async function betPhase(r, rd, lineups, winner, net = null) {
     scr.text(`${side}/btn_ex_bet/btn_bet/btn_info/num_layout_max/layout_min/text_num`, fmtW(stake));
     scr.text(`${side}/btn_ex_bet/btn_assets_notenough/btn_info/num_layout_max/layout_min/text_num`, fmtW(stake));
   }
-  const out = me.out;
-  scr.show('group_bet_btn', !out); scr.show('pnl_skip', !out && rd.canSkip); scr.show('panel_contdown_middle/group_out', out);
-  // the official tips, minus those about 竞猜对决 (its 观众保护)
-  const tips = DCFG.tips.filter((x) => !/观众保护|竞猜对决/.test(x)), tip = tips[Math.floor(Math.random() * tips.length)];
+  scr.show('group_bet_btn', !out && !stand); scr.show('pnl_skip', !out && rd.canSkip); scr.show('panel_contdown_middle/group_out', out);
+  scr.show('group_bet_btn_turn', !out && stand);
+  for (const side of ['left_btn', 'right_btn']) scr.show(`group_bet_btn_turn/${side}/btn_normal_bet`, stand);
+  // the official tips: 竞猜对决 gets those about its 观众保护 and the ones not about gifts; 礼物对决 all but those
+  const tips = DCFG.tips.filter((x) => (stand ? !/礼物|赠|全投|观望/.test(x) : !/观众保护|竞猜对决/.test(x))), tip = tips[Math.floor(Math.random() * tips.length)];
   scr.text('panel_contdown_middle/text_info', out ? '你已被淘汰，正在观战……' : solo ? '选择后即开赛 · ' + tip : tip);
   lineupRow(scr, 0, lineups[0]); lineupRow(scr, 1, lineups[1]);
   topBar(scr, 'manager_mode_view/top_menu_holder', r);
@@ -650,6 +686,15 @@ async function betPhase(r, rd, lineups, winner, net = null) {
   wait(0.8).then(() => { if (!scr.dead) scr.show('group_turn/ui_particle_boom', false); });
   const refresh = () => {
     const c = me.choice;
+    if (stand) {
+      for (const [i, side] of [[0, 'left_btn'], [1, 'right_btn']]) {
+        scr.show(`group_bet_btn_turn/${side}/btn_normal_bet/select`, !!c && c.side === i);
+        scr.show(`group_bet_btn_turn/${side}/btn_normal_bet/dark`, !!c && c.side !== i);
+      }
+      scr.show('group_assess', false);
+      fillLists(scr, 'container', 'text_num');
+      return;
+    }
     for (const [i, side] of [[0, 'left_btn'], [1, 'right_btn']]) {
       const selN = c && !c.skip && c.side === i && c.kind === 'normal', selA = c && !c.skip && c.side === i && c.kind === 'all';
       scr.show(`${side}/btn_ex_bet/btn_bet/select`, selN); scr.show(`${side}/btn_ex_bet/btn_bet_allin/select`, selA);
@@ -662,6 +707,15 @@ async function betPhase(r, rd, lineups, winner, net = null) {
     fillLists(scr, 'container', 'text_num');
   };
   const choose = (ch) => {
+    if (stand) {
+      if (me.out) return;
+      me.choice = { side: ch.side };
+      if (net) NET.match.send({ t: 'bet', side: ch.side });
+      sfx('click');
+      refresh();
+      phase(`第 ${r} 轮 · 选边 · 支持${ch.side ? '右' : '左'}队`);
+      return;
+    }
     const was = me.choice;
     me.choice = ch.skip ? ch : { ...ch, forced: ch.kind === 'all' && short && !rd.canAllIn };
     if (net) NET.match.send(ch.skip ? { t: 'bet', skip: true } : { t: 'bet', side: ch.side, kind: ch.kind });
@@ -676,6 +730,7 @@ async function betPhase(r, rd, lineups, winner, net = null) {
     scr.tap(`${side}/btn_ex_bet/btn_bet_allin/hotspot`, () => choose({ side: i, kind: 'all' }));
   }
   scr.tap('btn_skip/hotspot', () => choose({ skip: true }));
+  for (const [i, side] of [[0, 'left_btn'], [1, 'right_btn']]) scr.tap(`group_bet_btn_turn/${side}/btn_normal_bet/hotspot`, () => choose({ side: i }));
   refresh();
   // NPC bets land during the countdown; the FOLLOW_* viewers (priority > 0) late, after seeing the others
   const W8 = solo ? 6 : BET_TIME;
@@ -706,7 +761,10 @@ async function betPhase(r, rd, lineups, winner, net = null) {
     if (changed) refresh();
   }
   for (const x of npcs) if (!x.done) x.p.choice = npcDecide(x.p, rd, lineups, winner);
-  if (!net && !me.out && !me.choice) me.choice = rd.canSkip ? { skip: true } : { side: Math.random() < 0.5 ? 0 : 1, kind: short ? 'all' : 'normal', forced: short };
+  // undecided when the time is up: 观望 where the round allows it, else a side at random (竞猜对决: a side at random)
+  if (!net && !me.out && !me.choice) {
+    me.choice = stand ? { side: Math.random() < 0.5 ? 0 : 1 } : rd.canSkip ? { skip: true } : { side: Math.random() < 0.5 ? 0 : 1, kind: short ? 'all' : 'normal', forced: short };
+  }
   refresh();
   scr.text('panel_contdown_middle/text_time', '00:00');
   await wait(0.6);
@@ -717,6 +775,8 @@ async function battlePhase(r, online = false) {
   const scr = new Screen('battle_state', { z: 20 });
   scr.show('panel_waiting', false);
   scr.text('pnl_round/text_round', pad2(r)); scr.text('pnl_allround/text_allround', '/' + pad2(ROUNDS));
+  // 竞猜对决 has no last round: the banner shows the round alone
+  scr.show('panel_round/pnl_allround', !standMode());
   topBar(scr, 'root/top_container', r);
   fillLists(scr, 'content', 'text');
   const c = me.choice;
@@ -756,8 +816,11 @@ async function battlePhase(r, online = false) {
   return result;
 }
 function settle(r, rd, w) {
+  if (standMode()) { for (const p of players) { settleStand(p, p.choice, r, w); p.shieldHit = p.saved; } standRankAll(); return; }
   for (const p of players) { p.shieldHit = false; settleOne(p, p.choice, rd, w); }
 }
+// 竞猜对决's standings onto the viewers (the server sends its own; offline the same rule)
+function standRankAll() { const rk = standRanks(players); for (const p of players) p.rank = rk[p.id]; }
 async function roundEnd(r, w) {
   const scr = new Screen('round_end_state', { z: 22 });
   scr.show('group_left_win', w === 0); scr.show('group_right_win', w === 1); scr.show('group_draw', w === 'draw');
@@ -767,6 +830,9 @@ async function roundEnd(r, w) {
   scr.show('group_state/lose', played && !me.right);
   scr.show('group_state/sorry', !played);
   scr.text('sorry_lower/text_tie_game', me.out && me.outRound < r ? '观战中' : '本轮观望');
+  // 竞猜对决 has no gifts: no bubble with a count; a wrong pick is the 观众保护 taking it (真遗憾！) or OUT (已淘汰！)
+  const stand = standMode();
+  scr.show('right/right_lower', !stand); scr.show('lose/error/error_lower', !stand);
   if (played && me.right) {
     scr.show('right/group_allin', all); scr.show('right/spine_container_allin', all); scr.show('right/spine_container_1', !all);
     scr.show('right_lower/bubble/dec_text/text', !all); scr.show('right_lower/bubble/dec_text/text_allin', all);
@@ -789,7 +855,8 @@ async function roundEnd(r, w) {
   }
   sfx(!played ? 'b_ui_dqonlooker' : me.right ? (all ? 'b_ui_dqearncoinh' : 'b_ui_dqearncoin')
     : me.shieldHit ? 'b_ui_dqdefeatshield' : me.out ? 'b_ui_dqdefeat' : all ? 'b_ui_dqlosecoinh' : 'b_ui_dqlosecoin');
-  phase(`第 ${r} 轮 · 结算 · ${!played ? '观望' : me.right ? `猜对 ${sgn(me.change)}` : me.shieldHit ? '观众保护抵消' : `猜错 ${sgn(me.change)}`}`);
+  phase(`第 ${r} 轮 · 结算 · ${!played ? (me.out ? '观战' : '观望') : stand ? (me.right ? '猜对' : me.shieldHit ? '猜错，观众保护抵消' : '猜错，已淘汰')
+    : me.right ? `猜对 ${sgn(me.change)}` : me.shieldHit ? '观众保护抵消' : `猜错 ${sgn(me.change)}`}`);
   playLoops(scr);
   // the clip itself fades the panel in (0.1 s), holds it to 1.58 s and fades it out by 1.83 s; played at 0.6× here so
   // the result stays readable (~2.6 s)
@@ -908,12 +975,18 @@ async function standBoard(r, list, { last = false, seats = list.length } = {}) {
 }
 async function stGame() {
   let left = false;
-  const rounds = roundsOf(G.mode);
+  const rounds = roundsOf(G.mode), stand = standMode();
+  // 竞猜对决: until one viewer is left (or none of the humans: offline, until you are OUT), the rounds past the table
+  // repeating its last row, at most modeStandRoundNumber
+  const total = stand ? STAND.cap : rounds.length;
   G.log = [];
   EMO.begin();
-  for (let i = 0; i < rounds.length && !left; i++) {
-    const rd = rounds[i], r = rd.round;
+  if (stand) standRankAll();
+  for (let r = 1; r <= total && !left; r++) {
+    if (stand && standOver(players)) break;
+    const rd = stand ? standRow(rounds, r) : rounds[r - 1];
     G.round = r;
+    if (stand) standShields(players, r);
     const seed = (Math.random() * 2 ** 31) | 0;
     const lineups = makeLineups(rd, mulberry32(seed ^ 0x5bd1e995));
     const pred = predict(lineups, seed);
@@ -925,6 +998,11 @@ async function stGame() {
     settle(r, rd, w);
     G.log[G.log.length - 1].w = w;
     await roundEnd(r, w);
+    if (stand) {
+      left = await standBoard(r, players, { last: standOver(players) || r === total });
+      if (left) { standLeave(me, r + 1); me.left = true; standRankAll(); }
+      continue;
+    }
     left = await scoreboard(r);
     if (players.filter((p) => !p.out).length <= 1) break;
   }
@@ -953,6 +1031,23 @@ function finishComment(rank, newRecord) {
   };
   return (list.find(ok) || list[list.length - 1]).commentText;
 }
+// 竞猜对决's comment (commentData.STAND, by priority): rank 1 (一站到底！); Pass(5): stayed in through 5 rounds or more
+// (竞猜达人); ScoreGT(4) / ScoreLE(4): more than / at most 4 rounds guessed right — the two templates read this way
+function finishCommentStand(rank) {
+  const list = Object.values(DCFG.comments.STAND).sort((a, b) => a.priority - b.priority);
+  const stayed = me.out ? me.outRound - 1 : G.round;
+  const ok = (c) => {
+    const n = Number(c.param[0]);
+    switch (c.template) {
+      case 'act1enemyduelCommentRank': return rank === n;
+      case 'act1enemyduelCommentPass': return stayed >= n;
+      case 'act1enemyduelCommentScoreGT': return me.pass > n;
+      case 'act1enemyduelCommentScoreLE': return me.pass <= n;
+      default: return false;
+    }
+  };
+  return (list.find(ok) || list[list.length - 1]).commentText;
+}
 function finishReward(rank) {
   const basic = DCFG.basicScores[clamp(me.played, 1, DCFG.basicScores.length) - 1] || 0;
   const ex = DCFG.extraScore[G.mode.id], row = ex && ex.data.find((x) => rank >= x.rankMin && rank <= x.rankMax);
@@ -962,7 +1057,10 @@ async function stFinish() {
   phase('最终结算');
   let scr;
   await wipe(async () => { clearArena(); scr = new Screen('enemy_duel_battle_finish_view', { z: 40 }); }, '比赛结束');
-  const rk = ranked(), myRank = rk.indexOf(me) + 1;
+  const stand = standMode();
+  if (stand && !G.online) standRankAll();
+  // 竞猜对决: by the standings (equal ones share a rank); 礼物对决: by gifts
+  const rk = stand ? players.slice().sort((a, b) => a.rank - b.rank) : ranked(), myRank = stand ? me.rank : rk.indexOf(me) + 1;
   scr.text('title_part/text_title', G.left ? '已离开比赛' : '比赛结束');
   if (ART[G.mode.key]) scr.image('panel_bg/img_bg', ART[G.mode.key].bg, null, 'cover');
   scr.show('state_toggle/leave', !!G.left); scr.show('state_toggle/finish', !G.left);
@@ -972,8 +1070,8 @@ async function stFinish() {
     const it = instantiate(scr, content, 'enemy_duel_battle_finish_rank_item');
     scr.show('no_info', false, it); scr.show('normal_info', true, it); scr.show('mine', p.me, it);
     scr.text('normal_info/text_name', p.name, it); scr.text('normal_info/text_id', p.tag, it);
-    scr.text('normal_info/text_num', fmt(p.pts), it); scr.text('normal_info/text_rank', String(i + 1), it);
-    scr.show('icon_toggle/icon_stand', false, it); scr.show('icon_toggle/icon_op', true, it);
+    scr.text('normal_info/text_num', stand ? String(p.pass) : fmt(p.pts), it); scr.text('normal_info/text_rank', String(stand ? p.rank : i + 1), it);
+    scr.show('icon_toggle/icon_stand', stand, it); scr.show('icon_toggle/icon_op', !stand, it);
     scr.image('npc/img_avatar', p.avatar, it);
     if (p.me) play(it, 'panel_enemyduel_settlement_rank_mine_loop', { loop: true });
     return it;
@@ -982,12 +1080,14 @@ async function stFinish() {
   const scrollTo = scrollable(scr.one('rank_list/scroll_list/viewport'), content, items.length * 87);
   wait(0.05).then(() => scrollTo((myRank - 1) * 87 - 200));
   scr.text('name_layout_min/text_name', `Dr.${me.name}`);
-  const best = me.pts > G.best && !!G.mode.record;
-  scr.text('title_layout_min/text_comment', finishComment(myRank, best));
-  scr.show('panel_assets/title_operation', true); scr.show('panel_assets/title_stand', false);
-  scr.text('assets_layout_min/text_num', fmt(me.pts)); scr.show('assets_layout_min/text_turn', false);
+  // 竞猜对决: the rounds guessed right (竞猜轮次 … 轮), its own record and comments, no gift strategies
+  const best = stand ? me.pass > G.bestPass && !!G.mode.record : me.pts > G.best && !!G.mode.record;
+  scr.text('title_layout_min/text_comment', stand ? finishCommentStand(myRank) : finishComment(myRank, best));
+  scr.show('panel_assets/title_operation', !stand); scr.show('panel_assets/title_stand', stand);
+  scr.text('assets_layout_min/text_num', stand ? String(me.pass) : fmt(me.pts)); scr.show('assets_layout_min/text_turn', stand);
   scr.show('assets_layout_min/group_best', best);
-  if (best) G.best = me.pts;
+  scr.show('group_left/group_betting', !stand);
+  if (best) { if (stand) G.bestPass = me.pass; else G.best = me.pts; }
   scr.text('group_rank/text_rank', String(myRank));
   scr.show('group_rank/rank_top3', myRank <= 3);
   injectImg(scr.one('panel_avatar/container_avatar_img'), me.avatar, 'inj avatar');
@@ -1009,7 +1109,7 @@ async function stFinish() {
   sfx('g_ui_dqwinsettlement');
   scr.play('panel', 'panel_enemyduel_settlement_in');
   if (myRank <= 3) scr.play('group_rank/rank_top3', 'enemyduel_settlement_rank_top3_in').then(() => scr.play('group_rank/rank_top3', 'enemyduel_settlement_rank_top3_loop', { loop: true }));
-  phase(`最终结算 · 第 ${myRank} 名 · ${fmt(me.pts)} 礼物点数（继续匹配 / 返回主页）`);
+  phase(`最终结算 · 第 ${myRank} 名 · ${stand ? `竞猜 ${me.pass} 轮` : `${fmt(me.pts)} 礼物点数`}（继续匹配 / 返回主页）`);
   const r = await whenTapped(scr, { 'btn_next/hotspot': 'match', 'btn_backhome/hotspot': 'entry' });
   await fadeOut(scr, 0.3);
   // the seat is forgotten once the match is over or left; a match lost to the network keeps it (a reload rejoins)
