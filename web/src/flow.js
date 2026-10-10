@@ -601,7 +601,7 @@ function lineupRow(scr, side, groups) {
   const host = scr.one(side === 0 ? 'group_staff_info_left' : 'group_staff_info_right');
   let row = host.el.querySelector(':scope > .lineup');
   if (!row) { row = document.createElement('div'); row.className = 'lineup ' + (side ? 'r' : 'l'); host.el.appendChild(row); }
-  row.innerHTML = groups.map((g) => `<div class="card" style="background-image:url(${iconUri(g.f)})"><b>×${g.n}</b><span>${g.f.name}</span></div>`).join('');
+  row.innerHTML = groups.map((g) => `<div class="card" title="${g.f.name} ×${g.n}" style="background-image:url(${iconUri(g.f)})"><b>×${g.n}</b><span${[...g.f.name].length > 6 ? ' class="long"' : ''}>${g.f.name}</span></div>`).join('');
   const content = scr.one((side === 0 ? 'group_staff_info_left' : 'group_staff_info_right') + '/panel_info/main/scrollrect/viewport/content');
   clearKids(content);
   for (const g of groups) {
@@ -680,12 +680,19 @@ async function betPhase(r, rd, lineups, winner, net = null) {
   topBar(scr, 'manager_mode_view/top_menu_holder', r);
   scr.show('group_staff_info_left/panel_info', false); scr.show('group_staff_info_right/panel_info', false);
   const opened = {};
+  // the countdown's two lines: the tip, and in the secret part (goSecret) its own line in the same place — the tip steps
+  // back for it, and both while an enemy panel is open over them
+  const tipLines = () => {
+    const panel = opened.group_staff_info_left || opened.group_staff_info_right;
+    const tip = scr.one('panel_contdown_middle/text_info'), priv = scr.one('panel_contdown_middle/text_info_private');
+    if (tip) tip.alpha = panel || secret ? 0 : 1;
+    if (priv) priv.alpha = panel ? 0 : 1;
+  };
   for (const side of ['group_staff_info_left', 'group_staff_info_right']) {
     let open = false;
     const toggle = () => {
       open = !open; scr.show(`${side}/panel_info`, true);
-      // the panel opens over the countdown's tip line: the tip steps back while a panel is open
-      opened[side] = open; const tip = scr.one('panel_contdown_middle/text_info'); if (tip) tip.alpha = opened.group_staff_info_left || opened.group_staff_info_right ? 0 : 1;
+      opened[side] = open; tipLines();
       scr.play(`${side}/panel_info`, 'battle_ui_staff_panel_info', { reverse: !open }).then(() => { if (!open) scr.show(`${side}/panel_info`, false); });
     };
     scr.tap(`${side}/check_info/hotspot`, toggle);
@@ -756,13 +763,13 @@ async function betPhase(r, rd, lineups, winner, net = null) {
   // the window's last seconds are secret (the official 暗选: 下注时间即将结束……确定你的抉择！): the supporters' lists
   // fold away and picks made now show only as the bets close (online the instance holds them back)
   let secret = false, seen = null;
-  const list = scr.one('manager_mode_view/panel_list'), tipLine = scr.one('panel_contdown_middle/text_info');
+  const list = scr.one('manager_mode_view/panel_list');
   const goSecret = () => {
     if (secret || out) return;
     secret = true;
     seen = [0, 1].map((sd) => players.filter((q) => q.choice && !q.choice.skip && q.choice.side === sd).length);
     scr.show('panel_contdown_middle/text_info_private', true);
-    if (tipLine) tipLine.alpha = 0;
+    tipLines();
     if (list) list.alpha = 0;
   };
   let t = 0, red = false, lastTick = 0;
