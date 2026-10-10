@@ -13,11 +13,11 @@ let seq = 0;
 const log = (s) => console.log(`[${NAME}] ${s}`);
 installCrashLog(NAME);
 
-// a JSON body (≤ 256 kB: eight seats with their own avatar pictures of ≤ 16 kB each)
+// a JSON body (≤ 1 MB: thirty seats with their own avatar pictures of ≤ 16 kB each)
 function body(req) {
   return new Promise((res, rej) => {
     let b = '';
-    req.on('data', (c) => { b += c; if (b.length > 256 * 1024) { rej(new Error('too big')); req.destroy(); } });
+    req.on('data', (c) => { b += c; if (b.length > 1024 * 1024) { rej(new Error('too big')); req.destroy(); } });
     req.on('end', () => { try { res(JSON.parse(b || '{}')); } catch (e) { rej(e); } });
   });
 }

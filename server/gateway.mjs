@@ -1,8 +1,9 @@
-// The gateway: serves the page, runs the lobby over ws://<host>:<port>/lobby — the 礼物对决 matchmaking queue (a full
-// table of 8 starts at once; after QUEUE_FILL_MS the waiting players start with NPC viewers in the empty seats) and
-// 群组 rooms (6-digit codes, the host's NPC-fill switch, the host starts) — and hands each new match to the least
+// The gateway: serves the page, runs the lobby over ws://<host>:<port>/lobby — the matchmaking queues of 礼物对决 and
+// 竞猜对决 (a full table, 8 / 30, starts at once; after QUEUE_FILL_MS the waiting players start with NPC viewers in the
+// empty seats) and 群组 rooms of either mode (6-digit codes, the host's NPC-fill switch, the host starts; up to the
+// mode's maxPlayer) — and hands each new match to the least
 // loaded battle instance, relaying the players' match connections to it (ws://<host>:<port>/match, so the gateway's
-// port is the only one players need). GET /status shows the instances, the queue and the rooms.
+// port is the only one players need). GET /status shows the instances, the queues and the rooms.
 // The page: public/index.html (the code) and public/pack/duel-pack.<hash>.json (the assets) from `npm run build`, sent
 // precompressed (brotli / gzip, whichever the browser takes) with validators; the pack, named after its content, may be
 // cached for good. A build from before the split (public/duel-flow.html only) is served as it is.
@@ -21,7 +22,10 @@ import { installCrashLog, recordError, recentErrors, saveReport, reportCount } f
 const PORT = Number(process.env.PORT || 8600), HOST = process.env.HOST || '127.0.0.1';
 const INSTANCES = (process.env.INSTANCES || '8611,8612,8613').split(',').map(Number);
 const QUEUE_FILL_MS = Number(process.env.QUEUE_FILL_MS || 10000);
-const MAX = (SIM.DCFG.modes.multiOperationMatch || {}).maxPlayer || 8, MIN_ROOM = SIM.DCFG.consts.minRoomNum || 2;
+const MIN_ROOM = SIM.DCFG.consts.minRoomNum || 2;
+// the modes a queue or a room can be for, and their table sizes (modes.*.maxPlayer: 8 and 30)
+const QUEUE_MODES = ['multiOperationMatch', 'multiStandMatch'], ROOM_MODES = ['multiOperationRoom', 'multiStandRoom'];
+const seatsOf = (mode) => (SIM.DCFG.modes[mode] || {}).maxPlayer || 8;
 const PUBLIC = process.env.DUEL_PUBLIC || fileURLToPath(new URL('../public', import.meta.url));
 const SHELL = join(PUBLIC, 'index.html'), SINGLE = join(PUBLIC, 'duel-flow.html');
 const hasPage = () => existsSync(SHELL) || existsSync(SINGLE);
@@ -97,28 +101,30 @@ const AVATAR_KEYS = new Set(SIM.POOL.map((f) => f.key));
 const AVATAR_RE = /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$/;
 const cleanAvatar = (v) => (typeof v === 'string' && (AVATAR_KEYS.has(v) || (v.length <= 16000 && AVATAR_RE.test(v))) ? v : null);
 
-// ---- the 礼物对决 queue ------------------------------------------------------------------------------------------------
-let queue = [];
-function leaveQueue(s) { queue = queue.filter((x) => x !== s); if (s.state === 'queue') s.state = 'idle'; }
-setInterval(async () => {
-  queue = queue.filter((s) => s.state === 'queue' && sessions.has(s));
+// ---- the matchmaking queues, one per mode ------------------------------------------------------------------------------
+const queues = Object.fromEntries(QUEUE_MODES.map((m) => [m, []]));
+function leaveQueue(s) { for (const m of QUEUE_MODES) queues[m] = queues[m].filter((x) => x !== s); if (s.state === 'queue') s.state = 'idle'; }
+async function matchQueue(mode) {
+  const max = seatsOf(mode);
+  queues[mode] = queues[mode].filter((s) => s.state === 'queue' && sessions.has(s));
   // a place whose connection dropped is kept, but only the viewers who are here are matched
-  const here = queue.filter((s) => s.ws);
+  const here = queues[mode].filter((s) => s.ws);
   if (!here.length) return;
   const waited = Date.now() - here[0].queuedAt;
-  for (const s of here) send(s, { t: 'queue', n: here.length, max: MAX, waited: (Date.now() - s.queuedAt) / 1000, filling: waited > QUEUE_FILL_MS * 0.6 });
-  if (here.length >= MAX || waited >= QUEUE_FILL_MS) {
-    const group = here.slice(0, MAX);
-    queue = queue.filter((s) => !group.includes(s));
-    try { await createMatch('multiOperationMatch', group, group.length < MAX); }
+  for (const s of here) send(s, { t: 'queue', mode, n: here.length, max, waited: (Date.now() - s.queuedAt) / 1000, filling: waited > QUEUE_FILL_MS * 0.6 });
+  if (here.length >= max || waited >= QUEUE_FILL_MS) {
+    const group = here.slice(0, max);
+    queues[mode] = queues[mode].filter((s) => !group.includes(s));
+    try { await createMatch(mode, group, group.length < max); }
     catch (e) { recordError('gateway', 'create match (queue)', e); for (const s of group) { s.state = 'idle'; send(s, { t: 'error', msg: '匹配失败：' + e.message }); } }
   }
-}, 500);
+}
+setInterval(() => { for (const m of QUEUE_MODES) matchQueue(m); }, 500);
 
 // ---- rooms -----------------------------------------------------------------------------------------------------------
 const rooms = new Map();
 function roomState(r) {
-  return { t: 'room', code: r.code, mode: r.mode, npc: r.npc, max: MAX, host: r.host.id, members: r.members.map((m) => ({ id: m.id, name: m.name, tag: m.tag, avatar: m.avatar, away: !m.ws })) };
+  return { t: 'room', code: r.code, mode: r.mode, npc: r.npc, max: seatsOf(r.mode), host: r.host.id, members: r.members.map((m) => ({ id: m.id, name: m.name, tag: m.tag, avatar: m.avatar, away: !m.ws })) };
 }
 function pushRoom(r) { const st = roomState(r); for (const m of r.members) send(m, st); }
 function leaveRoom(s) {
@@ -138,17 +144,19 @@ function onMessage(s, m) {
       s.avatar = cleanAvatar(m.avatar) || s.avatar;
       send(s, { t: 'welcome', id: s.id, name: s.name, tag: s.tag, avatar: s.avatar, key: s.key });
       break;
-    case 'queue':
+    case 'queue': {
+      const mode = QUEUE_MODES.includes(m.mode) ? m.mode : 'multiOperationMatch';
       leaveRoom(s); leaveQueue(s);
-      s.state = 'queue'; s.queuedAt = Date.now(); queue.push(s);
+      s.state = 'queue'; s.queuedAt = Date.now(); queues[mode].push(s);
       break;
+    }
     case 'cancel': leaveQueue(s); break;
     case 'ping': if (Number.isFinite(m.c)) send(s, { t: 'pong', c: m.c }); break;   // the page's latency probe
     case 'avatar': { const a = cleanAvatar(m.avatar); if (a) { s.avatar = a; const r = s.room && rooms.get(s.room); if (r) pushRoom(r); } break; }
     case 'room.create': {
       leaveQueue(s); leaveRoom(s);
       let code; do code = String(100000 + Math.floor(Math.random() * 900000)); while (rooms.has(code));
-      const r = { code, mode: m.mode === 'multiOperationRoom' ? m.mode : 'multiOperationRoom', host: s, members: [s], npc: false };
+      const r = { code, mode: ROOM_MODES.includes(m.mode) ? m.mode : 'multiOperationRoom', host: s, members: [s], npc: false };
       rooms.set(code, r); s.room = code; s.state = 'room';
       pushRoom(r);
       break;
@@ -156,7 +164,7 @@ function onMessage(s, m) {
     case 'room.join': {
       const r = rooms.get(String(m.code || '').trim());
       if (!r) { send(s, { t: 'error', msg: '房间不存在或已无法加入' }); break; }
-      if (r.members.length >= MAX) { send(s, { t: 'error', msg: '房间已满' }); break; }
+      if (r.members.length >= seatsOf(r.mode)) { send(s, { t: 'error', msg: '房间已满' }); break; }
       leaveQueue(s); leaveRoom(s);
       r.members.push(s); s.room = r.code; s.state = 'room';
       pushRoom(r);
@@ -248,8 +256,8 @@ const server = http.createServer((req, res) => {
   if (u.pathname === '/healthz') { res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ ok: true, instances: [...inst.values()].filter((i) => i.up).length, page: hasPage() })); return; }
   if (u.pathname === '/status') {
     res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-    res.end(JSON.stringify({ gateway: { port: PORT, pid: process.pid, sessions: sessions.size, relays, queue: queue.map((s) => s.name), errors: recentErrors(), reports: reportCount() },
-      rooms: [...rooms.values()].map((r) => ({ code: r.code, host: r.host.name, members: r.members.map((m) => m.name), npc: r.npc })),
+    res.end(JSON.stringify({ gateway: { port: PORT, pid: process.pid, sessions: sessions.size, relays, queues: Object.fromEntries(QUEUE_MODES.map((m) => [m, queues[m].map((s) => s.name)])), errors: recentErrors(), reports: reportCount() },
+      rooms: [...rooms.values()].map((r) => ({ code: r.code, mode: r.mode, host: r.host.name, members: r.members.map((m) => m.name), npc: r.npc })),
       instances: [...inst.values()].map((i) => ({ port: i.port, up: i.up, matches: i.matches, players: i.players, list: i.list })) }, null, 1));
     return;
   }

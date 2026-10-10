@@ -1,5 +1,6 @@
-// The match engine of a battle instance: one 礼物对决 match (8 seats; empty seats filled with the official NPC viewers),
-// authoritative for the rounds, the bets, the results and the ranking. Battles are not simulated live: the line-ups
+// The match engine of a battle instance: one match, 礼物对决 (8 seats) or 竞猜对决 (30 seats, the rules in shared/sim.js
+// STAND), the empty seats filled with the official NPC viewers when asked; authoritative for the rounds, the bets and
+// picks, the results and the ranking. Battles are not simulated live: the line-ups
 // and a seed go to the clients, the shared deterministic sim (shared/sim.js, the same file the page runs) computes the
 // outcome here beforehand, and every client replays the same fight.
 import { readFileSync } from 'node:fs';
@@ -13,34 +14,38 @@ const ctx = {
   clamp: (v, a, b) => Math.max(a, Math.min(b, v)), lerp: (a, b, t) => a + (b - a) * t, Math, console,
 };
 vm.createContext(ctx);
-vm.runInContext(load('shared/sim.js') + '\n;globalThis.SIM = { makeLineups, predict, npcPick, npcEmote, settleOne, mulberry32, pickWeighted, POOL, DCFG, EMOJI_PICS };', ctx);
+vm.runInContext(load('shared/sim.js') + `
+;globalThis.SIM = { makeLineups, predict, npcPick, npcEmote, settleOne, mulberry32, pickWeighted, POOL, DCFG, EMOJI_PICS,
+  isStand, STAND, standRow, standSeat, standShields, npcStandPick, settleStand, standLeave, standOver, standRanks };`, ctx);
 export const SIM = ctx.SIM;
 const C = SIM.DCFG.consts;
 
-// timings (ms): the client's STARTING SOON + loading, the bet window (official 20 s), the round-end panel (the clip at
-// 0.6×) and the scoreboard (official 8 s); a battle is waited for until every connected human has watched it, at most
+// timings (ms): the client's STARTING SOON + loading, the bet window (official 20 s in both modes), the round-end panel
+// (the clip at 0.6×) and the scoreboard (official 8 s in both modes); a battle is waited for until every connected human has watched it, at most
 // its simulated length + the round-start banner + a margin
 // (DUEL_*_MS env overrides are for quick test runs)
 const env = (k, d) => (process.env[k] ? Number(process.env[k]) : d);
-const T = {
+const timings = (stand) => ({
   show: env('DUEL_SHOW_MS', 4500), loadMax: (C.maxLoadingTime || 15) * 1000, connectMax: 12000,
-  bet: env('DUEL_BET_MS', (C.modeOperationSelectTime || 20) * 1000), result: env('DUEL_RESULT_MS', 3200),
-  rank: env('DUEL_RANK_MS', (C.modeOperationRankTime || 8) * 1000), battleExtra: 14000,
-};
+  bet: env('DUEL_BET_MS', ((stand ? C.modeStandSelectTime : C.modeOperationSelectTime) || 20) * 1000), result: env('DUEL_RESULT_MS', 3200),
+  rank: env('DUEL_RANK_MS', ((stand ? C.modeStandRankTime : C.modeOperationRankTime) || 8) * 1000), battleExtra: 14000,
+});
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const token = () => randomBytes(12).toString('hex');
 const avatarKeys = () => SIM.POOL.map((f) => f.key);
 
 export class Match {
   constructor({ id, mode, humans, npcFill, log = () => {}, onError = null }) {
-    this.id = id; this.mode = mode; this.log = log; this.onError = onError; this.done = false; this.round = null; this.phase = 'wait'; this.later = new Set();
+    this.id = id; this.mode = mode; this.log = log; this.onError = onError; this.done = false; this.round = null; this.r = 0; this.phase = 'wait'; this.later = new Set();
     this.hist = []; this.seq = 0; this.roundFrom = 0;
+    this.stand = SIM.isStand(mode); this.T = timings(this.stand);
     this.rounds = Object.values(SIM.DCFG.rounds).filter((r) => r.modeId === mode).sort((a, b) => a.round - b.round);
     const max = (SIM.DCFG.modes[mode] || {}).maxPlayer || 8;
     const used = new Set(humans.map((h) => h.avatar));
-    const freeAvatar = () => { const k = avatarKeys().filter((x) => !used.has(x)); const a = k.length ? k[Math.floor(Math.random() * k.length)] : avatarKeys()[0]; used.add(a); return a; };
+    // NPC portraits: unused ones first (30 seats outnumber the roster: then any)
+    const freeAvatar = () => { const k = avatarKeys().filter((x) => !used.has(x)), from = k.length ? k : avatarKeys(); const a = from[Math.floor(Math.random() * from.length)]; used.add(a); return a; };
     const base = () => ({ pts: C.modeOperationInitialScore || 10000, out: false, outRound: 0, streak: 0, stats: { all: 0, normal: 0, skip: 0, forced: 0 },
-      played: 0, change: 0, right: null, lastForced: false, choice: null, left: false });
+      played: 0, change: 0, right: null, lastForced: false, choice: null, left: false, ...(this.stand ? SIM.standSeat() : {}) });
     this.players = humans.map((h, i) => ({ id: 'p' + (i + 1), name: h.name, tag: h.tag, avatar: h.avatar, human: true, npc: null, token: token(),
       ws: null, connected: false, ready: false, watched: false, ...base() }));
     if (npcFill) {
@@ -51,9 +56,14 @@ export class Match {
   }
   tokens() { return this.players.filter((p) => p.human).map((p) => ({ name: p.name, token: p.token })); }
   humans() { return this.players.filter((p) => p.human); }
-  snapshot() {
-    return this.players.map((p) => ({ id: p.id, name: p.name, tag: p.tag, avatar: p.avatar, human: p.human, npc: !!p.npc, pts: p.pts, out: p.out,
-      outRound: p.outRound, streak: p.streak, stats: p.stats, played: p.played, change: p.change, right: p.right, lastForced: p.lastForced, left: p.left, connected: !!p.connected }));
+  // the seats as the clients see them; the portraits (up to 16 kB each with a viewer's own picture) only with the seating
+  // ('hello'), not in every round's result: 30 seats × 30 viewers would make that megabytes. 竞猜对决 adds the rounds
+  // guessed right, the 观众保护 and the standing.
+  snapshot(withAvatars = false) {
+    const rank = this.stand ? SIM.standRanks(this.players) : null;
+    return this.players.map((p) => ({ id: p.id, name: p.name, tag: p.tag, ...(withAvatars ? { avatar: p.avatar } : {}), human: p.human, npc: !!p.npc, pts: p.pts, out: p.out,
+      outRound: p.outRound, streak: p.streak, stats: p.stats, played: p.played, change: p.change, right: p.right, lastForced: p.lastForced, left: p.left, connected: !!p.connected,
+      ...(rank ? { pass: p.pass, shield: p.shield, shieldAt: p.shieldAt, saved: p.saved, rank: rank[p.id] } : {}) }));
   }
   send(p, msg) { if (p.ws && p.ws.readyState === 1) p.ws.send(JSON.stringify(msg)); }
   // every broadcast is numbered (seq) and, emojis aside, kept with its time: a seat that comes back gets what it missed
@@ -75,7 +85,7 @@ export class Match {
     p.ws = ws; p.connected = true;
     const resume = Number.isInteger(since) && since >= 0;
     if (resume) this.log(`${p.name} reconnected (after #${since})`);
-    this.send(p, { t: 'hello', you: p.id, mode: this.mode, rounds: this.rounds.length, players: this.snapshot(), phase: this.phase, resumed: resume });
+    this.send(p, { t: 'hello', you: p.id, mode: this.mode, rounds: this.stand ? null : this.rounds.length, players: this.snapshot(true), phase: this.phase, resumed: resume });
     const from = resume ? this.hist.findIndex((h) => h.m.seq > since) : this.roundFrom;
     if (from >= 0) for (const h of this.hist.slice(from)) this.send(p, { ...h.m, age: Date.now() - h.at });
     ws.on('message', (data) => { let m; try { m = JSON.parse(data); } catch (e) { return; } this.onMessage(p, m); });
@@ -85,7 +95,11 @@ export class Match {
   onMessage(p, m) {
     if (m.t === 'ready') p.ready = true;
     else if (m.t === 'watched') p.watched = true;
-    else if (m.t === 'leave') { p.left = true; this.log(`${p.name} left`); }
+    else if (m.t === 'leave') {
+      p.left = true; this.log(`${p.name} left`);
+      // 竞猜对决: leaving while still in is OUT, in the round being played or else the next
+      if (this.stand) SIM.standLeave(p, ['bet', 'battle'].includes(this.phase) ? this.r : this.r + 1);
+    }
     else if (m.t === 'bet') this.bet(p, m);
     else if (m.t === 'emoji') this.emoji(p, m.pic);
     // the page's latency probe: echo its clock back
@@ -110,10 +124,16 @@ export class Match {
   }
   after(ms, fn) { const h = setTimeout(() => { this.later.delete(h); fn(); }, ms); this.later.add(h); }
   // a bet is checked against the round's rules: 观望 only when the round allows it, 支持 only with enough gifts,
-  // 全力支持 when the round opens it or the gifts no longer cover the stake
+  // 全力支持 when the round opens it or the gifts no longer cover the stake. 竞猜对决: a side, nothing else.
   bet(p, m) {
     const rd = this.round;
     if (this.phase !== 'bet' || !rd || p.out || p.left) return;
+    if (this.stand) {
+      if (m.side !== 0 && m.side !== 1) { this.send(p, { t: 'error', msg: '这个选择在本轮不可用' }); return; }
+      p.choice = { side: m.side };
+      this.bcast({ t: 'bets', choices: { [p.id]: p.choice } });
+      return;
+    }
     const short = p.pts < rd.roundScore;
     let c = null;
     if (m.skip) { if (rd.canSkip) c = { skip: true }; }
@@ -138,39 +158,51 @@ export class Match {
     try {
       this.log(`match ${this.id} (${this.mode}) seats: ${this.players.map((p) => p.name + (p.human ? '' : '·NPC')).join(', ')}`);
       // everyone connects, sees STARTING SOON, loads
+      const T = this.T;
       await this.waitHumans((p) => p.connected, T.connectMax);
       this.phase = 'show'; this.bcast({ t: 'phase', name: 'show' });
       await sleep(T.show);
       this.phase = 'loading'; this.bcast({ t: 'phase', name: 'loading', ms: T.loadMax });
       await this.waitHumans((p) => p.ready, T.loadMax);
-      for (const rd of this.rounds) {
+      // 礼物对决: the table's rounds while two viewers have gifts; 竞猜对决: until one viewer (or no human) is left, the
+      // rounds past the table repeating its last row, at most modeStandRoundNumber
+      const total = this.stand ? SIM.STAND.cap : this.rounds.length;
+      for (let r = 1; r <= total; r++) {
         if (!this.anyHumanHere()) { this.log(`match ${this.id}: no one left, closing`); break; }
-        if (this.players.filter((p) => !p.out).length <= 1) break;
-        await this.playRound(rd);
+        if (this.stand ? SIM.standOver(this.players) : this.players.filter((p) => !p.out).length <= 1) break;
+        await this.playRound(this.stand ? SIM.standRow(this.rounds, r) : this.rounds[r - 1], r);
       }
       this.phase = 'finish';
-      this.bcast({ t: 'finish', players: this.snapshot() });
-      this.log(`match ${this.id} finished: ${this.players.slice().sort((a, b) => b.pts - a.pts).map((p) => `${p.name} ${p.pts}`).join(', ')}`);
+      const fin = this.snapshot();
+      this.bcast({ t: 'finish', players: fin });
+      this.log(`match ${this.id} finished: ${this.stand
+        ? fin.slice().sort((a, b) => a.rank - b.rank).map((p) => `#${p.rank} ${p.name} ${p.pass}`).join(', ')
+        : this.players.slice().sort((a, b) => b.pts - a.pts).map((p) => `${p.name} ${p.pts}`).join(', ')}`);
     } catch (e) { if (this.onError) this.onError(e); else this.log(`match ${this.id} error: ${e.stack || e}`); }
     for (const h of this.later) clearTimeout(h);
     await sleep(3000);
     for (const p of this.players) if (p.ws) try { p.ws.close(1000, 'match over'); } catch (e) { /* gone */ }
     this.done = true;
   }
-  async playRound(rd) {
-    this.round = rd;
+  async playRound(rd, r) {
+    const T = this.T, stand = this.stand;
+    this.round = rd; this.r = r;
+    if (stand) SIM.standShields(this.players, r);
     const seed = (Math.random() * 2 ** 31) | 0;
     const lineups = SIM.makeLineups(rd, SIM.mulberry32(seed ^ 0x5bd1e995));
     const pred = SIM.predict(lineups, seed);
     for (const p of this.players) { p.choice = null; p.watched = false; }
     this.phase = 'bet';
-    this.bcast({ t: 'round', r: rd.round, roundId: rd.roundId, lineups: lineups.map((s) => s.map((g) => [g.f.key, g.n])), seed, betMs: T.bet });
+    this.bcast({ t: 'round', r, roundId: rd.roundId, lineups: lineups.map((s) => s.map((g) => [g.f.key, g.n])), seed, betMs: T.bet });
+    const npcPick = (p) => (stand
+      ? SIM.npcStandPick(p.npc, { lineups, winner: pred.winner, sup: this.supporters(), rnd: Math.random, pass: p.pass })
+      : SIM.npcPick(p.npc, { pts: p.pts, rd, lineups, winner: pred.winner, sup: this.supporters(), rnd: Math.random }));
     // the NPC viewers bet during the window; FOLLOW_* (priority > 0) late, after seeing the others
     const timers = this.players.filter((p) => p.npc && !p.out).map((p) => {
       const at = p.npc.priority > 0 ? (0.65 + Math.random() * 0.25) * T.bet : (0.05 + Math.random() * 0.55) * T.bet;
       return setTimeout(() => {
         if (this.phase !== 'bet') return;
-        p.choice = SIM.npcPick(p.npc, { pts: p.pts, rd, lineups, winner: pred.winner, sup: this.supporters(), rnd: Math.random });
+        p.choice = npcPick(p);
         this.bcast({ t: 'bets', choices: { [p.id]: p.choice } });
         const pic = SIM.npcEmote('bet', p.choice, null, Math.random);
         if (pic) this.after(200 + Math.random() * 800, () => { if (this.phase === 'bet') this.bcast({ t: 'emoji', id: p.id, pic }); });
@@ -178,10 +210,12 @@ export class Match {
     });
     await sleep(T.bet);
     timers.forEach(clearTimeout);
-    // undecided seats: NPCs pick now, humans watch (or, when the round forbids it, back a side at random)
+    // undecided seats: NPCs pick now, humans watch (or, when the round forbids it, back a side at random; 竞猜对决: a
+    // side at random)
     for (const p of this.players) {
       if (p.out || p.choice) continue;
-      if (p.npc) p.choice = SIM.npcPick(p.npc, { pts: p.pts, rd, lineups, winner: pred.winner, sup: this.supporters(), rnd: Math.random });
+      if (p.npc) p.choice = npcPick(p);
+      else if (stand) p.choice = { side: Math.random() < 0.5 ? 0 : 1 };
       else { const short = p.pts < rd.roundScore; p.choice = rd.canSkip ? { skip: true } : { side: Math.random() < 0.5 ? 0 : 1, kind: short ? 'all' : 'normal', forced: short }; }
     }
     this.phase = 'battle';
@@ -189,9 +223,9 @@ export class Match {
     // reactions while the fight runs (after the clients' round-start banner, within the battle)
     this.npcEmotes('battle', () => 2500 + Math.random() * Math.max(1000, Math.min(8000, pred.time * 1000)));
     await this.waitHumans((p) => p.watched, pred.time * 1000 + T.battleExtra);
-    for (const p of this.players) SIM.settleOne(p, p.choice, rd, pred.winner);
+    for (const p of this.players) if (stand) SIM.settleStand(p, p.choice, r, pred.winner); else SIM.settleOne(p, p.choice, rd, pred.winner);
     this.phase = 'result';
-    this.bcast({ t: 'result', r: rd.round, w: pred.winner, players: this.snapshot() });
+    this.bcast({ t: 'result', r, w: pred.winner, players: this.snapshot() });
     // the outcome: the clients show the arena a moment longer before the round's panel
     this.npcEmotes('result', () => 100 + Math.random() * 700, (p) => p.right);
     await sleep(T.result + T.rank);

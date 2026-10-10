@@ -12,11 +12,12 @@ export function loadSim() {
   vm.createContext(ctx);
   vm.runInContext(load('shared/sim.js') + `
 ;globalThis.SIM = { makeLineups, predict, npcPick, npcEmote, settleOne, mulberry32, sideScore, makeWorld, simStep, zoneAt, zoneRect,
-  outsideZone, POOL, DCFG, ENV, DT, BATTLE_MAX, EMOJI_PICS };`, ctx);
+  outsideZone, POOL, DCFG, ENV, DT, BATTLE_MAX, EMOJI_PICS, isStand, STAND, standRow, standSeat, standShields, npcStandPick, settleStand,
+  standLeave, standOver, standRanks };`, ctx);
   return ctx.SIM;
 }
-// the 礼物对决 match rounds in order
-export const matchRounds = (SIM) => Object.values(SIM.DCFG.rounds).filter((r) => r.modeId === 'multiOperationMatch').sort((a, b) => a.round - b.round);
+// a mode's rounds in order (default: the 礼物对决 match)
+export const matchRounds = (SIM, mode = 'multiOperationMatch') => Object.values(SIM.DCFG.rounds).filter((r) => r.modeId === mode).sort((a, b) => a.round - b.round);
 // a stable digest of a finished world: winner, end step, every unit's HP (to the bit) and position
 export function digest(W) {
   return JSON.stringify([W.result, W.n, W.units.map((u) => [u.f.key, u.side, u.hp, u.x, u.y, u.dead])]);

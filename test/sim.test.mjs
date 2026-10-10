@@ -1,5 +1,5 @@
 // The duel sim: determinism, the golden battles, the official rules it encodes (line-up tolerance, the safe zone's
-// steps, the bet settlement).
+// steps, the bet settlement, 竞猜对决's picks, 观众保护, end and standings).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -84,4 +84,65 @@ test('emojis: the battle theme\'s 12 pictures; NPC reactions only use them and f
     }
   }
   assert.ok(seen.size >= 8, [...seen].join());
+});
+
+test('竞猜对决: up to 30 seats; round 5 sets small enemies against one 领袖; the table\'s last row repeats', () => {
+  assert.equal(SIM.isStand('multiStandMatch'), true); assert.equal(SIM.isStand('multiStandRoom'), true); assert.equal(SIM.isStand('multiOperationMatch'), false);
+  assert.equal(SIM.DCFG.modes.multiStandMatch.maxPlayer, 30); assert.equal(SIM.DCFG.modes.multiStandRoom.maxPlayer, 30);
+  assert.deepEqual({ ...SIM.STAND }, { shieldTurn: 5, cap: 60, npcMaxRight: 3 });
+  const st = matchRounds(SIM, 'multiStandMatch');
+  assert.equal(st.length, 10);
+  assert.equal(SIM.standRow(st, 1).round, 1); assert.equal(SIM.standRow(st, 10).round, 10); assert.equal(SIM.standRow(st, 37).round, 10);
+  for (let i = 0; i < 40; i++) {
+    const [left, right] = SIM.makeLineups(st[4], SIM.mulberry32(i + 1));
+    assert.equal(right.length, 1); assert.equal(right[0].n, 1); assert.ok(right[0].f.pool.boss > 0, right[0].f.key);
+    assert.ok(left.every((g) => g.f.pool.small > 0)); assert.ok(Math.abs(SIM.sideScore(left) - 175) <= 75);
+  }
+});
+
+test('竞猜对决: a wrong pick is OUT, but the 观众保护 takes the first one in rounds 1–5; a draw is right for all', () => {
+  const mk = () => ({ id: 'x', human: true, out: false, outRound: 0, played: 0, streak: 0, ...SIM.standSeat() });
+  let p = mk(); SIM.settleStand(p, { side: 0 }, 1, 0);
+  assert.equal(p.pass, 1); assert.equal(p.right, true); assert.equal(p.out, false);
+  SIM.settleStand(p, { side: 1 }, 2, 0);
+  assert.equal(p.out, false); assert.equal(p.saved, true); assert.equal(p.shield, false); assert.equal(p.shieldAt, 2); assert.equal(p.pass, 1);
+  SIM.settleStand(p, { side: 1 }, 3, 'draw');
+  assert.equal(p.right, true); assert.equal(p.saved, false); assert.equal(p.pass, 2);
+  SIM.settleStand(p, { side: 1 }, 4, 0);
+  assert.equal(p.out, true); assert.equal(p.outRound, 4);
+  // an OUT viewer's pick counts for nothing
+  SIM.settleStand(p, { side: 0 }, 5, 0); assert.equal(p.pass, 2); assert.equal(p.outRound, 4);
+  // from round 6 nobody holds a shield: the first wrong pick there is OUT
+  p = mk(); for (let r = 1; r <= 5; r++) SIM.settleStand(p, { side: 0 }, r, 0);
+  assert.equal(p.shield, true);
+  SIM.standShields([p], 6); assert.equal(p.shield, false);
+  SIM.settleStand(p, { side: 1 }, 6, 0); assert.equal(p.out, true); assert.equal(p.outRound, 6); assert.equal(p.pass, 5);
+  // leaving while still in
+  p = mk(); SIM.standLeave(p, 3); assert.equal(p.out, true); assert.equal(p.outRound, 3);
+});
+
+test('竞猜对决: NPCs guess right at most 3 times; the end; the standings', () => {
+  const st = matchRounds(SIM, 'multiStandMatch'), rnd = SIM.mulberry32(5);
+  const L = SIM.makeLineups(st[0], SIM.mulberry32(9));
+  for (const npc of Object.values(SIM.DCFG.npcs)) {
+    for (const winner of [0, 1]) {
+      const c = SIM.npcStandPick(npc, { lineups: L, winner, sup: [3, 4], rnd, pass: 3 });
+      assert.deepEqual({ ...c }, { side: 1 - winner }, npc.npcId);
+      const free = SIM.npcStandPick(npc, { lineups: L, winner, sup: [3, 4], rnd, pass: 2 });
+      assert.deepEqual(Object.keys(free), ['side']); assert.ok(free.side === 0 || free.side === 1);
+    }
+    // a draw is right whatever the side
+    assert.ok([0, 1].includes(SIM.npcStandPick(npc, { lineups: L, winner: 'draw', sup: [0, 0], rnd, pass: 3 }).side));
+  }
+  const seat = (id, human, o) => ({ id, human, left: false, out: false, outRound: 0, ...SIM.standSeat(), ...o });
+  // over: one left; none left; only NPCs left (they never keep it going); a human who left does not count
+  assert.equal(SIM.standOver([seat('a', true), seat('b', true, { out: true })]), true);
+  assert.equal(SIM.standOver([seat('a', true, { out: true }), seat('b', true, { out: true })]), true);
+  assert.equal(SIM.standOver([seat('a', true, { out: true }), seat('n1', false), seat('n2', false)]), true);
+  assert.equal(SIM.standOver([seat('a', true, { left: true }), seat('n1', false)]), true);
+  assert.equal(SIM.standOver([seat('a', true), seat('n1', false)]), false);
+  // standings: rounds guessed right, then still in, then OUT later; a tie on both shares the rank
+  const ps = [seat('a', true, { pass: 4, out: true, outRound: 6 }), seat('b', true, { pass: 4 }), seat('c', true, { pass: 5, out: true, outRound: 6 }),
+    seat('d', true, { pass: 2, out: true, outRound: 3 }), seat('e', false, { pass: 2, out: true, outRound: 3 }), seat('f', false, { pass: 2, out: true, outRound: 4 })];
+  assert.deepEqual({ ...SIM.standRanks(ps) }, { c: 1, b: 2, a: 3, f: 4, d: 5, e: 5 });
 });

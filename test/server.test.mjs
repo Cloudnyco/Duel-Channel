@@ -1,6 +1,6 @@
 // The multiplayer server end to end: a gateway and one battle instance on free ports, eight bot clients queue for
 // 礼物对决 and play a whole match (fast timings) sending emojis, two of them losing their connection once and coming
-// back, the status page and the health probe answer.
+// back, the status page and the health probe answer; twelve bots play 竞猜对决 in a room filled to 30 with NPCs.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
@@ -46,5 +46,50 @@ test('a full match: 8 bots through the queue on one instance', { timeout: 240000
     }
     const st = await (await fetch(`http://127.0.0.1:${gw}/status`)).json();
     assert.equal(st.instances.length, 1);
+  } finally { for (const p of procs) p.kill(); }
+});
+
+test('a 竞猜对决 match: 12 bots in a room filled to 30 with NPCs, played to its end', { timeout: 240000 }, async () => {
+  const gw = await free(), ip = await free();
+  const fast = { DUEL_BET_MS: '1500', DUEL_RANK_MS: '300', DUEL_RESULT_MS: '300', DUEL_SHOW_MS: '300' };
+  const procs = [node('../server/instance.mjs', [], { ...fast, PORT: String(ip), HOST: '127.0.0.1' }),
+    node('../server/gateway.mjs', [], { ...fast, PORT: String(gw), HOST: '127.0.0.1', INSTANCES: String(ip) })];
+  let log = '';
+  for (const p of procs) { p.stdout.on('data', (d) => { log += d; }); p.stderr.on('data', (d) => { log += d; }); }
+  try {
+    await until(async () => { const r = await fetch(`http://127.0.0.1:${gw}/healthz`); return (await r.json()).instances === 1; }, 20000);
+    const bots = node('../server/bots.mjs', ['--n', '12', '--mode', 'stand', '--room', 'new', '--npc', '--lobby', `ws://127.0.0.1:${gw}/lobby`], { BOT_PACE: '0.1' });
+    let out = '';
+    bots.stdout.on('data', (d) => { out += d; });
+    const code = await new Promise((res) => bots.on('exit', res));
+    assert.equal(code, 0, out + log);
+    assert.equal(out.split('\n').filter((l) => /finished #\d+ guessed \d+/.test(l)).length, 12, out);
+    const line = out.split('\n').find((l) => l.startsWith('standings '));
+    const { rounds, draws, players } = JSON.parse(line.slice(10));
+    // 12 viewers + 18 NPCs (the room's NPC fill up to modes.multiStandRoom.maxPlayer)
+    assert.equal(players.length, 30); assert.equal(players.filter((p) => p.human).length, 12);
+    assert.ok(rounds >= 2, line);
+    // it ended because at most one viewer, or no human, was still in
+    const live = players.filter((p) => !p.out);
+    assert.ok(live.length <= 1 || !live.some((p) => p.human), line);
+    for (const p of players) {
+      // the 观众保护 was only ever taken in rounds 1–5, and nobody holds one after round 5
+      assert.ok(p.shieldAt >= 0 && p.shieldAt <= 5, JSON.stringify(p));
+      if (rounds > 5) assert.equal(p.shield, false, JSON.stringify(p));
+      if (p.out) assert.ok(p.outRound >= 1 && p.outRound <= rounds, JSON.stringify(p));
+      // an NPC guesses right at most 3 times (a draw is right for everyone)
+      if (!p.human) assert.ok(p.pass <= 3 + draws, JSON.stringify(p));
+    }
+    // the standings follow the rounds guessed right, then who stayed in longer
+    const key = (p) => [p.pass, p.out ? p.outRound : 1e9];
+    const order = players.slice().sort((a, b) => a.rank - b.rank);
+    assert.equal(order[0].rank, 1);
+    for (let i = 1; i < order.length; i++) {
+      const [a, b] = [key(order[i - 1]), key(order[i])];
+      assert.ok(a[0] > b[0] || (a[0] === b[0] && a[1] >= b[1]), `${JSON.stringify(order[i - 1])} before ${JSON.stringify(order[i])}`);
+      assert.equal(order[i].rank === order[i - 1].rank, a[0] === b[0] && a[1] === b[1]);
+    }
+    const st = await (await fetch(`http://127.0.0.1:${gw}/status`)).json();
+    assert.ok('multiStandMatch' in st.gateway.queues);
   } finally { for (const p of procs) p.kill(); }
 });

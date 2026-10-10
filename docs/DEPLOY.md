@@ -161,6 +161,9 @@ node server/bots.mjs --n 7                     # 7 个机器人进入匹配队�
 node server/bots.mjs --n 3 --room 123456       # 3 个机器人加入指定房间
 node server/bots.mjs --n 6 --loop              # 打完一局继续匹配
 node server/bots.mjs --lobby ws://192.168.1.20:8600/lobby --n 4
+node server/bots.mjs --n 29 --mode stand       # 29 个机器人进入竞猜对决的匹配队列
+node server/bots.mjs --n 30 --mode stand --room new        # 30 个机器人开一个竞猜对决群组（第一个建房，满员开局）
+node server/bots.mjs --n 12 --mode stand --room new --npc  # 12 个机器人 + NPC 补位到 30
 ```
 
 ## 7. 常见问题
@@ -176,5 +179,5 @@ node server/bots.mjs --lobby ws://192.168.1.20:8600/lobby --n 4
   - 大厅或房间里断线时，45 秒内（`maxRetryTimeInTeamRoom`）重连会回到原来的房间或匹配队列；其他人会看到你「断线中」。这期间开局的比赛会保留给你。
   - 刷新页面后再点「进入频道」，会直接回到正在进行的比赛（同一个标签页内有效）；比赛刚结束的两分钟内则显示最终结算。
   - 超过时限仍未连上会提示连接失败。比赛中的座位一直保留到比赛结束，期间刷新页面仍可回到比赛。
-- **竞猜对决**：尚未实现，只有礼物对决的匹配与群组。
+- **竞猜对决**：服务端已实现（匹配与群组，最多 30 人，规则见 [MECHANICS.md](MECHANICS.md)），可以用机器人试玩；页面尚未接入，模式卡仍显示未实现。
 - **延迟**：房间页和对战页的延迟每秒测一次，颜色按官方配置的阈值（< 60 ms、60–200 ms、≥ 200 ms）。

@@ -255,10 +255,13 @@ function makeSide(rd, side, rng) {
   const kmin = side ? rd.enemySideMinRight : rd.enemySideMinLeft, kmax = side ? rd.enemySideMaxRight : rd.enemySideMaxLeft;
   const field = POOL_FIELD[side ? rd.enemyPoolRight : rd.enemyPoolLeft] || 'normal';
   const target = rd.enemyScore + (rng() * 2 - 1) * rd.enemyScoreRandom, lo = rd.enemyScore - rd.enemyScoreRandom, hi = rd.enemyScore + rd.enemyScoreRandom;
+  // the pool's enemies that fit under the target; a pool none of which fit (竞猜对决 round 5's 领袖 pool: 300 each against
+  // 175 ± 75) gives one of each chosen type over the target (an interpretation: every chosen type appears at least once)
+  const inPool = POOL.filter((f) => (f.pool[field] || 0) > 0 && f.score < 9999), fitting = inPool.filter((f) => f.score <= target);
+  const over = fitting.length < kmin, cands = over ? inPool : fitting;
   let best = null;
   for (let attempt = 0; attempt < 120; attempt++) {
     const k = kmin + Math.floor(rng() * (kmax - kmin + 1));
-    const cands = POOL.filter((f) => (f.pool[field] || 0) > 0 && f.score < 9999 && f.score <= target);
     if (cands.length < k) continue;
     const types = [];
     while (types.length < k) types.push(pickWeighted(cands.filter((x) => !types.includes(x)), (x) => x.pool[field], rng));
@@ -273,7 +276,7 @@ function makeSide(rd, side, rng) {
     const units = gs.reduce((a, g) => a + g.n, 0);
     const miss = (total < lo ? lo - total : total > hi ? total - hi : 0) + (units > 26 ? 50 : 0);
     if (!best || miss < best.miss) best = { gs, miss };
-    if (miss === 0) break;
+    if (miss === 0 || over) break;
   }
   return best.gs;
 }
@@ -290,22 +293,26 @@ function npcSideScore(npc, groups) {
   if (tab) for (const d of tab.data) sc[d.enemyId] = d.score;
   return groups.reduce((a, g) => a + g.n * (sc[g.f.key] ?? npc.defaultEnemyScore ?? 0), 0);
 }
-// o: { pts, rd (the round's row), lineups, winner (precomputed), sup ([left, right] supporters so far), rnd }
-function npcPick(npc, o) {
+// o: { lineups, winner (precomputed), sup ([left, right] supporters so far), rnd }
+function npcSide(npc, o) {
   const C = DCFG.consts, rnd = o.rnd, coin = () => (rnd() < 0.5 ? 0 : 1);
   const sc = o.lineups.map((g) => npcSideScore(npc, g)), cnt = o.lineups.map((g) => g.reduce((a, x) => a + x.n, 0)), sup = o.sup;
   const knows = o.winner === 'draw' ? coin() : o.winner;
-  let side;
   switch (npc.specialStrategy) {
-    case 'CHOOSE_WIN': side = knows; break;
-    case 'CHOOSE_ODD': side = sc[0] === sc[1] ? coin() : sc[0] < sc[1] ? 0 : 1; break;
-    case 'FOLLOW_FEWER': side = sup[0] === sup[1] ? coin() : sup[0] < sup[1] ? 0 : 1; break;
-    case 'FOLLOW_MORE': side = sup[0] === sup[1] ? coin() : sup[0] > sup[1] ? 0 : 1; break;
-    case 'CHOOSE_ODD_ENEMY_COUNT': { const od = cnt.map((n) => n % 2 === 1); side = od[0] === od[1] ? coin() : od[0] ? 0 : 1; break; }
-    case 'CHOOSE_EVEN_ENEMY_COUNT': { const ev = cnt.map((n) => n % 2 === 0); side = ev[0] === ev[1] ? coin() : ev[0] ? 0 : 1; break; }
-    case 'ALWAYS_LEFT': side = 0; break;
-    default: side = rnd() < (C.npcCorrectProb ?? 0.3) ? knows : sc[0] === sc[1] ? coin() : sc[0] > sc[1] ? 0 : 1;
+    case 'CHOOSE_WIN': return knows;
+    case 'CHOOSE_ODD': return sc[0] === sc[1] ? coin() : sc[0] < sc[1] ? 0 : 1;
+    case 'FOLLOW_FEWER': return sup[0] === sup[1] ? coin() : sup[0] < sup[1] ? 0 : 1;
+    case 'FOLLOW_MORE': return sup[0] === sup[1] ? coin() : sup[0] > sup[1] ? 0 : 1;
+    case 'CHOOSE_ODD_ENEMY_COUNT': { const od = cnt.map((n) => n % 2 === 1); return od[0] === od[1] ? coin() : od[0] ? 0 : 1; }
+    case 'CHOOSE_EVEN_ENEMY_COUNT': { const ev = cnt.map((n) => n % 2 === 0); return ev[0] === ev[1] ? coin() : ev[0] ? 0 : 1; }
+    case 'ALWAYS_LEFT': return 0;
+    default: return rnd() < (C.npcCorrectProb ?? 0.3) ? knows : sc[0] === sc[1] ? coin() : sc[0] > sc[1] ? 0 : 1;
   }
+}
+// o: { pts, rd (the round's row), lineups, winner (precomputed), sup ([left, right] supporters so far), rnd }
+function npcPick(npc, o) {
+  const C = DCFG.consts, rnd = o.rnd;
+  const side = npcSide(npc, o);
   const stake = o.rd.roundScore, short = o.pts < stake, canAll = o.rd.canAllIn || short;
   const w = [o.rd.canSkip ? (C.modeOperationSkipParam ?? 0.3) : 0, short ? 0 : (C.modeOperationBetParam ?? 1), canAll ? (C.modeOperationAllinParam ?? 1.5) * (npc.allinProb ?? 0.5) : 0];
   let r = rnd() * (w[0] + w[1] + w[2]);
@@ -327,6 +334,62 @@ function settleOne(p, choice, rd, w) {
   else { p.change = choice.kind === 'all' ? -p.pts : -Math.min(stake, p.pts); p.streak = 0; }
   p.pts = Math.min(C.modeOperationMaxScore || 999999999, p.pts + p.change);
   if (p.pts <= 0) { p.pts = 0; p.out = true; p.outRound = rd.round; }
+}
+
+// ---- 竞猜对决 (STAND) ---------------------------------------------------------------------------------------------------
+// Up to 30 viewers (modes.multiStand*.maxPlayer). Each round every viewer still in backs one side: no gifts, no 观望; a
+// viewer who has not chosen when the time is up is given a side at random. A wrong pick is OUT, but every viewer has one
+// 观众保护: it takes the first wrong pick within rounds 1 … modeStandShieldTurn (5) and is gone for everyone from round 6
+// (PRTS: 第6轮时失效; the bet panel's 「所有人不再拥有观众保护！」). Both sides wiped out at once: every pick is right.
+// No round limit: the broadcast ends when one viewer is left or all are OUT, and NPC viewers never keep it going (PRTS).
+// Ranked by the rounds guessed right (PRTS: 按照成功轮次数进行排名). Interpretations, where neither the data nor PRTS
+// says: rounds past the table's last row (10) repeat it; modeStandRoundNumber (60) caps the broadcast; an NPC guesses
+// right at most npcMaxCorrectCountInStand (3) times, then backs the losing side; a viewer who leaves while still in is
+// OUT that round; equal rounds guessed right go to whoever stayed in longer.
+const isStand = (modeId) => !!DCFG.modes[modeId] && DCFG.modes[modeId].modeType === 'STAND';
+const STAND = {
+  shieldTurn: DCFG.consts.modeStandShieldTurn ?? 5, cap: DCFG.consts.modeStandRoundNumber ?? 60, npcMaxRight: DCFG.consts.npcMaxCorrectCountInStand ?? 3,
+};
+// the round table's row for round r (1-based)
+const standRow = (rows, r) => rows[Math.min(r, rows.length) - 1];
+// a viewer's stand state: rounds guessed right, the 观众保护 (still held; taken in round shieldAt), saved this round
+const standSeat = () => ({ pass: 0, shield: true, shieldAt: 0, saved: false });
+// at the start of round r: past the protected rounds nobody holds a shield any more
+function standShields(players, r) { if (r > STAND.shieldTurn) for (const p of players) p.shield = false; }
+// an NPC's pick: its strategy's side (npcSide), or the losing side once it has guessed right npcMaxRight times
+function npcStandPick(npc, o) {
+  const side = npcSide(npc, o);
+  if (o.pass >= STAND.npcMaxRight && o.winner !== 'draw') return { side: 1 - o.winner };
+  return { side };
+}
+// round r's outcome for one viewer's pick (w: 0, 1 or 'draw')
+function settleStand(p, choice, r, w) {
+  p.right = null; p.saved = false;
+  if (p.out || !choice) return;
+  p.played++;
+  p.right = w === 'draw' || choice.side === w;
+  if (p.right) { p.pass++; p.streak++; return; }
+  p.streak = 0;
+  if (p.shield && r <= STAND.shieldTurn) { p.shield = false; p.shieldAt = r; p.saved = true; return; }
+  p.out = true; p.outRound = r;
+}
+// a viewer who leaves while still in
+function standLeave(p, r) { if (!p.out) { p.out = true; p.outRound = r; p.shield = false; } }
+// over: one viewer (or none) left, or no human viewer still in (NPCs never keep it going)
+function standOver(players) {
+  const live = players.filter((p) => !p.out);
+  return live.length <= 1 || !live.some((p) => p.human && !p.left);
+}
+// the standings: rounds guessed right, then still in, then OUT later; equal on both share a rank. { id: rank }
+function standRanks(players) {
+  const key = (p) => [p.pass, p.out ? p.outRound : Infinity];
+  const order = players.slice().sort((a, b) => { const x = key(a), y = key(b); return y[0] - x[0] || (y[1] === x[1] ? 0 : y[1] > x[1] ? 1 : -1); });
+  const rank = {};
+  order.forEach((p, i) => {
+    const q = order[i - 1], same = q && q.pass === p.pass && (q.out ? q.outRound : Infinity) === (p.out ? p.outRound : Infinity);
+    rank[p.id] = same ? rank[q.id] : i + 1;
+  });
+  return rank;
 }
 
 // The emoji panel's pictures (the battle's emoticon theme, enabledEmoticonThemeIdList → display_meta_table).
