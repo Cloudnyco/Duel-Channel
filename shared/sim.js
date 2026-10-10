@@ -1207,18 +1207,21 @@ function surpriseStep(W) {
 //     0.7 s to each coil within its x-2 range placed before it (PRTS), and a unit touching it takes 250 arts damage and
 //     停顿 (cannot move) for 1.5 s, once a current.
 // Neither side owns a trap: what they do falls on both alike (the stages' layouts are symmetric).
+// On the field for now: the crate, the altar and the coil (drawn with the game's own art). The 弩炮 and the 清债程序 —
+// their bodies are in none of the packages at hand — are left out of the draw (TRAP_ON); their rules below stand.
 const TRAP_DATA = DCFG.traps || {}, STAGES = DCFG.stages || {};
 const TRAP_KIND = { trap_163_foolcrate: 'crate', trap_213_dqore: 'ore', trap_214_dqballis: 'ballista', trap_215_dqcrsbow: 'crossbow', trap_216_dqelec: 'coil' };
 // (the level's rows count up from the near side of the field, the bottom of the screen: row r is at y = AH + 0.5 − r, and
 // UP is towards smaller y)
 const TRAP_DIR = { UP: [0, -1], DOWN: [0, 1], RIGHT: [1, 0], LEFT: [-1, 0] };
+const TRAP_ON = new Set(['crate', 'ore', 'coil']);
 const BOLT_V = 10, BOLT_R = 0.35, VOLLEY = { trap_215_dqcrsbow: { n: 3, gap: 0.2 } }, COIL = { on: 0.7, half: 0.65 / 2 };
 // a round's traps: [[key, column, row, direction], …] in the level's tiles (the field is columns 1 … 13 and rows 1 … 9)
 function makeTraps(rd, rng) {
   const st = rd && STAGES[rd.act];
   if (!st || !st.length) return [];
   const stage = st[Math.floor(rng() * st.length)], out = [];
-  for (const g of stage.groups) for (const t of pickWeighted(g, (p) => p.w, rng).traps) out.push(t);
+  for (const g of stage.groups) for (const t of pickWeighted(g, (p) => p.w, rng).traps) if (TRAP_ON.has(TRAP_KIND[t[0]])) out.push(t);
   return out;
 }
 function makeTrap(t, i) {

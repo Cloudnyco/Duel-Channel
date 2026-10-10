@@ -673,10 +673,25 @@ async function loadMusicFile(file) {
   SND.bgm = { intro: null, loop: buf, title: file.name.replace(/\.[^.]+$/, '') };
   playMusic(null, buf, SND.bgm.title);
 }
+// the built-in BGM (assets/audio; tracks the user supplied): each loops whole — No Bet, No Life up to 161.5 s (its last
+// 0.3 s is silence after the fade), ALL! to its end (it ends on the beat). The viewer's pick is kept (duel.bgm).
+const BGM_TRACKS = [{ key: 'm_nobetnolife', title: 'No Bet, No Life', loopEnd: 161.5 }, { key: 'm_all', title: 'ALL!' }];
+const bgmTracks = () => BGM_TRACKS.filter((t) => SND.buf[t.key]);
+function bgmOf(key) { const t = BGM_TRACKS.find((x) => x.key === key && SND.buf[x.key]); return t && { intro: null, loop: SND.buf[t.key], title: t.title, loopEnd: t.loopEnd, key: t.key }; }
+function playTrack(key) {
+  try { localStorage.setItem('duel.bgm', key); } catch (e) { /* no storage */ }
+  const b = bgmOf(key);
+  if (!b) return false;
+  SND.bgm = b;
+  if (SND.ctx) playMusic(null, b.loop, b.title, b.loopEnd);
+  return true;
+}
 function startBgm() {
   if (!SND.ctx || SND.music) return;
-  // the duel's BGM, supplied by the user (music/No Bet, No Life.wav): the whole track loops; its last 0.3 s is
-  // silence after the fade, so the loop ends at 161.5 s
-  if (!SND.bgm) SND.bgm = { intro: null, loop: SND.buf.m_nobetnolife, title: 'No Bet, No Life', loopEnd: 161.5 };
+  if (!SND.bgm) {
+    let key = null;
+    try { key = localStorage.getItem('duel.bgm'); } catch (e) { /* no storage */ }
+    SND.bgm = bgmOf(key) || (bgmTracks()[0] && bgmOf(bgmTracks()[0].key)) || { intro: null, loop: null, title: '' };
+  }
   playMusic(SND.bgm.intro, SND.bgm.loop, SND.bgm.title, SND.bgm.loopEnd);
 }

@@ -1208,7 +1208,12 @@ function frame(now) {
 }
 const FLOW = { ctx: {} };
 // called by the sound layer when the BGM changes: the entry page's music player shows the track's name
-function onTrackChange(title) { const e = FLOW.ctx.entryScr; if (e && !e.dead) e.text('panel_name/text_music_name', title); }
+// (and the settings' track buttons mark the one playing; a file of the viewer's own marks none)
+function onTrackChange(title) {
+  const e = FLOW.ctx.entryScr; if (e && !e.dead) e.text('panel_name/text_music_name', title);
+  for (const b of $('tracks').children) b.setAttribute('aria-pressed', String(!!SND.bgm && b.dataset.k === SND.bgm.key));
+  $('trackName').textContent = title ? `正在播放：${title}` : '';
+}
 const STATES = { entry: stEntry, prepare: stPrepare, show: stShow, loading: stLoading, finish: stFinish,
   match: (ctx) => (NET.on ? stMatchOnline(ctx) : stMatch(ctx)), room: (ctx) => (NET.on ? stRoomOnline(ctx) : stRoom(ctx)),
   game: (ctx) => (G.online ? stGameOnline(ctx) : stGame(ctx)) };
@@ -1292,6 +1297,14 @@ function controls() {
   $('ff').onclick = () => { if (arena && arena.running) { arena.ff = 12; toast('快进本场战斗'); } else toast('当前没有进行中的战斗'); };
   $('mus').onclick = (e) => { setMusicOn(!SND.musicOn); e.currentTarget.setAttribute('aria-pressed', SND.musicOn); };
   $('snd').onclick = (e) => { SND.sfxOn = !SND.sfxOn; e.currentTarget.setAttribute('aria-pressed', SND.sfxOn); sfx('click'); };
+  // the built-in tracks (BGM_TRACKS), then a file of the viewer's own
+  const tr = $('tracks');
+  tr.innerHTML = BGM_TRACKS.map((t) => `<button type="button" data-k="${t.key}" aria-pressed="false">${t.title}</button>`).join('');
+  tr.onclick = (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (!playTrack(b.dataset.k)) { toast(SND.ctx ? '这首曲子不在素材包里' : '声音开启后播放这首'); for (const x of tr.children) x.setAttribute('aria-pressed', String(x === b)); return; }
+    toast('正在播放：' + SND.track);
+  };
   $('pick').onclick = () => $('file').click();
   $('file').onchange = async (e) => { const f = e.target.files[0]; if (!f) return; try { await loadMusicFile(f); toast('正在播放：' + SND.track); } catch (err) { toast('无法解码这个文件：' + f.name); } e.target.value = ''; };
   $('log').onclick = () => {

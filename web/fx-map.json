@@ -1,5 +1,5 @@
 {
-  "_comment": "The textures the arena and the emoji panel use, by role → the file in the asset pack's fx/ folder (assets/fx, docs/ASSETS.md): the client's own (fxcommon, battle effects, the common map atlases, the emoticon themes, the trap meshes' textures) and the field traps' avatars and skill icons from the public dump ArknightsAssets2.",
+  "_comment": "The textures the arena and the emoji panel use, by role → the file in the asset pack's fx/ folder (assets/fx, docs/ASSETS.md): the client's own (fxcommon, battle effects, the common map atlases, the emoticon themes, the trap meshes' and the trap effects' textures).",
   "keyart": "bg1.jpg",
   "cone": "img_fx_ray_soft_04.png",
   "glow": "img_uifx_basicglow_01.png",
@@ -50,11 +50,6 @@
   "bossHpBg": "sprite_enemy_boss_hp_bg.png",
   "bossGlow": "sprite_bar_glow.png",
   "bossFill": "sprite_white_slider_fill.png",
-  "trapCrate": "trap_001_crate.png",
-  "trapCoil": "trap_019_electric.png",
-  "trapOre": "skill_icon_sktok_ore.png",
-  "trapBallis": "skill_icon_sktok_ballis.png",
-  "trapCrsbow": "skill_icon_sktok_crsbow.png",
   "trapCrateTex": "TX_Common_wild_01.png",
   "trapOreTex": "TX_curse_device.png",
   "pic_foolamiya_01_battle": "pic_foolamiya_01_battle.png",

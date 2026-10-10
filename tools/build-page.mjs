@@ -15,7 +15,7 @@
 //   <assets>/                           the asset pack, in the repository — see docs/ASSETS.md:
 //     ui.json            the event's exported screens, templates, sprites, clips and UI Spine
 //     models/<orig>.json an original enemy's model: { icon, spine: { skel, atlas, pages, pma, anims } }
-//     audio/*.ogg        the event's UI sounds (+ the default BGM, m_nobetnolife.ogg, if present)
+//     audio/*.ogg        the event's UI sounds (+ the BGM tracks, m_nobetnolife.ogg and m_all.ogg, if present)
 //     fx/*               the textures listed in web/fx-map.json
 //     traps.json         the field traps' meshes (障碍物, 源石祭坛): { trap key: { tex (an fx role), v, uv, f } }
 //     fonts/             Bender and Novecento wide: not the game's and not in the repository (their authors' free-font

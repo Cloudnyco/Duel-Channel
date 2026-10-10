@@ -538,10 +538,9 @@ function drawGround(W) {
 // glow of mask_08 0.5 wide and a teal one 0.3 wide), and on a unit it stops map_electric_grid_buff_01 (the electric_01
 // cage). Between currents the game shows nothing; here the column stays faintly lit so the coils can be seen while
 // betting. The 清债程序's bullets are its trap_crsbow_attack_01_trail (the cansld_01 ball, a trail 0.15 wide over 0.1 s
-// from yellow to red and a brown one 0.2 wide over 0.2 s). The 弩炮 and the 清债程序 themselves (the stage scene's,
-// trap_crsbow_effect) and the 弩炮's bolt are in none of the packages here: stand-ins marked with their official
-// skill icons (ArknightsAssets2). An altar's pulse lights the tiles of its range.
-const TRAP_TEX = { crate: 'trapCrate', ore: 'trapOre', ballista: 'trapBallis', crossbow: 'trapCrsbow', coil: 'trapCoil' };
+// from yellow to red and a brown one 0.2 wide over 0.2 s), ready for when the 清债程序 comes on the field: it and the
+// 弩炮 are left out of the draw for now (sim.js TRAP_ON), their bodies (the stage scene's, trap_crsbow_effect) being in
+// none of the packages at hand. An altar's pulse lights the tiles of its range.
 const TRAP_COL = { ore: 0xffa040, coil: 0x9fd8ff, shot: COL.phys };
 // the coil's effects' colours (the materials' tints × 2, the particle shaders' way): the start column, the current's
 // lightning (× the LineRenderer's gradient), its violet glow and teal underlay (α 0.63 / 0.56), the stopped unit's cage
@@ -560,9 +559,6 @@ function setStrip(m, x0, y0, x1, y1, w, u0) {
   const uv = m.uvBuffer.data;
   uv[0] = u0; uv[2] = u0 + 1; uv[4] = u0 + 1; uv[6] = u0;
   m.uvBuffer.update();
-}
-function trapQuad(g, pts, fill, a, line) {
-  g.beginFill(fill, a); if (line) g.lineStyle(1, line, 0.5); g.drawPolygon(pts.flatMap((q) => [q[0], q[1]])); g.endFill(); g.lineStyle(0);
 }
 // a trap's mesh (TRAP_MESH: v = [column offset, row offset (up the field), height] per vertex in tiles, uv, f) on the field
 function trapMesh(t, M) {
@@ -588,20 +584,8 @@ function trapMesh(t, M) {
 // the winding of a face towards the viewer, once projected (the exported meshes' order, checked on the crate's lid)
 const TRAP_FRONT = -1;
 function makeTrapView(t) {
-  const v = new PIXI.Container(), g = new PIXI.Graphics(), c = t.x - 0.5, r = t.y - 0.5;
-  const M = typeof TRAP_MESH !== 'undefined' && TRAP_MESH[t.key];
-  v.addChild(g);
-  const rim = t.kind === 'ballista' || t.kind === 'crossbow', base = rim ? RIM_H : 0;
-  const block = (h, inset, top, front, side) => {
-    const x0 = c + inset, x1 = c + 1 - inset, y0 = r + inset, y1 = r + 1 - inset, b = base;
-    if (t.x < AW / 2) trapQuad(g, [projH(x1, y0, b + h), projH(x1, y1, b + h), projH(x1, y1, b), projH(x1, y0, b)], side, 1);
-    else trapQuad(g, [projH(x0, y0, b + h), projH(x0, y1, b + h), projH(x0, y1, b), projH(x0, y0, b)], side, 1);
-    trapQuad(g, [projH(x0, y1, b + h), projH(x1, y1, b + h), projH(x1, y1, b), projH(x0, y1, b)], front, 1);
-    trapQuad(g, [projH(x0, y0, b + h), projH(x1, y0, b + h), projH(x1, y1, b + h), projH(x0, y1, b + h)], top, 1, 0x8a9396);
-    return projH(t.x, t.y, b + h);
-  };
-  let icon = null, glow = null;
-  const pic = (scale, sy) => { icon = new PIXI.Sprite(tex(TRAP_TEX[t.kind])); icon.anchor.set(0.5); icon.scale.set(scale, scale * (sy || 1)); v.addChild(icon); return icon; };
+  const v = new PIXI.Container(), M = typeof TRAP_MESH !== 'undefined' && TRAP_MESH[t.key];
+  let glow = null;
   if (M) {
     v.addChild(trapMesh(t, M));
     const [x, y, k] = projH(t.x, t.y, 0.1);
@@ -609,22 +593,7 @@ function makeTrapView(t) {
       glow = new PIXI.Sprite(tex('glow')); glow.anchor.set(0.5); glow.blendMode = ADD(); glow.tint = TRAP_COL.ore; glow.position.set(x, y); glow.scale.set(FLOOR.T * k * 1.6 / 256, FLOOR.T * k * 0.9 / 256); v.addChildAt(glow, 0);
     }
     if (t.kind === 'crate') { t.hpBar = new PIXI.Graphics(); v.addChild(t.hpBar); t.mesh = v.children[0]; }
-  } else if (t.kind === 'crate') {
-    const [x, y, k] = block(0.55, 0.06, 0x2c3438, 0x1b2124, 0x151a1c);
-    // a hazard band across the front
-    const [ax, ay] = projH(c + 0.06, r + 0.94, 0.2), [bx, by] = projH(c + 0.94, r + 0.94, 0.2), [, cy] = projH(c, r + 0.94, 0.3);
-    g.beginFill(COL.yellow, 0.85); g.drawRect(ax, cy, bx - ax, ay - cy); g.endFill();
-    pic(FLOOR.T * k * 0.62 / 180, 0.62).position.set(x, y); icon.alpha = 0.75; icon.tint = 0xd8dde0;
-    t.hpBar = new PIXI.Graphics(); v.addChild(t.hpBar);
-  } else if (t.kind === 'ore') {
-    const [x, y, k] = block(0.14, 0.04, 0x2a2420, 0x1a1512, 0x14100e);
-    glow = new PIXI.Sprite(tex('glow')); glow.anchor.set(0.5); glow.blendMode = ADD(); glow.tint = TRAP_COL.ore; glow.position.set(x, y); glow.scale.set(FLOOR.T * k * 1.6 / 256, FLOOR.T * k * 0.9 / 256); v.addChildAt(glow, 0);
-    pic(FLOOR.T * k * 0.7 / 128, 0.62).position.set(x, y); icon.tint = 0xffd2a8;
-  } else if (rim) {
-    const [x, y, k] = block(0.3, 0.12, 0x343c40, 0x20272a, 0x181d20);
-    pic(FLOOR.T * k * 0.55 / 128).position.set(x, y - FLOOR.T * k * 0.3);
-    icon.scale.x *= t.dir[0] < 0 ? -1 : 1;
-  } else {
+  } else if (t.kind === 'coil') {
     // the coil: the start effect's column (flow_35, its streaks rising from the floor), dim between currents
     const [x, y, k] = projH(t.x, t.y, 0);
     const col = new PIXI.Sprite(tex('elecBox')); col.anchor.set(0.5, 1); col.blendMode = ADD(); col.tint = ELEC.box;
@@ -632,7 +601,7 @@ function makeTrapView(t) {
     col.position.set(x, y); col.scale.set(FLOOR.T * k * 0.6 / 128, FLOOR.T * k * 0.62 / 128);
     v.addChild(col); t.box = col; t.boxT = 0; t.boxK = k;
   }
-  t.glow = glow; t.icon = icon;
+  t.glow = glow;
   const [, fy] = proj(t.x, Math.min(AH + 1, t.y + 0.5));
   v.zIndex = fy;
   arena.unitsC.addChild(v);
@@ -656,8 +625,7 @@ function drawTraps(W, dt) {
       const r = t.hp / t.maxHp;
       t.hpBar.clear();
       if (r < 1) { const [x, y, k] = projH(t.x, t.y, 0.75), w = FLOOR.T * k * 0.7; t.hpBar.beginFill(0x000000, 0.55); t.hpBar.drawRect(x - w / 2, y, w, 4); t.hpBar.endFill(); t.hpBar.beginFill(0xd8dde0, 0.9); t.hpBar.drawRect(x - w / 2, y, w * r, 4); t.hpBar.endFill(); }
-      const face = t.mesh || t.icon;
-      if (face) { if (t.hitT > 0) { t.hitT -= dt; face.tint = 0xffd6c8; } else face.tint = t.mesh ? 0xffffff : 0xd8dde0; }
+      if (t.mesh) { if (t.hitT > 0) { t.hitT -= dt; t.mesh.tint = 0xffd6c8; } else t.mesh.tint = 0xffffff; }
     }
   }
   for (const b of W.bolts) {
