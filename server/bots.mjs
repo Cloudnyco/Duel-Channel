@@ -13,7 +13,8 @@ const LOOP = process.argv.includes('--loop'), PREFIX = arg('--prefix', 'Bot');
 // tests: bots (1-based) that drop their match connection once and come back resuming / rejoining
 const DROP_RESUME = String(arg('--drop-resume', '')).split(',').filter(Boolean).map(Number);
 const DROP_REJOIN = String(arg('--drop-rejoin', '')).split(',').filter(Boolean).map(Number);
-const host = new URL(LOBBY).hostname;
+// a match is reached through the gateway, as the page does (/match?port=…, relayed to the instance)
+const GATE = LOBBY.replace(/\/lobby$/, '');
 // BOT_PACE scales the bots' think / watch delays (tests run them at 0.1)
 const PACE = Number(process.env.BOT_PACE || 1);
 const sleep = (ms) => new Promise((r) => setTimeout(r, Math.max(0, ms) * PACE));
@@ -34,7 +35,7 @@ function bot(i) {
   function play(mt) {
     let me = null, pts = 10000, tried = [], burst = false, lastSeq = 0, cur = null, drops = 0;
     const seen = { others: 0, burst: 0, bad: 0 }, rounds = new Set(), results = new Set();
-    const base = `ws://${host}:${mt.port}/match?m=${mt.matchId}&k=${mt.token}`;
+    const base = `${GATE}/match?port=${mt.port}&m=${mt.matchId}&k=${mt.token}`;
     // a test bot may lose its connection once, on round 3's bet: 'resume' comes back with the last seq it got (as the
     // page does after a drop), 'rejoin' comes back without (as a reloaded page does)
     const dropMode = DROP_RESUME.includes(i + 1) ? 'resume' : DROP_REJOIN.includes(i + 1) ? 'rejoin' : null;

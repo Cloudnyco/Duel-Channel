@@ -148,10 +148,13 @@ function watchPing(scr, suffix, under, wrap = (t) => t, offline = '单机') {
 // consts.maxRetryTimeInTeamRoom seconds and takes its session back (room seat, queue place, a match started meanwhile);
 // if the gateway no longer knows the session (restarted, or too late) the page logs in afresh and the current room or
 // queue screen ends as if the lobby had closed
+// the lobby and the matches both go through the gateway's own address (it relays a match's connection to its instance),
+// over wss:// when the page came over HTTPS
+const WS_BASE = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`;
 async function connectLobby(name) {
   let live = false;
   const hello = () => ({ t: 'hello', name, avatar: myAvatar.value() || undefined });
-  NET.lobby = new Link(`ws://${location.host}/lobby`, {
+  NET.lobby = new Link(`${WS_BASE}/lobby`, {
     retry: C.maxRetryTimeInTeamRoom || 45, onstate: (st) => RECONNECT.state(st),
     reopen: (link) => ({ url: link.url, first: { t: 'resume', key: NET.me.key } }),
     intercept: (m) => {
@@ -187,14 +190,14 @@ function applyServerPlayers(list) {
       right: s.right, lastForced: s.lastForced, left: s.left });
   }
 }
-// a seat in a match: connect to its instance, take the seating
-// a seat in a match: connect to its instance, take the seating. Dropped, the connection is reopened for up to
-// consts.maxRetryTimeInBattle seconds and the instance replays what was missed (since=<last seq>), so the rounds go on
-// where they were. The seat is also kept in sessionStorage: a reloaded page comes back to the match (rejoinMatch).
+// a seat in a match: connect to its instance (through the gateway), take the seating. Dropped, the connection is
+// reopened for up to consts.maxRetryTimeInBattle seconds and the instance replays what was missed (since=<last seq>), so
+// the rounds go on where they were. The seat is also kept in sessionStorage: a reloaded page comes back to the match
+// (rejoinMatch).
 const SEAT_KEY = 'duel.seat';
 async function joinMatch(m) {
   if (NET.match) NET.match.close();
-  const url = `ws://${location.hostname}:${m.port}/match?m=${encodeURIComponent(m.matchId)}&k=${encodeURIComponent(m.token)}`;
+  const url = `${WS_BASE}/match?port=${encodeURIComponent(m.port)}&m=${encodeURIComponent(m.matchId)}&k=${encodeURIComponent(m.token)}`;
   NET.match = new Link(url, {
     retry: C.maxRetryTimeInBattle || 30, onstate: (st) => RECONNECT.state(st),
     reopen: (link) => ({ url: `${url}&since=${link.seq}` }),

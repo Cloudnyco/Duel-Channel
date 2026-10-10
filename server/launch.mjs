@@ -9,8 +9,9 @@ const N = Number(arg('--instances', 3)), PORT = Number(arg('--port', 8600)), HOS
 const ports = Array.from({ length: N }, (_, i) => PORT + 11 + i);
 const kids = new Set(), exits = new Map();
 let stopping = false;
+// --host is the gateway's: the instances listen on this machine only (players reach them through the gateway's relay)
 const start = (file, env) => {
-  const c = fork(new URL(file, import.meta.url), [], { env: { ...process.env, HOST, ...env } });
+  const c = fork(new URL(file, import.meta.url), [], { env: { ...process.env, HOST: file === './gateway.mjs' ? HOST : '127.0.0.1', ...env } });
   kids.add(c);
   c.on('exit', (code, sig) => {
     kids.delete(c);

@@ -1,13 +1,15 @@
 // The gateway: serves the page, runs the lobby over ws://<host>:<port>/lobby — the 礼物对决 matchmaking queue (a full
 // table of 8 starts at once; after QUEUE_FILL_MS the waiting players start with NPC viewers in the empty seats) and
 // 群组 rooms (6-digit codes, the host's NPC-fill switch, the host starts) — and hands each new match to the least
-// loaded battle instance. GET /status shows the instances, the queue and the rooms.
+// loaded battle instance, relaying the players' match connections to it (ws://<host>:<port>/match, so the gateway's
+// port is the only one players need). GET /status shows the instances, the queue and the rooms.
 // The page: public/index.html (the code) and public/pack/duel-pack.<hash>.json (the assets) from `npm run build`, sent
 // precompressed (brotli / gzip, whichever the browser takes) with validators; the pack, named after its content, may be
 // cached for good. A build from before the split (public/duel-flow.html only) is served as it is.
 // env: PORT (default 8600), HOST (bind, default 127.0.0.1), INSTANCES (comma-separated instance ports), QUEUE_FILL_MS,
 //      DUEL_PUBLIC (the built page's folder, default ../public)
 import http from 'node:http';
+import { connect } from 'node:net';
 import { readFileSync, existsSync, statSync, createReadStream } from 'node:fs';
 import { createHash, randomBytes } from 'node:crypto';
 import { join } from 'node:path';
@@ -246,16 +248,42 @@ const server = http.createServer((req, res) => {
   if (u.pathname === '/healthz') { res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ ok: true, instances: [...inst.values()].filter((i) => i.up).length, page: hasPage() })); return; }
   if (u.pathname === '/status') {
     res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-    res.end(JSON.stringify({ gateway: { port: PORT, pid: process.pid, sessions: sessions.size, queue: queue.map((s) => s.name), errors: recentErrors(), reports: reportCount() },
+    res.end(JSON.stringify({ gateway: { port: PORT, pid: process.pid, sessions: sessions.size, relays, queue: queue.map((s) => s.name), errors: recentErrors(), reports: reportCount() },
       rooms: [...rooms.values()].map((r) => ({ code: r.code, host: r.host.name, members: r.members.map((m) => m.name), npc: r.npc })),
       instances: [...inst.values()].map((i) => ({ port: i.port, up: i.up, matches: i.matches, players: i.players, list: i.list })) }, null, 1));
     return;
   }
   res.writeHead(404); res.end('not found');
 });
+// ---- a match's connection, relayed --------------------------------------------------------------------------------------
+// The page reaches its match through the gateway: /match?port=<instance>&m=<match>&k=<seat token>[&since=<seq>] is
+// passed on, byte for byte, to that instance on this machine. Only the gateway's port has to be reachable (one port to
+// open or forward), and behind an HTTPS proxy or tunnel the page uses wss:// for both. The request line is rebuilt from
+// the four checked parameters, and only the instances' ports are dialled.
+let relays = 0;
+function relayMatch(req, socket, head, u) {
+  const q = u.searchParams, port = Number(q.get('port')), m = q.get('m') || '', k = q.get('k') || '', since = q.get('since');
+  if (!INSTANCES.includes(port) || !/^\d+-\d+$/.test(m) || !/^[0-9a-f]{24}$/.test(k) || (since !== null && !/^\d+$/.test(since))) { socket.destroy(); return; }
+  const up = connect(port, '127.0.0.1');
+  let open = true;
+  const end = () => { if (!open) return; open = false; relays--; up.destroy(); socket.destroy(); };
+  relays++;
+  up.on('connect', () => {
+    const head1 = [`GET /match?m=${m}&k=${k}${since !== null ? `&since=${since}` : ''} HTTP/1.1`];
+    for (let i = 0; i < req.rawHeaders.length; i += 2) head1.push(`${req.rawHeaders[i]}: ${req.rawHeaders[i + 1]}`);
+    up.write(head1.join('\r\n') + '\r\n\r\n');
+    if (head && head.length) up.write(head);
+    socket.setNoDelay(true); up.setNoDelay(true);
+    up.pipe(socket); socket.pipe(up);
+  });
+  up.on('error', end); socket.on('error', end); up.on('close', end); socket.on('close', end);
+}
+
 const wss = new WebSocketServer({ noServer: true, maxPayload: 32768 });
 server.on('upgrade', (req, socket, head) => {
-  if (new URL(req.url, 'http://x').pathname !== '/lobby') { socket.destroy(); return; }
+  const u = new URL(req.url, 'http://x');
+  if (u.pathname === '/match') { relayMatch(req, socket, head, u); return; }
+  if (u.pathname !== '/lobby') { socket.destroy(); return; }
   wss.handleUpgrade(req, socket, head, (ws) => {
     const cx = { s: newSession(ws) };
     ws.on('message', (d) => { let m; try { m = JSON.parse(d); } catch (e) { return; } if (m.t === 'resume') resume(cx, ws, String(m.key || '')); else onMessage(cx.s, m); });

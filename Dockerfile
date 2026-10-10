@@ -2,7 +2,7 @@
 # the page built from the repository's asset pack (the build stage fetches the two display fonts, docs/ASSETS.md).
 #
 #   docker build -t duel-channel .
-#   docker run --rm -p 127.0.0.1:8600:8600 -p 127.0.0.1:8611-8613:8611-8613 duel-channel
+#   docker run --rm -p 127.0.0.1:8600:8600 duel-channel
 #
 # A page built elsewhere can still be mounted over it: -v "$PWD/public:/app/public:ro"
 
@@ -28,8 +28,8 @@ COPY server ./server
 COPY shared ./shared
 COPY data ./data
 COPY --from=page /src/public ./public
-# browsers connect to the gateway (8600) and, during a match, straight to its instance (8611-8613)
-EXPOSE 8600 8611 8612 8613
+# browsers connect to the gateway only (8600): it relays their match connections to the instances (8611-8613, local)
+EXPOSE 8600
 # error logs and players' reports (logs/server-errors.log, logs/reports/)
 RUN mkdir -p logs && chown node:node logs
 USER node

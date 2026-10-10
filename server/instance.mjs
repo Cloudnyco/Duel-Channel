@@ -1,6 +1,6 @@
-// A battle instance: hosts any number of matches. The gateway creates matches here (POST /create, local only); players
-// connect to ws://<host>:<port>/match?m=<match>&k=<seat token>[&since=<last seq>] (since: a dropped connection
-// coming back, game.mjs attach). GET /status reports the load.
+// A battle instance: hosts any number of matches. The gateway creates matches here (POST /create, local only); players'
+// connections come through the gateway's relay to ws://127.0.0.1:<port>/match?m=<match>&k=<seat token>[&since=<last
+// seq>] (since: a dropped connection coming back, game.mjs attach). GET /status reports the load.
 // env: PORT (required), HOST (bind address, default 127.0.0.1), NAME
 import http from 'node:http';
 import { WebSocketServer } from 'ws';

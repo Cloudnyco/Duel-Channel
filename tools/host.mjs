@@ -1,7 +1,7 @@
 // One-step hosting, behind start.cmd (Windows) and start.sh (Linux / macOS): installs the dependencies when they are
 // missing, checks the asset pack, builds the page when it is missing or older than anything it is built from, asks
 // whether players on the local network may join, starts the gateway and its battle instances, prints the addresses to
-// share (and the ports a firewall must let through), and opens the page in the browser.
+// share (and the port a firewall must let through), and opens the page in the browser.
 // usage: node tools/host.mjs [--lan | --local] [--port 8600] [--instances 3] [--rebuild] [--no-open] [--dry-run]
 //   --lan / --local   listen on every network interface / on this machine only (default: ask; non-interactive: local)
 import { spawn, spawnSync } from 'node:child_process';
@@ -65,14 +65,15 @@ if (lan === null && TTY) {
 }
 lan = !!lan;
 
-// 5. the server, on ports nothing else holds (another copy already running is the usual case)
+// 5. the server, on ports nothing else holds (another copy already running is the usual case); the instances listen on
+// this machine only, players reach them through the gateway
 const ports = Array.from({ length: N }, (_, i) => PORT + 11 + i);
-const free = (port) => new Promise((res) => {
+const free = (port, host) => new Promise((res) => {
   const s = createServer().once('error', () => res(false));
-  s.listen(port, lan ? '0.0.0.0' : '127.0.0.1', () => s.close(() => res(true)));
+  s.listen(port, host, () => s.close(() => res(true)));
 });
 for (const p of [PORT, ...ports]) {
-  if (!(await free(p))) fail(`端口 ${p} 已被占用（可能已经开着一个服务器：试试打开 http://127.0.0.1:${PORT}/）。\n  换一组端口：加 --port ${PORT + 100}（对战实例随之用 ${PORT + 111} 起的端口）`);
+  if (!(await free(p, lan && p === PORT ? '0.0.0.0' : '127.0.0.1'))) fail(`端口 ${p} 已被占用（可能已经开着一个服务器：试试打开 http://127.0.0.1:${PORT}/）。\n  换一组端口：加 --port ${PORT + 100}（对战实例随之用 ${PORT + 111} 起的端口）`);
 }
 // --dry-run (CI): everything up to here — dependencies, the page, the ports — without starting the server
 if (has('--dry-run')) { say(`就绪：页面已构建，端口 ${PORT}、${ports.join('、')} 可用（--dry-run，未启动服务器）`); process.exit(0); }
@@ -90,16 +91,15 @@ const kind = (name, ip) => (/tailscale/i.test(name) || /^100\.(6[4-9]|[7-9]\d|1[
 // IPv4 addresses others can reach: not loopback, not link-local (169.254/16), not a proxy client's TUN (198.18/15)
 const reachable = (a) => a.family === 'IPv4' && !a.internal && !/^169\.254\.|^198\.1[89]\./.test(a.address);
 const addrs = lan ? Object.entries(networkInterfaces()).flatMap(([name, list]) => (list || []).filter(reachable).map((a) => [kind(name, a.address), a.address])) : [];
-const span = ports.length > 1 ? `${ports[0]}-${ports[ports.length - 1]}` : String(ports[0]);
 say('\n────────────────────────────────────────────────────────────');
 say('争锋频道已启动');
 say(`  本机打开：${local}`);
 if (lan) {
   if (addrs.length) for (const [name, ip] of addrs) say(`  朋友打开：http://${ip}:${PORT}/   （${name}）`);
   else say('  没有找到可用的局域网地址：检查网络连接，或先连上 Tailscale / ZeroTier');
-  say(`  防火墙需放行 TCP ${PORT} 和 ${span}（对局时浏览器直接连接对战实例）`);
+  say(`  防火墙需放行 TCP ${PORT}（对局连接也经过这个端口）`);
   if (WIN) say('  首次启动时 Windows 会询问是否允许 Node.js 访问网络：勾选「专用网络」');
-  else say(`  Linux 上若启用了防火墙：sudo ufw allow ${PORT},${ports[0]}:${ports[ports.length - 1]}/tcp（或 firewall-cmd --add-port=${PORT}/tcp --add-port=${span}/tcp）`);
+  else say(`  Linux 上若启用了防火墙：sudo ufw allow ${PORT}/tcp（或 firewall-cmd --add-port=${PORT}/tcp）`);
 } else say('  只有这台电脑能连接；要和朋友联机，重新运行并选 y（或加 --lan）');
 say('  按 Ctrl+C 停止');
 say('────────────────────────────────────────────────────────────\n');

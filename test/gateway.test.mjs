@@ -1,7 +1,8 @@
 // The gateway's page files, with a stand-in build in a temp folder (no assets needed): the shell and the pack go out in
 // the encoding the browser takes (brotli / gzip copies, the plain file otherwise or when a copy is stale), with ETags
 // and 304s; the pack, named after its content, is cacheable for good; nothing outside the build's names is served; a
-// build from before the split (duel-flow.html only) still works; no build at all gives 503.
+// build from before the split (duel-flow.html only) still works; no build at all gives 503. Also: the lobby's sessions,
+// the relay of a match's connection, players' error reports, the launcher's restarts.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
@@ -114,6 +115,45 @@ test('the lobby: a dropped viewer keeps their room seat and takes the session ba
     assert.equal((await c.next('resume.fail')).t, 'resume.fail');
     for (const x of [a2, b, c]) x.ws.close();
   } finally { gw.stop(); rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('a match connection through the gateway: relayed to its instance, close codes kept, nothing else dialled', { timeout: 30000 }, async () => {
+  const { default: WebSocket } = await import('ws');
+  const dir = mkdtempSync(join(tmpdir(), 'duel-pub-'));
+  const ip = await free(), port = await free();
+  const inst = spawn(process.execPath, [fileURLToPath(new URL('../server/instance.mjs', import.meta.url))],
+    { env: { ...process.env, PORT: String(ip), HOST: '127.0.0.1', DUEL_LOGS: join(dir, 'logs') }, stdio: 'ignore' });
+  const gw = spawn(process.execPath, [fileURLToPath(new URL('../server/gateway.mjs', import.meta.url))],
+    { env: { ...process.env, PORT: String(port), HOST: '127.0.0.1', INSTANCES: String(ip), DUEL_PUBLIC: dir, DUEL_LOGS: join(dir, 'logs') }, stdio: 'ignore' });
+  const post = (p, body) => new Promise((res, rej) => {
+    const data = Buffer.from(JSON.stringify(body));
+    const r = request({ host: '127.0.0.1', port: p, path: '/create', method: 'POST', headers: { 'Content-Type': 'application/json', 'Content-Length': data.length } },
+      (m) => { const b = []; m.on('data', (c) => b.push(c)); m.on('end', () => res(JSON.parse(Buffer.concat(b)))); });
+    r.on('error', rej); r.end(data);
+  });
+  // a socket's first message, or how it ended
+  const first = (url) => new Promise((res) => {
+    const ws = new WebSocket(url);
+    ws.on('message', (d) => { res({ msg: JSON.parse(d), ws }); });
+    ws.on('close', (code) => res({ code }));
+    ws.on('error', () => res({ error: true }));
+  });
+  try {
+    for (let i = 0; i < 100; i++) { try { await get(port, '/healthz'); await get(ip, '/status'); break; } catch (e) { await new Promise((r) => setTimeout(r, 100)); } }
+    const o = await post(ip, { mode: 'multiOperationRoom', npcFill: true, humans: [{ name: '甲' }] });
+    const base = `ws://127.0.0.1:${port}/match?port=${ip}&m=${o.matchId}`;
+    const ok = await first(`${base}&k=${o.seats[0].token}`);
+    assert.equal(ok.msg.t, 'hello'); assert.equal(ok.msg.you, 'p1'); assert.equal(ok.msg.players.length, 8);
+    assert.equal(JSON.parse((await get(port, '/status')).body).gateway.relays, 1);
+    ok.ws.close();
+    // the instance's own close code comes through: a token it does not know is final (4001)
+    assert.equal((await first(`${base}&k=${'0'.repeat(24)}`)).code, 4001);
+    // malformed, or a port that is not one of the instances: refused before anything is dialled
+    for (const q of [`port=${port}&m=${o.matchId}&k=${o.seats[0].token}`, `port=${ip}&m=x&k=${o.seats[0].token}`, `port=${ip}&m=${o.matchId}&k=${o.seats[0].token}&since=-1`])
+      assert.ok((await first(`ws://127.0.0.1:${port}/match?${q}`)).error, q);
+    await new Promise((r) => setTimeout(r, 200));
+    assert.equal(JSON.parse((await get(port, '/status')).body).gateway.relays, 0);
+  } finally { gw.kill(); inst.kill(); rmSync(dir, { recursive: true, force: true }); }
 });
 
 test('error reports: saved one file each under logs/reports, refused when empty, too large or too frequent', { timeout: 30000 }, async () => {
