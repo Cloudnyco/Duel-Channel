@@ -833,8 +833,8 @@ async function battlePhase(r, online = false) {
   scr.show('root/panel_battle_holder/group_support', !!(c && !c.skip));
   if (c && !c.skip) {
     scr.text('panel_battle_holder/group_support/layout_max/layout_min/text', `你${c.kind === 'all' ? '全力' : ''}支持了${c.side ? '右侧（蓝）' : '左侧（红）'}队伍`);
-    // both hands point to the side supported (the sprite points right)
-    for (const f of scr.q('panel_battle_holder/group_support/layout_max/layout_min/support_finger')) f.rt.scale[0] = c.side ? 1 : -1;
+    // both hands point to the side supported (the sprite, support_finger, points left: mirrored for the right side)
+    for (const f of scr.q('panel_battle_holder/group_support/layout_max/layout_min/support_finger')) f.rt.scale[0] = c.side ? -1 : 1;
   }
   playLoops(scr);
   scr.play('root', 'battle_ui_battle_in');
