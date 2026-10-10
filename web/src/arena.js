@@ -532,7 +532,8 @@ function drawGround(W) {
 // 障碍物 and 源石祭坛 are the client's own meshes (their prefabs in pkgrps/btl_pfb_tokens: the crate S_common_box_01 with
 // TX_Common_wild_01, the altar S_curse_device with TX_curse_device; assets/traps.json, TRAP_MESH): each vertex goes
 // through the floor's projection at its height, the triangles facing away dropped and the rest drawn far to near.
-// The 梅什科线圈 has no model: it is its effects (battle/prefabs/effects/map) — at each current the start effect
+// The 梅什科线圈 has no model, and is left out of the draw for now (sim.js TRAP_ON); what is here for it is its effects
+// (battle/prefabs/effects/map) — at each current the start effect
 // map_electric_grid_start_01 at the coil (a column of flow_35 in violet blue, 0.5 s), the current map_electric_grid_01
 // from coil to coil (three LineRenderers 0.35 up: shangdian_07's lightning 0.25 wide, scrolling along it, over a violet
 // glow of mask_08 0.5 wide and a teal one 0.3 wide), and on a unit it stops map_electric_grid_buff_01 (the electric_01

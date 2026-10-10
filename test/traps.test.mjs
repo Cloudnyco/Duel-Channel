@@ -25,8 +25,8 @@ test('a round draws one of its event\'s two stages, then per random group one pa
       if (t.length) some++;
       for (const [k, col, row] of t) {
         assert.ok(keys.has(k), k); assert.ok(col >= 0 && col <= 14 && row >= 0 && row <= 10, `${k} ${col},${row}`);
-        // (the 弩炮 and the 清债程序 are left out of the draw for now)
-        assert.ok(!/dqballis|dqcrsbow/.test(k), k);
+        // (the 弩炮, the 清债程序 and the 梅什科线圈, which have no model, are left out of the draw for now)
+        assert.ok(!/dqballis|dqcrsbow|dqelec/.test(k), k);
       }
     }
     // 绿藤城 stage a: none 150 : 5 : 5; every event's rounds are mostly bare
