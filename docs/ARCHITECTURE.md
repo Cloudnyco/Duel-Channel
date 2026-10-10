@@ -47,8 +47,11 @@
 
 消息（JSON over WebSocket）：
 
-- 大厅：`hello` / `welcome`（带会话 `key`）、`resume`（断线后用 `key` 取回会话，失败时回 `resume.fail`）、`queue`（`mode`：`multiOperationMatch` 或 `multiStandMatch`，各自排队）/ `cancel`、`room.*`（`room.create` 的 `mode`：`multiOperationRoom` 或 `multiStandRoom`，人数上限随模式）、`avatar`、`matched`、`ping` / `pong`。
-- 比赛：`hello`、`phase`、`round`（阵容 + 种子 + 押注时长）、`bets`、`battle`、`result`、`finish`、`ready` / `watched` / `bet` / `leave`、`emoji`（客户端发 `{ pic }`，服务端转发 `{ id, pic }`）、`ping` / `pong`。
+- 大厅：`hello`（带浏览器标识 `cid`，32 位十六进制，存在页面的 localStorage）/ `welcome`（带会话 `key`）、`resume`（断线后用 `key` 取回会话，失败时回 `resume.fail`）、`queue`（`mode`：`multiOperationMatch` 或 `multiStandMatch`，各自排队）/ `cancel`、`room.*`（`room.create` 的 `mode`：`multiOperationRoom` 或 `multiStandRoom`，人数上限随模式）、`avatar`、`matched`、`ping` / `pong`。
+- 比赛：`hello`、`phase`、`round`（阵容 + 种子承诺 `commit` + 押注时长 `betMs` + 暗选时长 `secretMs`）、`bets`、`secret`（进入暗选）、`battle`（全部选择 + 种子 `seed` 与盐 `salt`）、`result`、`finish`、`ready` / `watched` / `bet` / `leave`、`emoji`（客户端发 `{ pic }`，服务端转发 `{ id, pic }`）、`ping` / `pong`。
+  - 公平性：`round` 不带种子，只带 `commit = sha256("<seed>:<salt>")`；押注结束时 `battle` 公布 `seed` 和 `salt`，页面核对后再用真种子重建场地（押注期间阵容摆在替身世界里，开战时单位滑到真实位置）。阵容来自另一个独立的种子。暗选时段内的 `bets` 只发给选择者本人。
+  - 限流：每个座位的消息是容量 20、每秒补 10 的令牌桶，超出的丢弃，累计丢弃超过 200 条时断开（关闭码 4008）；每轮最多改选 12 次（之后回「本轮改选次数过多」）。
+  - 调试模式（`DUEL_DEBUG=1` 或 `launch.mjs --debug`）：`round` 照旧带 `seed` 和 `salt`，`hello` 带 `debug: true`，页面在左上角显示「调试模式 · 本场种子提前公开」（网址带 `?debug` 的页面不显示，供录制）。只用于录制。
   - 座位列表只在 `hello` 里带头像；`result` / `finish` 不带（30 个座位、每个头像最多 16 KB）。
   - 竞猜对决：`bet` 只有 `{ side }`；座位多出 `pass`（选对的轮数）、`shield`（还持有观众保护）、`shieldAt`（在第几轮用掉）、`saved`（本轮被保护）、`rank`；`hello` 的 `rounds` 为 `null`（不限轮数）。
 - 断线重连：实例的每条广播都带递增的 `seq`，并保留在比赛的历史里（表情除外）。重连时带上 `since=<最后收到的 seq>`，实例补发之后的全部消息；不带 `since`（刷新页面后重新加入）时，从当前一轮的开头补发。补发的消息带 `age`（毫秒），客户端据此校准倒计时，对战落后太多时会快进追上。

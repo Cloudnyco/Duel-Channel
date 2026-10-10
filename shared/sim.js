@@ -1457,7 +1457,7 @@ function npcSide(npc, o) {
     case 'CHOOSE_ODD_ENEMY_COUNT': { const od = cnt.map((n) => n % 2 === 1); return od[0] === od[1] ? coin() : od[0] ? 0 : 1; }
     case 'CHOOSE_EVEN_ENEMY_COUNT': { const ev = cnt.map((n) => n % 2 === 0); return ev[0] === ev[1] ? coin() : ev[0] ? 0 : 1; }
     case 'ALWAYS_LEFT': return 0;
-    default: return rnd() < (C.npcCorrectProb ?? 0.3) ? knows : sc[0] === sc[1] ? coin() : sc[0] > sc[1] ? 0 : 1;
+    default: return (o.informed ?? rnd() < (C.npcCorrectProb ?? 0.3)) ? knows : sc[0] === sc[1] ? coin() : sc[0] > sc[1] ? 0 : 1;
   }
 }
 // o: { pts, rd (the round's row), lineups, winner (precomputed), sup ([left, right] supporters so far), rnd }
@@ -1515,6 +1515,16 @@ const standRow = (table, r) => table[Math.min(r, table.length) - 1];
 const standSeat = () => ({ pass: 0, shield: true, shieldAt: 0, saved: false });
 // at the start of round r: past the protected rounds nobody holds a shield any more
 function standShields(players, r) { if (r > STAND.shieldTurn) for (const p of players) p.shield = false; }
+// Whether an NPC's pick this round uses the outcome computed ahead: CHOOSE_WIN always, DEFAULT with npcCorrectProb, and
+// in 竞猜对决 one that has guessed right npcMaxRight times (it then backs the loser). Drawn as the round opens and passed
+// to npcPick / npcStandPick as o.informed, so such a pick can be made in the window's secret part, never shown before
+// the bets close (server/game.mjs; the page offline likewise). o: { stand, pass, rnd }
+function npcInformed(npc, o) {
+  if (o.stand && o.pass >= STAND.npcMaxRight) return true;
+  if (npc.specialStrategy === 'CHOOSE_WIN') return true;
+  if (['CHOOSE_ODD', 'FOLLOW_FEWER', 'FOLLOW_MORE', 'CHOOSE_ODD_ENEMY_COUNT', 'CHOOSE_EVEN_ENEMY_COUNT', 'ALWAYS_LEFT'].includes(npc.specialStrategy)) return false;
+  return o.rnd() < (DCFG.consts.npcCorrectProb ?? 0.3);
+}
 // an NPC's pick: its strategy's side (npcSide), or the losing side once it has guessed right npcMaxRight times
 function npcStandPick(npc, o) {
   const side = npcSide(npc, o);

@@ -7,8 +7,13 @@
 // The page: public/index.html (the code) and public/pack/duel-pack.<hash>.json (the assets) from `npm run build`, sent
 // precompressed (brotli / gzip, whichever the browser takes) with validators; the pack, named after its content, may be
 // cached for good. A build from before the split (public/duel-flow.html only) is served as it is.
+// Fair play in the public queues: a browser (the page's own id, kept in its storage) holds one seat at a time — not a
+// second place in a queue, nor one while its seat in a match is still in play — and viewers from one address are put
+// at different tables (behind a reverse proxy set TRUST_PROXY=1 so the address is the client's, X-Forwarded-For; at a
+// LAN event behind one NAT, QUEUE_SAME_IP=1 lets them share). Rooms are the host's: none of this applies there. Every
+// connection's messages are rate-limited, and so are a room code's failed tries from one address.
 // env: PORT (default 8600), HOST (bind, default 127.0.0.1), INSTANCES (comma-separated instance ports), QUEUE_FILL_MS,
-//      DUEL_PUBLIC (the built page's folder, default ../public)
+//      DUEL_PUBLIC (the built page's folder, default ../public), TRUST_PROXY, QUEUE_SAME_IP
 import http from 'node:http';
 import { connect } from 'node:net';
 import { readFileSync, existsSync, statSync, createReadStream } from 'node:fs';
@@ -31,9 +36,39 @@ const SHELL = join(PUBLIC, 'index.html'), SINGLE = join(PUBLIC, 'duel-flow.html'
 const hasPage = () => existsSync(SHELL) || existsSync(SINGLE);
 const log = (s) => console.log(`[gateway] ${s}`);
 installCrashLog('gateway');
+const TRUST_PROXY = process.env.TRUST_PROXY === '1', SAME_IP_OK = process.env.QUEUE_SAME_IP === '1';
+// a connection's address for the queues: the socket's, or behind a trusted proxy the first X-Forwarded-For hop; this
+// machine's own (a tunnel or proxy here that does not pass the client's) counts as unknown
+const LOOPBACK = new Set(['127.0.0.1', '::1', '::ffff:127.0.0.1']);
+function clientIp(req) {
+  let ip = req.socket.remoteAddress || '';
+  if (TRUST_PROXY) { const f = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim(); if (f) ip = f; }
+  return !ip || LOOPBACK.has(ip) ? null : ip.replace(/^::ffff:/, '');
+}
+// a lobby connection's messages: a bucket of 20, refilled at 10 a second; one that keeps flooding is disconnected
+function allow(s) {
+  const now = Date.now(), b = s.bucket;
+  b.n = Math.min(20, b.n + (now - b.at) / 100); b.at = now;
+  if (b.n < 1) { s.dropped++; return false; }
+  b.n -= 1;
+  return true;
+}
+// a room code's failed tries: at most 10 a minute from one address (or connection)
+const joinFails = new Map();
+const joinBlocked = (who) => (joinFails.get(who) || []).filter((t) => Date.now() - t < 60000).length >= 10;
+const joinFailed = (who) => joinFails.set(who, (joinFails.get(who) || []).filter((t) => Date.now() - t < 60000).concat(Date.now()));
 
 // ---- instances: polled for load, the least loaded one gets the next match --------------------------------------------
 const inst = new Map(INSTANCES.map((p) => [p, { port: p, up: false, matches: 0, players: 0, list: [] }]));
+// the browsers whose seat in a running match is still in play (the instances' lists), and those just seated (until the
+// next poll has them)
+const justSeated = new Map();
+function seatedCids() {
+  const out = new Set();
+  for (const i of inst.values()) for (const m of i.list || []) for (const c of m.cids || []) out.add(c);
+  for (const [c, t] of justSeated) if (Date.now() - t < 6000) out.add(c); else justSeated.delete(c);
+  return out;
+}
 async function poll() {
   for (const i of inst.values()) {
     try { const r = await fetch(`http://127.0.0.1:${i.port}/status`, { signal: AbortSignal.timeout(1500) }); Object.assign(i, await r.json(), { up: true }); }
@@ -46,10 +81,11 @@ async function createMatch(mode, members, npcFill) {
   const live = [...inst.values()].filter((i) => i.up).sort((a, b) => a.matches - b.matches);
   if (!live.length) throw new Error('没有可用的对战实例');
   const r = await fetch(`http://127.0.0.1:${live[0].port}/create`, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ mode, npcFill, humans: members.map((s) => ({ name: s.name, tag: s.tag, avatar: s.avatar })) }) });
+    body: JSON.stringify({ mode, npcFill, humans: members.map((s) => ({ name: s.name, tag: s.tag, avatar: s.avatar, cid: s.cid })) }) });
   const o = await r.json();
   if (!r.ok) throw new Error(o.error || 'create failed');
   live[0].matches++;
+  for (const s of members) if (s.cid) justSeated.set(s.cid, Date.now());
   members.forEach((s, i) => { s.state = 'idle'; s.room = null; send(s, { t: 'matched', port: o.port, matchId: o.matchId, token: o.seats[i].token, mode }); });
   log(`match ${o.matchId} → instance ${o.port}: ${members.map((s) => s.name).join(', ')}${npcFill ? ' + NPC' : ''}`);
 }
@@ -65,9 +101,9 @@ const send = (s, m) => {
   if (s.ws && s.ws.readyState === 1) s.ws.send(JSON.stringify(m));
   else if (m.t === 'matched') s.held = m;
 };
-function newSession(ws) {
+function newSession(ws, ip) {
   const s = { id: 'u' + (++sid), key: randomBytes(12).toString('hex'), ws, name: '', tag: '#' + (1000 + Math.floor(Math.random() * 9000)),
-    avatar: nextAvatar(), state: 'idle', room: null, held: null, awayTimer: 0 };
+    avatar: nextAvatar(), state: 'idle', room: null, held: null, awayTimer: 0, ip, cid: null, bucket: { n: 20, at: Date.now() }, dropped: 0 };
   sessions.add(s);
   return s;
 }
@@ -112,8 +148,14 @@ async function matchQueue(mode) {
   if (!here.length) return;
   const waited = Date.now() - here[0].queuedAt;
   for (const s of here) send(s, { t: 'queue', mode, n: here.length, max, waited: (Date.now() - s.queuedAt) / 1000, filling: waited > QUEUE_FILL_MS * 0.6 });
-  if (here.length >= max || waited >= QUEUE_FILL_MS) {
-    const group = here.slice(0, max);
+  // a table: the earliest first, but one viewer per address (QUEUE_SAME_IP aside); the others wait for the next
+  const group = [], ips = new Set();
+  for (const s of here) {
+    if (group.length >= max) break;
+    if (!SAME_IP_OK && s.ip && ips.has(s.ip)) continue;
+    group.push(s); if (s.ip) ips.add(s.ip);
+  }
+  if (group.length >= max || waited >= QUEUE_FILL_MS) {
     queues[mode] = queues[mode].filter((s) => !group.includes(s));
     try { await createMatch(mode, group, group.length < max); }
     catch (e) { recordError('gateway', 'create match (queue)', e); for (const s of group) { s.state = 'idle'; send(s, { t: 'error', msg: '匹配失败：' + e.message }); } }
@@ -140,12 +182,18 @@ function leaveRoom(s) {
 function onMessage(s, m) {
   switch (m.t) {
     case 'hello':
+      // the page's own id (its storage): one seat per browser in the public queues
+      if (typeof m.cid === 'string' && /^[0-9a-f]{32}$/.test(m.cid)) s.cid = m.cid;
       s.name = cleanName(m.name);
       s.avatar = cleanAvatar(m.avatar) || s.avatar;
       send(s, { t: 'welcome', id: s.id, name: s.name, tag: s.tag, avatar: s.avatar, key: s.key });
       break;
     case 'queue': {
       const mode = QUEUE_MODES.includes(m.mode) ? m.mode : 'multiOperationMatch';
+      if (s.cid && ([...sessions].some((x) => x !== s && x.cid === s.cid && x.state === 'queue') || seatedCids().has(s.cid))) {
+        send(s, { t: 'error', msg: '这个浏览器已经在匹配队列或比赛中：同一浏览器只能占一个座位' });
+        break;
+      }
       leaveRoom(s); leaveQueue(s);
       s.state = 'queue'; s.queuedAt = Date.now(); queues[mode].push(s);
       break;
@@ -162,8 +210,10 @@ function onMessage(s, m) {
       break;
     }
     case 'room.join': {
+      const who = s.ip || s.id;
+      if (joinBlocked(who)) { send(s, { t: 'error', msg: '尝试过于频繁，请稍后再试' }); break; }
       const r = rooms.get(String(m.code || '').trim());
-      if (!r) { send(s, { t: 'error', msg: '房间不存在或已无法加入' }); break; }
+      if (!r) { joinFailed(who); send(s, { t: 'error', msg: '房间不存在或已无法加入' }); break; }
       if (r.members.length >= seatsOf(r.mode)) { send(s, { t: 'error', msg: '房间已满' }); break; }
       leaveQueue(s); leaveRoom(s);
       r.members.push(s); s.room = r.code; s.state = 'room';
@@ -260,7 +310,8 @@ const server = http.createServer((req, res) => {
   if (u.pathname === '/status') {
     res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
     res.end(JSON.stringify({ gateway: { port: PORT, pid: process.pid, sessions: sessions.size, relays, queues: Object.fromEntries(QUEUE_MODES.map((m) => [m, queues[m].map((s) => s.name)])), errors: recentErrors(), reports: reportCount() },
-      rooms: [...rooms.values()].map((r) => ({ code: r.code, mode: r.mode, host: r.host.name, members: r.members.map((m) => m.name), npc: r.npc })),
+      // a room's code only for this machine: anyone else could walk into a private room with it
+      rooms: [...rooms.values()].map((r) => ({ ...(LOOPBACK.has(req.socket.remoteAddress) ? { code: r.code } : {}), mode: r.mode, host: r.host.name, members: r.members.map((m) => m.name), npc: r.npc })),
       instances: [...inst.values()].map((i) => ({ port: i.port, up: i.up, matches: i.matches, players: i.players, list: i.list })) }, null, 1));
     return;
   }
@@ -296,8 +347,13 @@ server.on('upgrade', (req, socket, head) => {
   if (u.pathname === '/match') { relayMatch(req, socket, head, u); return; }
   if (u.pathname !== '/lobby') { socket.destroy(); return; }
   wss.handleUpgrade(req, socket, head, (ws) => {
-    const cx = { s: newSession(ws) };
-    ws.on('message', (d) => { let m; try { m = JSON.parse(d); } catch (e) { return; } if (m.t === 'resume') resume(cx, ws, String(m.key || '')); else onMessage(cx.s, m); });
+    const cx = { s: newSession(ws, clientIp(req)) };
+    ws.on('message', (d) => {
+      if (!allow(cx.s)) { if (cx.s.dropped > 200) try { ws.close(4008, 'too many messages'); } catch (e) { /* gone */ } return; }
+      let m; try { m = JSON.parse(d); } catch (e) { return; }
+      if (!m || typeof m !== 'object') return;
+      if (m.t === 'resume') resume(cx, ws, String(m.key || '')); else onMessage(cx.s, m);
+    });
     ws.on('close', () => { if (cx.s.ws === ws) away(cx.s); });
   });
 });

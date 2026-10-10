@@ -535,11 +535,12 @@ async function stLoading(ctx) {
 }
 
 // ---- 6 the rounds -----------------------------------------------------------------------------------------------------
-// NPC viewers decide with the shared npcPick / npcStandPick (sim.js); the supporters so far feed the FOLLOW_* strategies
-function npcDecide(p, rd, lineups, winner) {
-  const sup = [0, 1].map((sd) => players.filter((q) => q.choice && !q.choice.skip && q.choice.side === sd).length);
-  if (standMode()) return npcStandPick(p.npc, { lineups, winner, sup, rnd: Math.random, pass: p.pass });
-  return npcPick(p.npc, { pts: p.pts, rd, lineups, winner, sup, rnd: Math.random });
+// NPC viewers decide with the shared npcPick / npcStandPick (sim.js); the supporters as shown (seen: as they stood when
+// the window turned secret) feed the FOLLOW_* strategies; informed: the pick uses the outcome (npcInformed)
+function npcDecide(p, rd, lineups, winner, seen) {
+  const sup = seen || [0, 1].map((sd) => players.filter((q) => q.choice && !q.choice.skip && q.choice.side === sd).length);
+  if (standMode()) return npcStandPick(p.npc, { lineups, winner, sup, rnd: Math.random, pass: p.pass, informed: p.informed });
+  return npcPick(p.npc, { pts: p.pts, rd, lineups, winner, sup, rnd: Math.random, informed: p.informed });
 }
 function plateFor(scr, list, p, side) {
   const tpl = side === 0 ? 'panel_act1duelenemy_nameplate_left' : 'panel_act1duelenemy_nameplate_right';
@@ -738,9 +739,25 @@ async function betPhase(r, rd, lineups, winner, net = null) {
   scr.tap('btn_skip/hotspot', () => choose({ skip: true }));
   for (const [i, side] of [[0, 'left_btn'], [1, 'right_btn']]) scr.tap(`group_bet_btn_turn/${side}/btn_normal_bet/hotspot`, () => choose({ side: i }));
   refresh();
-  // NPC bets land during the countdown; the FOLLOW_* viewers (priority > 0) late, after seeing the others
+  // NPC bets land during the countdown; the FOLLOW_* viewers (priority > 0) late, after seeing the others; the informed
+  // ones (their pick uses the outcome: npcInformed) only as the bets close, so their picks are never shown before
   const W8 = solo ? 6 : BET_TIME;
-  const npcs = net ? [] : players.filter((p) => !p.me && !p.out).map((p) => ({ p, at: p.npc.priority > 0 ? lerp(W8 * 0.65, W8 - 1.5, Math.random()) : lerp(1, W8 * 0.6, Math.random()) }));
+  const npcs = net ? [] : players.filter((p) => !p.me && !p.out).map((p) => {
+    p.informed = npcInformed(p.npc, { stand, pass: p.pass, rnd: Math.random });
+    return { p, at: p.informed ? Infinity : p.npc.priority > 0 ? lerp(W8 * 0.65, W8 - 1.5, Math.random()) : lerp(1, W8 * 0.6, Math.random()) };
+  });
+  // the window's last seconds are secret (the official 暗选: 下注时间即将结束……确定你的抉择！): the supporters' lists
+  // fold away and picks made now show only as the bets close (online the instance holds them back)
+  let secret = false, seen = null;
+  const list = scr.one('manager_mode_view/panel_list'), tipLine = scr.one('panel_contdown_middle/text_info');
+  const goSecret = () => {
+    if (secret || out) return;
+    secret = true;
+    seen = [0, 1].map((sd) => players.filter((q) => q.choice && !q.choice.skip && q.choice.side === sd).length);
+    scr.show('panel_contdown_middle/text_info_private', true);
+    if (tipLine) tipLine.alpha = 0;
+    if (list) list.alpha = 0;
+  };
   let t = 0, red = false, lastTick = 0;
   const handle = scr.one('slidingarea/handle'), t0 = net && net.at ? net.at : performance.now();
   while (net ? !net.final : t < BET_TIME) {
@@ -752,8 +769,10 @@ async function betPhase(r, rd, lineups, winner, net = null) {
       let upd = false;
       for (const m of NET.match.drain('bets')) for (const [id, ch] of Object.entries(m.choices)) { const p = players.find((x) => x.id === id); if (p && !p.me) { p.choice = ch; upd = true; } }
       for (const m of NET.match.drain('error')) toast(m.msg);
+      if (NET.match.drain('secret').length) goSecret();
       const fin = NET.match.take('battle');
-      if (fin) { for (const p of players) p.choice = fin.choices[p.id] || null; net.final = true; upd = true; G.battleAt = fin._at; }
+      // the bets closed: every pick, and the battle's seed (with its salt, for the commitment)
+      if (fin) { for (const p of players) p.choice = fin.choices[p.id] || null; net.final = true; upd = true; G.battleAt = fin._at; G.battleSeed = fin.seed; G.battleSalt = fin.salt; }
       if (NET.match.closed || t > BET_TIME + 15) net.final = true;
       if (upd) refresh();
     } else t += 0.1;
@@ -761,18 +780,26 @@ async function betPhase(r, rd, lineups, winner, net = null) {
     scr.text('panel_contdown_middle/text_time', mmss(Math.ceil(left)));
     if (handle) { handle.rt.amin[0] = handle.rt.amax[0] = clamp(t / BET_TIME, 0, 1); }
     if (!red && left <= RED) { red = true; scr.play('panel_contdown_middle', 'battle_ui_countdown_red', { loop: true }); }
+    if (left <= (net && net.secretMs ? net.secretMs / 1000 : RED) && !solo) goSecret();
     if (left <= RED && left > 0 && Math.ceil(left) !== lastTick) { lastTick = Math.ceil(left); sfx('b_ui_dqcountdown'); }
     let changed = false;
-    for (const x of npcs) if (!x.done && t >= x.at) { x.done = true; x.p.choice = npcDecide(x.p, rd, lineups, winner); changed = true; EMO.npc('bet', x.p, null, 0.2 + Math.random() * 0.8); }
+    for (const x of npcs) if (!x.done && t >= x.at) { x.done = true; x.p.choice = npcDecide(x.p, rd, lineups, winner, secret ? seen : null); changed = true; if (!secret) EMO.npc('bet', x.p, null, 0.2 + Math.random() * 0.8); }
     if (changed) refresh();
   }
-  for (const x of npcs) if (!x.done) x.p.choice = npcDecide(x.p, rd, lineups, winner);
+  for (const x of npcs) if (!x.done) x.p.choice = npcDecide(x.p, rd, lineups, winner, seen);
   // undecided when the time is up: 观望 where the round allows it, else a side at random (竞猜对决: a side at random)
   if (!net && !me.out && !me.choice) {
     me.choice = stand ? { side: Math.random() < 0.5 ? 0 : 1 } : rd.canSkip ? { skip: true } : { side: Math.random() < 0.5 ? 0 : 1, kind: short ? 'all' : 'normal', forced: short };
   }
   refresh();
   scr.text('panel_contdown_middle/text_time', '00:00');
+  // the bets closed: the lists come back with every pick (battle_ui_secretbet_list_out)
+  if (secret) {
+    scr.show('panel_contdown_middle/text_info_private', false);
+    if (list) list.alpha = 1;
+    scr.play('manager_mode_view/panel_list', 'battle_ui_secretbet_list_out');
+    await wait(0.5);
+  }
   await wait(0.6);
   await fadeOut(scr, 0.3);
 }
@@ -1315,7 +1342,7 @@ async function boot() {
     for (;;) st = await STATES[st](FLOW.ctx);
   } catch (e) { REPORT.fatal(e); }
 }
-window.__flow = { SND, DCFG, NET, EMO, REPORT, dbg: { STATES, FLOW, get playing() { return playing; }, POOL, startBattle, clearArena, Screen, roundEnd, scoreboard, settle, setupRound, makeLineups, predict, makeWorld, simStep, mulberry32, roundsOf, betPhase, battlePhase, stFinish, stShow, play, standBoard, avatarUri, get me() { return me; } }, G, get players() { return players; }, CLOCK, screens, arena: () => arena, phase: () => $('phase').textContent,
+window.__flow = { SND, DCFG, NET, EMO, REPORT, dbg: !PAGE_DEBUG ? null : { STATES, FLOW, get playing() { return playing; }, POOL, startBattle, clearArena, Screen, roundEnd, scoreboard, settle, setupRound, makeLineups, predict, makeWorld, simStep, mulberry32, roundsOf, betPhase, battlePhase, stFinish, stShow, play, standBoard, avatarUri, get me() { return me; } }, G, get players() { return players; }, CLOCK, screens, arena: () => arena, phase: () => $('phase').textContent,
   // test hook: click the topmost shown, clickable node whose path ends with the suffix
   tap: (suf) => { for (const scr of screens.slice().reverse()) { const s = scr.q(suf).find((x) => x.shown && x.el.onclick); if (s) { s.el.click(); return true; } } return false; } };
 boot();

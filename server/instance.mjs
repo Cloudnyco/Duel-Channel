@@ -40,7 +40,9 @@ const server = http.createServer(async (req, res) => {
       const live = [...matches.values()].filter((m) => !m.done);
       return json(res, 200, { name: NAME, port: PORT, pid: process.pid, errors: recentErrors(), matches: live.length,
         players: live.reduce((a, m) => a + m.humans().filter((p) => p.connected).length, 0),
-        list: live.map((m) => ({ id: m.id, mode: m.mode, phase: m.phase, round: m.round ? m.round.round : 0, humans: m.humans().map((p) => p.name), seats: m.players.length })) });
+        list: live.map((m) => ({ id: m.id, mode: m.mode, phase: m.phase, round: m.round ? m.round.round : 0, humans: m.humans().map((p) => p.name), seats: m.players.length,
+          // the browsers whose seat here is still in play (the gateway's one-seat-per-browser rule)
+          cids: m.humans().filter((p) => !p.left && p.cid).map((p) => p.cid) })) });
     }
     json(res, 404, { error: 'not found' });
   } catch (e) { json(res, 400, { error: String(e.message || e) }); }

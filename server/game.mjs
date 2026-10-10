@@ -1,11 +1,18 @@
 // The match engine of a battle instance: one match, 礼物对决 (8 seats) or 竞猜对决 (30 seats, the rules in shared/sim.js
 // STAND), the empty seats filled with the official NPC viewers when asked; authoritative for the rounds, the bets and
-// picks, the results and the ranking. Battles are not simulated live: the line-ups
-// and a seed go to the clients, the shared deterministic sim (shared/sim.js, the same file the page runs) computes the
-// outcome here beforehand, and every client replays the same fight.
+// picks, the results and the ranking. Battles are not simulated live: the line-ups and a seed go to the clients, the
+// shared deterministic sim (shared/sim.js, the same file the page runs) computes the outcome here beforehand, and every
+// client replays the same fight.
+// Fairness: with the seed a client could compute the outcome before betting, so a round's seed goes out only once the
+// bets are closed ('battle'); the round opens with the line-ups and a commitment, sha256(`${seed}:${salt}`), which the
+// seed and salt in 'battle' let every client check (the server cannot pick a seed after seeing the bets). The line-ups
+// come from a seed of their own, so they say nothing about the battle's. The last consts.*SelectTimeLast seconds of
+// the window are secret (the official 暗选: picks made then are not shown until the bets close), and the NPC viewers
+// whose pick uses the precomputed outcome (SIM.npcInformed) make it in that window only. DUEL_DEBUG=1 (recording, e.g.
+// the promo video's pinned seeds) sends the seed with the round as before; every seat is told it is a debug match.
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
-import { randomBytes } from 'node:crypto';
+import { randomBytes, randomInt, createHash } from 'node:crypto';
 
 const root = new URL('..', import.meta.url);
 const load = (p) => readFileSync(new URL(p, root), 'utf8');
@@ -16,7 +23,7 @@ const ctx = {
 vm.createContext(ctx);
 vm.runInContext(load('shared/sim.js') + `
 ;globalThis.SIM = { makeLineups, predict, npcPick, npcEmote, settleOne, mulberry32, pickWeighted, POOL, DCFG, EMOJI_PICS,
-  isStand, STAND, standRow, standSeat, standShields, npcStandPick, settleStand, standLeave, standOver, standRanks, roundTable, pickRound };`, ctx);
+  isStand, STAND, standRow, standSeat, standShields, npcStandPick, npcInformed, settleStand, standLeave, standOver, standRanks, roundTable, pickRound };`, ctx);
 export const SIM = ctx.SIM;
 const C = SIM.DCFG.consts;
 
@@ -32,6 +39,11 @@ const timings = (stand) => ({
 });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const token = () => randomBytes(12).toString('hex');
+export const DEBUG = process.env.DUEL_DEBUG === '1';
+export const commitOf = (seed, salt) => createHash('sha256').update(`${seed}:${salt}`).digest('hex');
+// a seat's messages: a bucket of RATE_BURST refilled at RATE_PER_S; past it messages are dropped, and a seat that keeps
+// flooding (RATE_KICK dropped) is disconnected. A seat changes its pick at most BET_CHANGES times a round.
+const RATE_PER_S = 10, RATE_BURST = 20, RATE_KICK = 200, BET_CHANGES = 12;
 const avatarKeys = () => SIM.POOL.map((f) => f.key);
 
 export class Match {
@@ -47,7 +59,7 @@ export class Match {
     const freeAvatar = () => { const k = avatarKeys().filter((x) => !used.has(x)), from = k.length ? k : avatarKeys(); const a = from[Math.floor(Math.random() * from.length)]; used.add(a); return a; };
     const base = () => ({ pts: C.modeOperationInitialScore || 10000, out: false, outRound: 0, streak: 0, stats: { all: 0, normal: 0, skip: 0, forced: 0 },
       played: 0, change: 0, right: null, lastForced: false, choice: null, left: false, ...(this.stand ? SIM.standSeat() : {}) });
-    this.players = humans.map((h, i) => ({ id: 'p' + (i + 1), name: h.name, tag: h.tag, avatar: h.avatar, human: true, npc: null, token: token(),
+    this.players = humans.map((h, i) => ({ id: 'p' + (i + 1), name: h.name, tag: h.tag, avatar: h.avatar, cid: h.cid || null, human: true, npc: null, token: token(),
       ws: null, connected: false, ready: false, watched: false, ...base() }));
     if (npcFill) {
       const pool = Object.values(SIM.DCFG.npcs), chosen = [];
@@ -86,12 +98,24 @@ export class Match {
     p.ws = ws; p.connected = true;
     const resume = Number.isInteger(since) && since >= 0;
     if (resume) this.log(`${p.name} reconnected (after #${since})`);
-    this.send(p, { t: 'hello', you: p.id, mode: this.mode, rounds: this.stand ? null : this.rounds.length, players: this.snapshot(true), phase: this.phase, resumed: resume });
+    this.send(p, { t: 'hello', you: p.id, mode: this.mode, rounds: this.stand ? null : this.rounds.length, players: this.snapshot(true), phase: this.phase, resumed: resume, debug: DEBUG });
     const from = resume ? this.hist.findIndex((h) => h.m.seq > since) : this.roundFrom;
     if (from >= 0) for (const h of this.hist.slice(from)) this.send(p, { ...h.m, age: Date.now() - h.at });
-    ws.on('message', (data) => { let m; try { m = JSON.parse(data); } catch (e) { return; } this.onMessage(p, m); });
+    ws.on('message', (data) => {
+      if (!this.allow(p)) { if (p.dropped > RATE_KICK) try { ws.close(4008, 'too many messages'); } catch (e) { /* gone */ } return; }
+      let m; try { m = JSON.parse(data); } catch (e) { return; }
+      if (m && typeof m === 'object') this.onMessage(p, m);
+    });
     ws.on('close', () => { if (p.ws === ws) { p.ws = null; p.connected = false; this.log(`${p.name} disconnected`); } });
     if (this.done) setTimeout(() => { try { ws.close(1000, 'match over'); } catch (e) { /* gone */ } }, 3000);
+  }
+  // the seat's message bucket (RATE_*)
+  allow(p) {
+    const now = Date.now(), b = p.bucket || (p.bucket = { n: RATE_BURST, at: now });
+    b.n = Math.min(RATE_BURST, b.n + (now - b.at) / 1000 * RATE_PER_S); b.at = now;
+    if (b.n < 1) { p.dropped = (p.dropped || 0) + 1; return false; }
+    b.n -= 1;
+    return true;
   }
   onMessage(p, m) {
     if (m.t === 'ready') p.ready = true;
@@ -124,15 +148,18 @@ export class Match {
     }
   }
   after(ms, fn) { const h = setTimeout(() => { this.later.delete(h); fn(); }, ms); this.later.add(h); }
+  // a pick made: everyone sees it, but in the secret window only its maker (the others learn it as the bets close)
+  told(p) { if (this.secret) this.send(p, { t: 'bets', choices: { [p.id]: p.choice } }); else this.bcast({ t: 'bets', choices: { [p.id]: p.choice } }); }
   // a bet is checked against the round's rules: 观望 only when the round allows it, 支持 only with enough gifts,
   // 全力支持 when the round opens it or the gifts no longer cover the stake. 竞猜对决: a side, nothing else.
   bet(p, m) {
     const rd = this.round;
     if (this.phase !== 'bet' || !rd || p.out || p.left) return;
+    if ((p.betN = (p.betN || 0) + 1) > BET_CHANGES) { if (p.betN === BET_CHANGES + 1) this.send(p, { t: 'error', msg: '本轮改选次数过多' }); return; }
     if (this.stand) {
       if (m.side !== 0 && m.side !== 1) { this.send(p, { t: 'error', msg: '这个选择在本轮不可用' }); return; }
       p.choice = { side: m.side };
-      this.bcast({ t: 'bets', choices: { [p.id]: p.choice } });
+      this.told(p);
       return;
     }
     const short = p.pts < rd.roundScore;
@@ -142,7 +169,7 @@ export class Match {
     else if ((m.side === 0 || m.side === 1) && m.kind === 'all' && (rd.canAllIn || short)) c = { side: m.side, kind: 'all', forced: short && !rd.canAllIn };
     if (!c) { this.send(p, { t: 'error', msg: '这个选择在本轮不可用' }); return; }
     p.choice = c;
-    this.bcast({ t: 'bets', choices: { [p.id]: c } });
+    this.told(p);
   }
   supporters() { return [0, 1].map((sd) => this.players.filter((q) => q.choice && !q.choice.skip && q.choice.side === sd).length); }
   async waitHumans(pred, ms) {
@@ -189,28 +216,37 @@ export class Match {
     const T = this.T, stand = this.stand;
     this.round = rd; this.r = r;
     if (stand) SIM.standShields(this.players, r);
-    const seed = (Math.random() * 2 ** 31) | 0;
-    const lineups = SIM.makeLineups(rd, SIM.mulberry32(seed ^ 0x5bd1e995));
+    // the line-ups and the battle each from a seed of their own (crypto), the battle's committed to now, shown later
+    const lineupSeed = randomInt(2 ** 31), seed = randomInt(2 ** 31), salt = randomBytes(16).toString('hex');
+    const lineups = SIM.makeLineups(rd, SIM.mulberry32(lineupSeed ^ 0x5bd1e995));
     const pred = SIM.predict(lineups, seed);
-    for (const p of this.players) { p.choice = null; p.watched = false; }
-    this.phase = 'bet';
-    this.bcast({ t: 'round', r, roundId: rd.roundId, lineups: lineups.map((s) => s.map((g) => [g.f.key, g.n])), seed, betMs: T.bet });
+    for (const p of this.players) { p.choice = null; p.watched = false; p.betN = 0; }
+    this.phase = 'bet'; this.secret = false; this.seen = null;
+    const secretMs = Math.min(T.bet, env('DUEL_SECRET_MS', ((stand ? C.modeStandSelectTimeLast : C.modeOperationSelectTimeLast) || 7) * 1000)), openMs = T.bet - secretMs;
+    this.bcast({ t: 'round', r, roundId: rd.roundId, lineups: lineups.map((s) => s.map((g) => [g.f.key, g.n])), commit: commitOf(seed, salt), betMs: T.bet, secretMs,
+      ...(DEBUG ? { seed, salt } : {}) });
+    // the NPC viewers: the FOLLOW_* ones (priority > 0) see the supporters as everyone could when the window turned
+    // secret; the informed ones (their pick uses the outcome) decide in the secret window, the rest while picks show
+    const sup = () => this.seen || this.supporters();
     const npcPick = (p) => (stand
-      ? SIM.npcStandPick(p.npc, { lineups, winner: pred.winner, sup: this.supporters(), rnd: Math.random, pass: p.pass })
-      : SIM.npcPick(p.npc, { pts: p.pts, rd, lineups, winner: pred.winner, sup: this.supporters(), rnd: Math.random }));
-    // the NPC viewers bet during the window; FOLLOW_* (priority > 0) late, after seeing the others
-    const timers = this.players.filter((p) => p.npc && !p.out).map((p) => {
-      const at = p.npc.priority > 0 ? (0.65 + Math.random() * 0.25) * T.bet : (0.05 + Math.random() * 0.55) * T.bet;
+      ? SIM.npcStandPick(p.npc, { lineups, winner: pred.winner, sup: sup(), rnd: Math.random, pass: p.pass, informed: p.informed })
+      : SIM.npcPick(p.npc, { pts: p.pts, rd, lineups, winner: pred.winner, sup: sup(), rnd: Math.random, informed: p.informed }));
+    const npcs = this.players.filter((p) => p.npc && !p.out);
+    for (const p of npcs) p.informed = SIM.npcInformed(p.npc, { stand, pass: p.pass, rnd: Math.random });
+    const timers = npcs.map((p) => {
+      const at = p.informed || p.npc.priority > 0 ? openMs + (0.1 + Math.random() * 0.75) * secretMs : (0.05 + Math.random() * 0.85) * openMs;
       return setTimeout(() => {
         if (this.phase !== 'bet') return;
         p.choice = npcPick(p);
-        this.bcast({ t: 'bets', choices: { [p.id]: p.choice } });
+        this.told(p);
         const pic = SIM.npcEmote('bet', p.choice, null, Math.random);
-        if (pic) this.after(200 + Math.random() * 800, () => { if (this.phase === 'bet') this.bcast({ t: 'emoji', id: p.id, pic }); });
+        if (pic && !this.secret) this.after(200 + Math.random() * 800, () => { if (this.phase === 'bet' && !this.secret) this.bcast({ t: 'emoji', id: p.id, pic }); });
       }, at);
     });
+    timers.push(setTimeout(() => { if (this.phase !== 'bet') return; this.seen = this.supporters(); this.secret = true; this.bcast({ t: 'secret' }); }, openMs));
     await sleep(T.bet);
     timers.forEach(clearTimeout);
+    this.secret = false;
     // undecided seats: NPCs pick now, humans watch (or, when the round forbids it, back a side at random; 竞猜对决: a
     // side at random)
     for (const p of this.players) {
@@ -220,7 +256,7 @@ export class Match {
       else { const short = p.pts < rd.roundScore; p.choice = rd.canSkip ? { skip: true } : { side: Math.random() < 0.5 ? 0 : 1, kind: short ? 'all' : 'normal', forced: short }; }
     }
     this.phase = 'battle';
-    this.bcast({ t: 'battle', choices: Object.fromEntries(this.players.filter((p) => p.choice).map((p) => [p.id, p.choice])) });
+    this.bcast({ t: 'battle', choices: Object.fromEntries(this.players.filter((p) => p.choice).map((p) => [p.id, p.choice])), seed, salt });
     // reactions while the fight runs (after the clients' round-start banner, within the battle)
     this.npcEmotes('battle', () => 2500 + Math.random() * Math.max(1000, Math.min(8000, pred.time * 1000)));
     await this.waitHumans((p) => p.watched, pred.time * 1000 + T.battleExtra);

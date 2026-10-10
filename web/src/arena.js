@@ -571,9 +571,11 @@ function bossPanel(W, dt) {
 }
 
 // ---- the visible arena: the sim's world (sim.js) with Spine views --------------------------------------------------------
+// seed null (online, the bets still open): a stand-in world shows the line-up until the battle's seed comes (reseedRound)
 function setupRound(lineups, seed) {
   clearArena();
-  arena.W = makeWorld(lineups, seed, true);
+  arena.lineups = lineups; arena.standIn = seed == null;
+  arena.W = makeWorld(lineups, seed ?? 0, true);
   // a giant makes its entrance as the line-up comes on
   for (const u of arena.W.units) attachView(u, u.giant);
   arena.acc = 0; arena.ff = 1; arena.running = false;
@@ -582,6 +584,16 @@ function setupRound(lineups, seed) {
   setLedArt(stand);
   setTicker(typeof G !== 'undefined' && G.round ? `ROUND ${String(G.round).padStart(2, '0')}${stand ? '' : ` / ${ROUNDS}`}` : '');
   drawRing();
+}
+// online the battle's seed comes as the bets close (server/game.mjs): the real world takes the stand-in's place, and
+// each unit glides the few hundredths of a tile from where it stood to its own place (vox / voy, easing to 0)
+function reseedRound(seed) {
+  if (!arena.W || !arena.standIn) return;
+  const old = arena.W, W = makeWorld(arena.lineups, seed, true);
+  for (const u of old.units) if (u.view) u.view.destroy({ children: true });
+  [0, 1].forEach((sd) => W.all[sd].forEach((u, i) => { const o = old.all[sd][i]; if (o && o.f === u.f) { u.vox = o.x - u.x; u.voy = o.y - u.y; } }));
+  arena.W = W; arena.standIn = false;
+  for (const u of W.units) attachView(u, false);
 }
 function clearArena() {
   if (arena.W) { for (const u of arena.W.units) if (u.view) u.view.destroy({ children: true }); for (const s of arena.W.shots) if (s.g) s.g.destroy({ children: true }); }
@@ -644,7 +656,8 @@ function renderUnit(u, dt) {
   // a fallen unit that has faded out (alpha 0 from 1.17 s): nothing left to draw — its view hidden, its skeleton no
   // longer posed every frame (some 40 % of the unit-frames of a battle went to these)
   if (u.dead && u.deadT >= 1.2) { if (u.view.visible) u.view.visible = false; return; }
-  const [sx, sy, k] = proj(u.x, u.y);
+  if (u.vox || u.voy) { const e = Math.max(0, 1 - dt * 6); u.vox = Math.abs(u.vox * e) < 1e-3 ? 0 : u.vox * e; u.voy = Math.abs(u.voy * e) < 1e-3 ? 0 : u.voy * e; }
+  const [sx, sy, k] = proj(u.x + (u.vox || 0), u.y + (u.voy || 0));
   u.view.position.set(sx, sy);
   u.view.zIndex = sy;
   const s = FLOOR.T * k / 320 * (u.f.scale || 1);

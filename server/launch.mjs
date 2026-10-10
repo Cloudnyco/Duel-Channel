@@ -1,12 +1,14 @@
 // Starts the gateway and N battle instances as child processes (one log stream, Ctrl+C stops all). A child that exits
 // on its own (an exception nothing caught: errors.mjs records it) is started again after 1, 2, 4… s (at most 30 s);
 // after 5 exits within a minute it is left down and the log says so.
-// usage: node server/launch.mjs [--instances 3] [--port 8600] [--host 127.0.0.1]
+// usage: node server/launch.mjs [--instances 3] [--port 8600] [--host 127.0.0.1] [--debug]
+// --debug (or DUEL_DEBUG=1): debug matches, each round's seed sent with its line-ups (recording; server/game.mjs)
 import { fork } from 'node:child_process';
 
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
 const N = Number(arg('--instances', 3)), PORT = Number(arg('--port', 8600)), HOST = arg('--host', '127.0.0.1');
 const ports = Array.from({ length: N }, (_, i) => PORT + 11 + i);
+if (process.argv.includes('--debug')) process.env.DUEL_DEBUG = '1';
 const kids = new Set(), exits = new Map();
 let stopping = false;
 // --host is the gateway's: the instances listen on this machine only (players reach them through the gateway's relay)
@@ -28,5 +30,6 @@ const start = (file, env) => {
 for (const p of ports) start('./instance.mjs', { PORT: String(p), NAME: `instance-${p}` });
 start('./gateway.mjs', { PORT: String(PORT), INSTANCES: ports.join(',') });
 console.log(`[launch] gateway :${PORT}, instances ${ports.join(', ')} — open http://${HOST === '0.0.0.0' ? '127.0.0.1' : HOST}:${PORT}/`);
+if (process.env.DUEL_DEBUG === '1') console.log('[launch] DEBUG: every round sends its seed with the line-ups (for recording only; every seat sees a debug mark)');
 const stop = () => { stopping = true; for (const c of kids) c.kill(); process.exit(0); };
 process.on('SIGINT', stop); process.on('SIGTERM', stop);

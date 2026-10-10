@@ -4,6 +4,61 @@
 // before the bets — the page replays the same fight from the line-ups and the seed (sim.js is shared). Opened as a
 // file, the page stays the offline demo. 自娱自乐 is always local.
 const NET = { on: /^https?:$/.test(location.protocol), lobby: null, match: null, me: null };
+// a page opened as a file or with ?debug: the debug hooks (window.__flow.dbg), and no debug-match notice (recording)
+const PAGE_DEBUG = location.protocol === 'file:' || /[?&]debug(=|&|$)/.test(location.search);
+// this browser's own id (kept in its storage): the gateway gives one browser one seat in the public queues
+const CID_KEY = 'duel.cid';
+function clientId() {
+  try {
+    let c = localStorage.getItem(CID_KEY);
+    if (!/^[0-9a-f]{32}$/.test(c || '')) { c = [...crypto.getRandomValues(new Uint8Array(16))].map((b) => b.toString(16).padStart(2, '0')).join(''); localStorage.setItem(CID_KEY, c); }
+    return c;
+  } catch (e) { return undefined; }
+}
+// SHA-256 of a short ASCII string, as hex: a round opens with sha256(`${seed}:${salt}`) and closes its bets with the
+// seed and salt, so the page can tell the seed was fixed before anyone bet (server/game.mjs). WebCrypto would need a
+// secure context, and a page from a LAN address is not one.
+function sha256hex(text) {
+  const rot = (v, n) => (v >>> n) | (v << (32 - n)), H = [], K = [], seen = {};
+  for (let c = 2, n = 0; n < 64; c++) {
+    if (seen[c]) continue;
+    for (let i = c; i < 320; i += c) seen[i] = true;
+    if (n < 8) H[n] = (Math.pow(c, 1 / 2) * 4294967296) | 0;
+    K[n++] = (Math.pow(c, 1 / 3) * 4294967296) | 0;
+  }
+  const bytes = [...text].map((ch) => ch.charCodeAt(0) & 255), bits = bytes.length * 8;
+  bytes.push(0x80);
+  while (bytes.length % 64 !== 56) bytes.push(0);
+  for (let i = 7; i >= 0; i--) bytes.push(i >= 4 ? 0 : (bits >>> (i * 8)) & 255);
+  let h = H.slice();
+  for (let o = 0; o < bytes.length; o += 64) {
+    const w = [];
+    for (let i = 0; i < 16; i++) w[i] = (bytes[o + i * 4] << 24) | (bytes[o + i * 4 + 1] << 16) | (bytes[o + i * 4 + 2] << 8) | bytes[o + i * 4 + 3];
+    for (let i = 16; i < 64; i++) {
+      const s0 = rot(w[i - 15], 7) ^ rot(w[i - 15], 18) ^ (w[i - 15] >>> 3), s1 = rot(w[i - 2], 17) ^ rot(w[i - 2], 19) ^ (w[i - 2] >>> 10);
+      w[i] = (w[i - 16] + s0 + w[i - 7] + s1) | 0;
+    }
+    let [a, b, c, d, e, f, g, hh] = h;
+    for (let i = 0; i < 64; i++) {
+      const t1 = (hh + (rot(e, 6) ^ rot(e, 11) ^ rot(e, 25)) + ((e & f) ^ (~e & g)) + K[i] + w[i]) | 0;
+      const t2 = ((rot(a, 2) ^ rot(a, 13) ^ rot(a, 22)) + ((a & b) ^ (a & c) ^ (b & c))) | 0;
+      hh = g; g = f; f = e; e = (d + t1) | 0; d = c; c = b; b = a; a = (t1 + t2) | 0;
+    }
+    h = h.map((v, i) => (v + [a, b, c, d, e, f, g, hh][i]) | 0);
+  }
+  return h.map((v) => (v >>> 0).toString(16).padStart(8, '0')).join('');
+}
+// a debug match (the server's DUEL_DEBUG: seeds sent with the round, for recording): a mark beside the latency readout
+// (top left of the stage) while it runs; a page with ?debug (the one recording) shows none
+function debugMark(on) {
+  let el = document.getElementById('debug-mark');
+  if (!on || PAGE_DEBUG) { if (el) el.remove(); return; }
+  if (el) return;
+  el = document.createElement('div'); el.id = 'debug-mark'; el.textContent = '调试模式 · 本场种子提前公开';
+  Object.assign(el.style, { position: 'absolute', left: '82px', top: '84px', zIndex: 50, padding: '0 8px', borderRadius: '3px', font: '600 12px/18px "Noto Sans SC", sans-serif',
+    color: '#1d1d1d', background: '#f3d23a', pointerEvents: 'none', opacity: 0.9 });
+  document.getElementById('stage').appendChild(el);
+}
 // A server connection with a message queue the flow reads in order (next / drain / take). With `retry` (seconds) a
 // connection that drops unexpectedly is reopened in the background with growing pauses until that time runs out:
 // waiting reads simply wait on, what the flow sends meanwhile that matters (bets, ready, watched, leave) goes out once
@@ -153,7 +208,7 @@ function watchPing(scr, suffix, under, wrap = (t) => t, offline = '单机') {
 const WS_BASE = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`;
 async function connectLobby(name) {
   let live = false;
-  const hello = () => ({ t: 'hello', name, avatar: myAvatar.value() || undefined });
+  const hello = () => ({ t: 'hello', name, avatar: myAvatar.value() || undefined, cid: clientId() });
   NET.lobby = new Link(`${WS_BASE}/lobby`, {
     retry: C.maxRetryTimeInTeamRoom || 45, onstate: (st) => RECONNECT.state(st),
     reopen: (link) => ({ url: link.url, first: { t: 'resume', key: NET.me.key } }),
@@ -215,12 +270,14 @@ async function joinMatch(m) {
   players = h.players.map((s) => serverPlayer(s, h.you));
   me = players.find((p) => p.me);
   G.online = true;
+  G.debugMatch = !!h.debug; debugMark(G.debugMatch);
+  if (G.debugMatch) { if (PAGE_DEBUG) console.info('debug match: seeds come with the line-ups'); else toast('这是一场调试模式的对局：服务器在押注前就公开了种子', 4); }
   G.mode = MODES.find((x) => x.id === h.mode) || G.mode;
   G.matchId = m.matchId;
   try { sessionStorage.setItem(SEAT_KEY, JSON.stringify({ port: m.port, matchId: m.matchId, token: m.token })); } catch (e) { /* no storage */ }
   return h;
 }
-const forgetSeat = () => { try { sessionStorage.removeItem(SEAT_KEY); } catch (e) { /* no storage */ } };
+const forgetSeat = () => { debugMark(false); try { sessionStorage.removeItem(SEAT_KEY); } catch (e) { /* no storage */ } };
 // after a reload: the seat this tab had, if its match still runs. Returns the state to go to ('show' while the match
 // is still starting, 'game' for its rounds or its final standings), or null
 async function rejoinMatch() {
@@ -386,9 +443,16 @@ async function stGameOnline() {
     if (stand) standShields(players, r);
     const lineups = m.lineups.map((s) => s.map(([k, n]) => ({ f: byKey(k), n })));
     G.log.push({ r, seed: m.seed, lineups: lineups.map((x) => x.map((g) => `${g.f.name}×${g.n}`).join(' + ')), cost: lineups.map(sideScore), len: 0 });
-    setupRound(lineups, m.seed);
-    G.serverResult = null; G.battleAt = 0;
-    await betPhase(r, rd, lineups, null, { betMs: m.betMs, at: m._at });
+    // the battle's seed comes as the bets close (a debug match sends it now): the line-up stands on a stand-in world
+    setupRound(lineups, m.seed ?? null);
+    G.serverResult = null; G.battleAt = 0; G.battleSeed = null; G.battleSalt = null;
+    await betPhase(r, rd, lineups, null, { betMs: m.betMs, secretMs: m.secretMs, at: m._at });
+    if (Number.isInteger(G.battleSeed)) {
+      // the seed and salt against the round's opening commitment
+      if (m.commit && sha256hex(`${G.battleSeed}:${G.battleSalt}`) !== m.commit) { console.warn('round seed does not match its commitment', r); toast('本轮种子与开局承诺不符', 4); }
+      G.log[G.log.length - 1].seed = G.battleSeed;
+      reseedRound(G.battleSeed);
+    }
     const w = await battlePhase(r, true);
     const res = G.serverResult;
     if (!res || res.t !== 'result') { if (res && res.t === 'finish') { applyServerPlayers(res.players); G.matchOver = true; forgetSeat(); } break; }
