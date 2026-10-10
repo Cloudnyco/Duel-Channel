@@ -77,8 +77,10 @@ function bot(i) {
           if (dropMode && !drops && m.r === 3) {
             drops++;
             ws.terminate();
-            // back after the bet window has closed: the instance must replay the bets, the battle, maybe the result
-            setTimeout(() => { if (dropMode === 'rejoin') lastSeq = 0; connect(dropMode === 'resume' ? lastSeq : null); }, 2500);
+            // back just after the bet window has closed, while the round is still on: the instance must replay the bets,
+            // the battle, maybe the result (a reloaded page, coming back once the next round has begun, would rightly be
+            // replayed that round only)
+            setTimeout(() => { if (dropMode === 'rejoin') lastSeq = 0; connect(dropMode === 'resume' ? lastSeq : null); }, m.betMs + 300);
             return;
           }
           await sleep(rnd(1000, m.betMs - 2500));
