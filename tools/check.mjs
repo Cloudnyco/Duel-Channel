@@ -55,7 +55,8 @@ if (packFiles.length) {
   check(packFiles.some((f) => f.startsWith('assets/audio/') && f.endsWith('.ogg')), 'asset pack: no sound tracked');
 }
 // the enemies' attack effects (optional): every fighter named is on the roster, every effect named is there, every
-// texture an effect draws with is there
+// texture an effect draws with is there (main, dissolve, distortion and its weight, colour multiply, a particle
+// trail's), every animation track as long as its frames, every sub-emitter a system of its effect
 if (packFiles.includes('assets/enemyfx.json')) {
   const E = JSON.parse(rd('assets/enemyfx.json')), keys = new Set(roster.map((x) => x.key));
   for (const [k, v] of Object.entries(E.by || {})) {
@@ -63,7 +64,15 @@ if (packFiles.includes('assets/enemyfx.json')) {
     for (const n of [v.s, v.t, v.h]) if (n) check(E.fx[n], `assets/enemyfx.json ${k}: no effect ${n}`);
   }
   for (const n of Object.values(E.common || {})) check(E.fx[n], `assets/enemyfx.json: no common effect ${n}`);
-  for (const [n, e] of Object.entries(E.fx || {})) for (const p of [...e.ps, ...e.tr]) for (const t of [p.tex, p.diss && p.diss.tex]) if (t) check(E.tex[t], `assets/enemyfx.json ${n}: no texture ${t}`);
+  const texOf = (p) => [p.tex, p.diss && p.diss.tex, p.dist && p.dist.tex, p.dist && p.dist.wt, p.mul && p.mul.tex, ...(p.trl ? texOf(p.trl) : [])].filter(Boolean);
+  const WIDTH = { tr: 15, on: 1, tint: 4, ust: 4, dst: 4, xst: 4, amt: 1, bw: 1, xi: 2, wid: 1 };
+  for (const [n, e] of Object.entries(E.fx || {})) {
+    for (const p of [...e.ps, ...e.tr, ...(e.mr || [])]) {
+      for (const t of texOf(p)) check(E.tex[t], `assets/enemyfx.json ${n}: no texture ${t}`);
+      if (p.an) for (const [c, w] of Object.entries(WIDTH)) if (p.an[c]) check(p.an[c].length === p.an.n * w, `assets/enemyfx.json ${n}: track ${c} is not ${p.an.n} frames`);
+    }
+    for (const p of e.ps) for (const s of p.sub || []) check(e.ps[s.i] && e.ps[s.i].subOf !== undefined, `assets/enemyfx.json ${n}: no sub-emitter system ${s.i}`);
+  }
 }
 if (fails.length) { console.error(fails.map((m) => '✗ ' + m).join('\n')); process.exit(1); }
 console.log(`ok: template, ${body.split('\n').length} lines of page code, ${roster.length} fighters, ${Object.values(cfg.rounds).flat().length} rounds, ${tracked.length} tracked files`);

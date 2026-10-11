@@ -15,7 +15,7 @@ assets/
   audio/*.ogg       界面音效（b_ui_dq*、g_ui_dq*、g_ui_tabswitch / matchsucceed / matchcancel）；可选 m_nobetnolife.ogg、m_all.ogg 作为 BGM
   fx/*              web/fx-map.json 列出的特效、地块、buff、表情与装置贴图
   traps.json        场地装置的模型：{ 装置: { tex（fx 角色）, v, uv, f } }（障碍物、源石祭坛）
-  enemyfx.json      敌人的攻击特效（可选）：{ by: { 敌人: { s 起手, t 弹道, h 命中, arc, v } }, common, fx: { 特效: { d, ps, tr } }, tex, clamp }
+  enemyfx.json      敌人的攻击特效（可选）：{ by: { 敌人: { s 起手, t 弹道, h 命中, arc, v } }, common, fx: { 特效: { d, w, ups, ps, tr, mr } }, tex, clamp }
   fonts/            构建时下载的字体（不提交）
 ```
 
@@ -70,11 +70,14 @@ Ark-Models 有 4 个原型只登记了名字、没有文件，用最接近的模
 敌人的攻击特效，从客户端的特效预制体导出（维护者的本地工具，不在仓库中）：
 
 - 来源：敌人特效合包 `pkgrps/btl_pfb_fx_enemy_*`、早期敌人各自的 `battle/prefabs/effects/<代号>.ab`、通用特效 `battle/prefabs/effects/common.ab`，投射物预制体 `battle/prefabs/[uc]projectiles.ab`，贴图与材质在 `refs/fx/*`，着色器在 `[uc]shaders.ab`。
-- 对应关系：按原型敌人的代号找特效名（`enemy_<代号>_attack…_start` / `_trail` / `_hit`，早期敌人没有 `enemy_` 前缀）；远程敌人以投射物预制体为准（`SimpleProjectile._mainEffect` 是弹道，`EffectBehaviour._effectsWhenHit` 是命中，`ParacurveMovement._raiseHeight` 是抛物线高度）。敌人预制体本身（动画事件绑定特效）是热更新资源，不在安装包里，所以起手特效的触发时机按特效本身推断：所有粒子都延迟 0.15 秒以上的随攻击动画开始播放，其余在命中 / 出手时播放。
-- 每个特效是一组粒子系统（节点在特效空间中的位置与朝向、各模块参数、渲染方式，网格粒子带网格）和拖尾（`TrailRenderer` / `LineRenderer`）。材质按着色器的 GLES 程序换算为一种混合（叠加 / 透明）和一个颜色系数：`Torappu/Particles/Additive`、`AlphaBlend` 是 2 × `_TintColor`，`Dissolve` / `Disturb (CustomData)` 是 2 × `_MainColor`，`_PremultiplyAlpha` 开启时颜色再 × 2；溶解着色器记下溶解贴图、平铺、强度与边宽，自定义数据（Custom Data）曲线驱动 UV 偏移与溶解进度。`_MainTexChannel` 单通道贴图在导出时烘成灰度（键名 `<贴图>#R` 等），溶解噪声烘成不透明灰度（`#N0` 等）。
+- 对应关系：按原型敌人的代号找特效名（`enemy_<代号>_attack…_start` / `_trail` / `_hit`，早期敌人没有 `enemy_` 前缀）；远程敌人以投射物预制体为准（`SimpleProjectile._mainEffect` 是弹道，`EffectBehaviour._effectsWhenHit` 是命中，`ParacurveMovement._raiseHeight` 是抛物线高度）。
+- 时机：敌人预制体本身（动画事件绑定特效）是热更新资源，不在安装包里。62 个起手特效的根节点带 `FxDelay`（延迟 0–1.5 秒），与攻击动画开始到 `OnAttack` 命中帧的时间对照，64 组里 45 组相差不到 0.15 秒（中位数早 0.055 秒），其余多数加上粒子自身的延迟后吻合。据此，起手特效在攻击动画开始时生成，按 `FxDelay` 加根节点 `ParticleEffect._delayToPlay` 等待（`w`）后播放。没有等待（等待加最短的粒子延迟不到 0.15 秒）的起手特效在命中 / 出手时播放，这一条是推断。特效随攻击者的播放速度（攻击动画为配合攻击间隔加快的倍数）加快，上限为 `ParticleEffect._limitedPlaybackSpeed`（`ups`，开启 `_usePlaybackSpeed` 的特效才有）。起手特效放在攻击者脚下、命中特效放在目标胸口，与根节点 `_spawnLocation` 的分组一致（命中几乎都是 2，起手多数是 1），具体枚举含义数据里没有。
+- 每个特效是一组粒子系统（`ps`）、拖尾（`tr`：`TrailRenderer` / `LineRenderer`）和网格（`mr`：`MeshRenderer`，含 Unity 内置的 Quad、Plane），各自带节点在特效空间中的位置与朝向。粒子系统导出各模块：发射、形状、速度、限速、力、颜色 / 大小 / 旋转随生命周期变化、序列帧、自定义数据、噪声（`noise`）、继承速度（`inh`）、碰撞平面（`coll`）、出生子发射器（`sub` / `subOf`）、粒子拖尾（`trl`，渲染方式为 None、只显示拖尾的系统也导出）。
+- 动画：特效里的 `Animator` / `Animation` 片段（Mecanim 的流式 / 密集 / 常量曲线，按绑定的节点路径和属性名的 CRC32 解析）按每秒 30 帧采样成各渲染器的轨道（`an`）：节点的位置与朝向（`tr`）、显示与否（`on`，片段打开的节点即使在预制体里是关着的也导出）、材质的颜色（`tint`）、平铺与偏移（`ust` / `dst` / `xst`）、溶解进度与边宽（`amt` / `bw`）、扭曲强度（`xi`）、拖尾宽度（`wid`）。
+- 材质按着色器的 GLES 程序换算为一种混合（叠加 / 透明）和一个颜色系数：`Torappu/Particles/Additive`、`AlphaBlend`、`Dissolve AB / Add`（含 UVTween）是 2 × `_TintColor`，`Dissolve` / `Disturb` / `Ram` 的 CustomData 版本是 2 × `_MainColor`（透明度再 × `_Opacity`），`Disturb Origin` 是 2 × `_MainColor` × `_MainColor.a`，`Disturb Anchor` 按 `_MainColorACtrl` 调整透明度，`_PremultiplyAlpha` 开启时颜色再 × 2。溶解（`diss`）记下噪声贴图、平铺、强度与边宽；扭曲（`dist`，Disturb 系列）记下噪声贴图、平铺、强度、锚点、权重贴图和它对主 / 溶解 UV 的影响系数；`Ram` 的乘色贴图记为 `mul`。自定义数据（Custom Data）曲线按着色器驱动 UV 偏移、溶解进度、边宽或扭曲强度。`_MainTexChannel` 单通道贴图在导出时烘成灰度（键名 `<贴图>#R` 等），噪声烘成不透明灰度（`#N0` 等），权重 / 乘色贴图烘成不透明（`#O`）。
+- 特效脚本：`FxUVTweener` 的滚动速度并入 `uvspd`（主贴图、溶解）和 `dist.spd`（扭曲），`FxUVTweenerAdvance` 记为按周期重复的偏移（`tw`），`FxUVRotation` 记为 Disturb 着色器的 UV 旋转（`uvrot`，角度到旋转矩阵的方向是推断）。
 - 贴图缩到序列帧每格不超过 128 像素、整体不超过 256 像素，存为 WebP；`clamp` 列出导入设置为 Clamp 的贴图（其余平铺）。
-- `MeshRenderer`（投射物本体等）导出网格与材质；用到 Unity 内置网格（Quad、Plane，不在任何资源包里）时按内置网格的形状补上。
-- 尚未还原：由 Animator 驱动的节点动画（起手 / 命中特效里受它控制的网格暂不绘制，投射物上的按静止绘制）、粒子的子发射器与噪声模块。
+- 尚未还原：`FollowMountPoint`（23 个特效跟随单位身上的挂点移动，挂点位置在敌人预制体里），`Dissolve AB Double` 的第二层溶解，`Disturb Anchor` 的第二层扭曲，`Mask` 的叠加贴图，`Ram` 乘色贴图的透明通道，出生以外的子发射器，平面以外的碰撞。噪声模块用页面自己的平滑噪声场（Unity 的噪声算法未公开），强度、频率、八度与滚动按数据。
 
 ### audio、fx、fonts
 

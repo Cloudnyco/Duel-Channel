@@ -533,17 +533,25 @@ function drawGround(W) {
 // ---- the enemies' own attack effects (assets/enemyfx.json: ENEMY_FX inlined in the single file, else fetched from
 // ENEMY_FX_URL once the page runs) ------------------------------------------------------------------------------------
 // Each is the client's effect prefab, exported with tools the repository does not carry (docs/ASSETS.md): particle
-// systems and trails in the effect's own space — x forward (the attacker's facing, a projectile's flight), y up, z away
-// from the viewer — in world units. An enemy's start effect plays at its feet when the hit lands (a melee swing) or the
-// shot leaves (a ranged one), its projectile carries the trail its prefab names (_mainEffect, flying the prefab's arc),
-// and the hit effect plays at the target's chest. Enemies with none of their own (the plain soldiers and slugs: their
-// prefabs, which would name them, are not in the packages at hand) take the client's common hit effects
-// (common_enemy_hit_01, arts common_magic_hit_01). The client draws an enemy's Spine at 0.01 × 0.27 world units a pixel
-// (tools/lib/model-scales.mjs), this arena at 1/320 tile: an effect unit is 1 / (0.0027 × 320) tiles here, so the
-// effects keep their size against the models. Particles are billboards (stretched along their screen velocity, or
-// lying in their system's plane for local alignment), mesh particles project their mesh; the shaders' colour is the
-// texture × the vertex colour × the material's (doubled) tint, an additive overflow carried into the alpha.
-const EFX = { K: 1 / (0.0027 * 320), M: null, data: null, tex: {}, img: {}, frames: new Map(), baked: new Map(), live: [], loading: null, ready: false, MAX: 160 };
+// systems, trails and meshes in the effect's own space — x forward (the attacker's facing, a projectile's flight), y up,
+// z away from the viewer — in world units, with the tracks its Animator plays (where a renderer is, whether it shows,
+// the material values it drives). An enemy's start effect is made as its attack clip starts and waits as long as its
+// prefab says (FxDelay: until about the strike); one that does not wait (under 0.15 s in all) plays when the hit lands
+// (a melee swing) or the shot leaves (a ranged one). Its projectile carries the trail its prefab names (_mainEffect,
+// flying the prefab's arc), and the hit effect plays at the target's chest. Enemies with none of their own (the plain
+// soldiers and slugs: their prefabs, which would name them, are not in the packages at hand) take the client's common
+// hit effects (common_enemy_hit_01, arts common_magic_hit_01). An effect keeps its attacker's playback speed (the
+// attack clip sped up to the attack interval) up to its prefab's limit (ParticleEffect._limitedPlaybackSpeed). The
+// client draws an enemy's Spine at 0.01 × 0.27 world units a pixel (tools/lib/model-scales.mjs), this arena at 1/320
+// tile: an effect unit is 1 / (0.0027 × 320) tiles here, so the effects keep their size against the models.
+// Plain particles are sprites (billboards, stretched along their screen velocity, or lying in their system's plane);
+// mesh particles, trails, meshes and the particles whose material dissolves, distorts, tiles or scrolls are drawn by
+// the particle shaders' own rule (EFX_FS), one batch a renderer.
+const EFX = { K: 1 / (0.0027 * 320), M: null, data: null, tex: {}, img: {}, frames: new Map(), live: [], loading: null, ready: false, MAX: 160, prog: null };
+const efxLow = (m) => (m ? (m.st === 3 ? Math.min(m.mn, m.sc) : m.sc) : 0);
+// drawn by the shaders' rule: a mesh, or a material that does more than colour a texture (not a system that draws
+// its particles' trails only)
+const efxShaded = (p) => p.render.mode !== 5 && !!(p.mesh || p.diss || p.dist || p.mul || p.uvst || p.uvspd || p.tw || p.uvrot || (p.an && (p.an.ust || p.an.dst || p.an.amt || p.an.bw || p.an.xst || p.an.xi)));
 function efxLoad() {
   if (EFX.loading) return EFX.loading;
   EFX.M = new PIXI.Matrix();
@@ -562,8 +570,12 @@ function efxLoad() {
       im.onerror = () => res();
       im.src = uri;
     }))).then(() => {
-      // a start effect whose systems all wait (0.15 s or more) keeps time with the attack clip from its start
-      for (const [k, e] of Object.entries(d.fx)) e.lead = Math.min(...e.ps.map((p) => (p.delay ? (p.delay.st === 3 ? Math.min(p.delay.mn, p.delay.sc) : p.delay.sc) : 0)), e.tr.length ? 0 : Infinity);
+      // a start effect that waits (0.15 s or more: its prefab's wait, else all its systems' delays) keeps time with the
+      // attack clip from its start
+      for (const e of Object.values(d.fx)) {
+        e.lead = (e.w || 0) + Math.min(...e.ps.filter((p) => p.subOf === undefined).map((p) => efxLow(p.delay)), e.tr.length ? 0 : Infinity);
+        for (const p of e.ps) p.shaded = efxShaded(p);
+      }
       EFX.data = d; EFX.ready = true;
     });
   }).catch((e) => { console.warn('enemy effects not loaded:', e.message); });
@@ -580,52 +592,13 @@ function efxFrame(key, tx, ty, f) {
   }
   return t;
 }
-// a trail's or a line's texture with its colour gradient along the length (u: 0 at the head) and tint baked in
-function efxStripTex(t) {
-  let tx = EFX.baked.get(t);
-  if (tx) return tx;
-  const im = EFX.img[t.tex], W = 64, H = Math.max(4, Math.min(64, im.height)), c = document.createElement('canvas');
-  c.width = W; c.height = H;
-  const x = c.getContext('2d');
-  x.drawImage(im, 0, 0, W, H);
-  const d = x.getImageData(0, 0, W, H), tint = t.tint || [1, 1, 1, 1];
-  for (let i = 0; i < W; i++) {
-    const g = sampleGrad(t.grad, i / (W - 1));
-    for (let j = 0; j < H; j++) {
-      const o = (j * W + i) * 4;
-      d.data[o] = Math.min(255, d.data[o] * g[0] * tint[0]); d.data[o + 1] = Math.min(255, d.data[o + 1] * g[1] * tint[1]);
-      d.data[o + 2] = Math.min(255, d.data[o + 2] * g[2] * tint[2]); d.data[o + 3] = Math.min(255, d.data[o + 3] * g[3] * Math.min(1, tint[3]));
-    }
-  }
-  x.putImageData(d, 0, 0);
-  tx = PIXI.Texture.from(c);
-  EFX.baked.set(t, tx);
-  return tx;
-}
 const efxRot = (M, v) => [M[0] * v[0] + M[1] * v[1] + M[2] * v[2], M[3] * v[0] + M[4] * v[1] + M[5] * v[2], M[6] * v[0] + M[7] * v[1] + M[8] * v[2]];
+const efxRotT = (M, v) => [M[0] * v[0] + M[3] * v[1] + M[6] * v[2], M[1] * v[0] + M[4] * v[1] + M[7] * v[2], M[2] * v[0] + M[5] * v[1] + M[8] * v[2]];
 // Unity's Euler angles (degrees; z, then x, then y) as a matrix
 function efxEuler(r) {
   const [x, y, z] = r.map((a) => a * Math.PI / 180), cx = Math.cos(x), sx = Math.sin(x), cy = Math.cos(y), sy = Math.sin(y), cz = Math.cos(z), sz = Math.sin(z);
   return [cy * cz + sy * sx * sz, -cy * sz + sy * sx * cz, sy * cx, cx * sz, cx * cz, -sx, -sy * cz + cy * sx * sz, sy * sz + cy * sx * cz, cy * cx];
 }
-// the battle particle shaders' rule for a texel (their GLES programs): colour = texture × colour, each channel at most 1;
-// alpha = texture alpha × colour alpha; with a dissolve × clamp((noise − amount) / border) (all of it at amount 0);
-// written premultiplied for the add / normal blends
-const EFX_VS = `precision highp float;
-attribute vec2 aVertexPosition; attribute vec2 aTextureCoord; attribute vec2 aDissCoord;
-uniform mat3 projectionMatrix; uniform mat3 translationMatrix;
-varying vec2 vUv; varying vec2 vDv;
-void main() { gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0); vUv = aTextureCoord; vDv = aDissCoord; }`;
-const EFX_FS = `precision mediump float;
-varying vec2 vUv; varying vec2 vDv;
-uniform sampler2D uMain; uniform sampler2D uDiss; uniform vec4 uColor; uniform vec3 uDiss3;
-void main() {
-  vec4 t = texture2D(uMain, vUv);
-  float a = clamp(t.a * uColor.a, 0.0, 1.0);
-  if (uDiss3.z > 0.5) a *= clamp((texture2D(uDiss, vDv).r - uDiss3.x + (uDiss3.x <= 0.0 ? uDiss3.y : 0.0)) / uDiss3.y, 0.0, 1.0);
-  vec3 c = min(t.rgb * uColor.rgb, vec3(t.a));
-  gl_FragColor = vec4(t.a > 0.0 ? c * (a / t.a) : vec3(0.0), a);
-}`;
 function efxUnit() { const z = Math.random() * 2 - 1, a = Math.random() * Math.PI * 2, r = Math.sqrt(1 - z * z); return [r * Math.cos(a), r * Math.sin(a), z]; }
 // an effect-space point (units) from an instance's root on the screen: [x, y, k]
 function efxScreen(R, v) {
@@ -633,25 +606,190 @@ function efxScreen(R, v) {
   const [sx, sy, k] = proj(fx, fy);
   return [sx, sy - (R.h + v[1] * K) * FLOOR.T * k, k];
 }
+// smooth value noise in [−1, 1] (the noise module's field; Unity's own is not published)
+const EFX_P = (() => {
+  const p = new Uint8Array(512);
+  let s = 20240611;
+  for (let i = 0; i < 256; i++) p[i] = i;
+  for (let i = 255; i > 0; i--) { s = (s * 16807) % 2147483647; const j = s % (i + 1), t = p[i]; p[i] = p[j]; p[j] = t; }
+  for (let i = 0; i < 256; i++) p[256 + i] = p[i];
+  return p;
+})();
+function efxNoise(x, y, z) {
+  const X = Math.floor(x), Y = Math.floor(y), Z = Math.floor(z), fx = x - X, fy = y - Y, fz = z - Z, P = EFX_P;
+  const u = fx * fx * (3 - 2 * fx), v = fy * fy * (3 - 2 * fy), w = fz * fz * (3 - 2 * fz);
+  const h = (i, j, k) => P[(P[(P[(X + i) & 255] + Y + j) & 255] + Z + k) & 255] / 127.5 - 1;
+  return lerp(lerp(lerp(h(0, 0, 0), h(1, 0, 0), u), lerp(h(0, 1, 0), h(1, 1, 0), u), v), lerp(lerp(h(0, 0, 1), h(1, 0, 1), u), lerp(h(0, 1, 1), h(1, 1, 1), u), v), w);
+}
+
+// ---- a renderer's animation: the Animator's tracks sampled over the clip (an: n frames over L seconds, looping or
+// held at the end)
+function efxAnAt(an, t) {
+  const L = an.L || 1e-3, x = an.loop ? ((t % L) + L) % L : clamp(t, 0, L), f = x / L * (an.n - 1), i = Math.min(an.n - 1, Math.floor(f));
+  return [i, Math.min(an.n - 1, i + 1), f - i];
+}
+function efxAnV(a, k, at) { const [i, j, w] = at, o = new Array(k); for (let c = 0; c < k; c++) o[c] = a[i * k + c] + (a[j * k + c] - a[i * k + c]) * w; return o; }
+// a renderer's values now: its place (pos, M, scl), shown or not, tint, tilings (main, dissolve, distortion), dissolve
+// amount and border, distortion strength, a trail's width
+function efxCur(d) {
+  return { pos: d.pos || [0, 0, 0], M: d.M || [1, 0, 0, 0, 1, 0, 0, 0, 1], scl: d.scl || [1, 1, 1], on: 1, tint: d.tint || [1, 1, 1, 1],
+    ust: d.uvst || [1, 1, 0, 0], dst: d.diss ? d.diss.st : [1, 1, 0, 0], xst: d.dist ? d.dist.st : [1, 1, 0, 0],
+    amt: d.diss ? d.diss.amount : 0, bw: d.diss ? d.diss.border : 0.1, xi: d.dist ? d.dist.I : [0, 0], wid: d.width ?? 1 };
+}
+function efxAnimate(cur, an, t) {
+  if (!an) return;
+  const at = efxAnAt(an, t);
+  if (an.tr) { const f = efxAnV(an.tr, 15, at); cur.pos = f.slice(0, 3); cur.M = f.slice(3, 12); cur.scl = f.slice(12, 15); }
+  if (an.on) cur.on = an.on[at[2] > 0.999 ? at[1] : at[0]];
+  if (an.tint) cur.tint = efxAnV(an.tint, 4, at);
+  if (an.ust) cur.ust = efxAnV(an.ust, 4, at);
+  if (an.dst) cur.dst = efxAnV(an.dst, 4, at);
+  if (an.xst) cur.xst = efxAnV(an.xst, 4, at);
+  if (an.amt) cur.amt = efxAnV(an.amt, 1, at)[0];
+  if (an.bw) cur.bw = efxAnV(an.bw, 1, at)[0];
+  if (an.xi) cur.xi = efxAnV(an.xi, 2, at);
+  if (an.wid) cur.wid = efxAnV(an.wid, 1, at)[0];
+}
+// the textures' scroll at time t: main, dissolve, distortion (the material's speeds and FxUVTweener's, wrapped as the
+// shaders do; FxUVTweenerAdvance's tween over its time, repeating)
+function efxScroll(d, t) {
+  const s = d.uvspd || [0, 0, 0, 0], x = (d.dist && d.dist.spd) || [0, 0], fr = (v) => v - Math.floor(v);
+  const o = [fr(s[0] * t), fr(s[1] * t), fr(s[2] * t), fr(s[3] * t), fr(x[0] * t), fr(x[1] * t)];
+  if (d.tw) { const k = d.tw.rep ? t % d.tw.T : Math.min(t, d.tw.T); for (let i = 0; i < 6; i++) o[i] += d.tw.s[i] * k; }
+  return o;
+}
+// a texture coordinate (Unity's: v up) through a tiling (scale x y, offset x y) plus an offset (custom data's), a UV
+// rotation (R = x y z w about the centre: u' = (x, z)·uv, v' = (y, w)·uv) and a scroll, to the page's (v down)
+function efxUV(u, v, st, ox, oy, R, su, sv, out, o) {
+  let x = u * st[0] + st[2] + ox, y = v * st[1] + st[3] + oy;
+  if (R) { const a = x - 0.5, b = y - 0.5; x = a * R[0] + b * R[2] + 0.5; y = a * R[1] + b * R[3] + 0.5; }
+  out[o] = x + su; out[o + 1] = 1 - (y + sv);
+}
+// a vertex's four coordinates: main, dissolve, distortion, weight / multiply (c1: custom data's main and dissolve
+// offsets, cx: the distortion's)
+function efxUVs(d, cur, sc, u, v, c1, cx, out) {
+  const R = d.uvrot, A = (d.dist && d.dist.wst) || (d.mul && d.mul.st);
+  efxUV(u, v, cur.ust, c1 ? c1[0] : 0, c1 ? c1[1] : 0, R && R[0], sc[0], sc[1], out, 0);
+  if (d.diss) efxUV(u, v, cur.dst, c1 ? c1[2] : 0, c1 ? c1[3] : 0, R && R[1], sc[2], sc[3], out, 2);
+  if (d.dist) efxUV(u, v, cur.xst, cx ? cx[0] : 0, cx ? cx[1] : 0, R && R[3], sc[4], sc[5], out, 4);
+  if (A) efxUV(u, v, A, 0, 0, R && R[2], 0, 0, out, 6);
+  return out;
+}
+
+// ---- the particle shaders' rule for a texel (their GLES programs in shaders.ab): a distortion moves the main and
+// dissolve UVs by (noise − anchor) × strength (× the weight texture's rg) × K; colour = texture × colour (× a multiply
+// texture), each channel at most 1; alpha = texture alpha × colour alpha, with a dissolve × clamp((noise − amount) /
+// border) (all of it at amount 0); written premultiplied for the add / normal blends
+const EFX_VS = `precision highp float;
+attribute vec2 aVertexPosition; attribute vec2 aUv; attribute vec2 aDv; attribute vec4 aXv; attribute vec4 aCol; attribute vec4 aDs;
+uniform mat3 projectionMatrix; uniform mat3 translationMatrix;
+varying vec2 vUv; varying vec2 vDv; varying vec4 vXv; varying vec4 vCol; varying vec4 vDs;
+void main() {
+  gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);
+  vUv = aUv; vDv = aDv; vXv = aXv; vCol = aCol; vDs = aDs;
+}`;
+const EFX_FS = `precision mediump float;
+varying vec2 vUv; varying vec2 vDv; varying vec4 vXv; varying vec4 vCol; varying vec4 vDs;
+uniform sampler2D uMain; uniform sampler2D uDiss; uniform sampler2D uDist; uniform sampler2D uAux;
+uniform vec4 uMode; uniform vec4 uK; uniform vec2 uA;
+void main() {
+  vec2 uv = vUv, dv = vDv;
+  if (uMode.y > 0.5) {
+    vec2 o = (texture2D(uDist, vXv.xy).r - uA) * vDs.zw;
+    if (uMode.z > 0.5 && uMode.z < 1.5) o *= texture2D(uAux, vXv.zw).rg;
+    uv += o * uK.xy; dv += o * uK.zw;
+  }
+  vec4 t = texture2D(uMain, uv);
+  vec3 c = (t.a > 0.0 ? t.rgb / t.a : vec3(0.0)) * vCol.rgb;
+  float a = t.a * vCol.a;
+  if (uMode.z > 1.5) { vec4 m = texture2D(uAux, vXv.zw); c *= m.rgb; if (uMode.z > 2.5) a *= m.r; }
+  a = clamp(a, 0.0, 1.0);
+  if (uMode.x > 0.5) a *= clamp((texture2D(uDiss, dv).r - vDs.x + (vDs.x <= 0.0 ? vDs.y : 0.0)) / vDs.y, 0.0, 1.0);
+  gl_FragColor = vec4(min(c, vec3(1.0)) * a, a);
+}`;
+// floats a vertex: screen x y, main uv, dissolve uv, distortion + weight / multiply uv, colour, dissolve amount and
+// border, distortion strength u v
+const EFX_F = 18;
+// one renderer's triangles drawn by that rule (d: its material — tex, blend, diss, dist, mul)
+class EfxBatch {
+  constructor(d, c, at) {
+    const D = d.diss && EFX.tex[d.diss.tex], X = d.dist && EFX.tex[d.dist.tex], W = d.dist && d.dist.wt && EFX.tex[d.dist.wt], U = d.mul && EFX.tex[d.mul.tex];
+    if (!EFX.prog) EFX.prog = PIXI.Program.from(EFX_VS, EFX_FS, 'enemy-fx');
+    this.B = new PIXI.Buffer(new Float32Array(EFX_F * 64), false); this.IB = new PIXI.Buffer(new Uint16Array(96), false, true);
+    const g = new PIXI.Geometry(), S = EFX_F * 4;
+    for (const [n, k, o] of [['aVertexPosition', 2, 0], ['aUv', 2, 2], ['aDv', 2, 4], ['aXv', 4, 6], ['aCol', 4, 10], ['aDs', 4, 14]]) g.addAttribute(n, this.B, k, false, PIXI.TYPES.FLOAT, S, o * 4);
+    g.addIndex(this.IB);
+    const K = d.dist ? d.dist.K : [0, 0, 0, 0];
+    this.mesh = new PIXI.Mesh(g, new PIXI.Shader(EFX.prog, { uMain: EFX.tex[d.tex], uDiss: D || PIXI.Texture.WHITE, uDist: X || PIXI.Texture.WHITE, uAux: W || U || PIXI.Texture.WHITE,
+      uMode: new Float32Array([D ? 1 : 0, X ? 1 : 0, W ? 1 : U ? (d.mul.a ? 3 : 2) : 0, 0]), uK: new Float32Array([K[0], -K[1], K[2], -K[3]]), uA: new Float32Array((d.dist && d.dist.A) || [0, 0]) }));
+    this.mesh.blendMode = d.blend === 'add' ? ADD() : PIXI.BLEND_MODES.NORMAL;
+    this.mesh.visible = false;
+    this.n = 0; this.ni = 0;
+    if (at === undefined) c.addChild(this.mesh); else c.addChildAt(this.mesh, at);
+  }
+  begin() { this.n = 0; this.ni = 0; }
+  // room for nv more vertices and ni more indices (false past what 16-bit indices reach)
+  room(nv, ni) {
+    if (this.n + nv > 65535) return false;
+    const d = this.B.data, I = this.IB.data;
+    if ((this.n + nv) * EFX_F > d.length) { const x = new Float32Array(Math.max(d.length * 2, (this.n + nv) * EFX_F)); x.set(d); this.B.data = x; }
+    if (this.ni + ni > I.length) { const x = new Uint16Array(Math.max(I.length * 2, this.ni + ni)); x.set(I); this.IB.data = x; }
+    return true;
+  }
+  // a vertex: screen x y, its coordinates (efxUVs), colour C, S = dissolve amount, border, distortion strength u v
+  vert(x, y, U, C, S) {
+    const d = this.B.data, o = this.n * EFX_F;
+    d[o] = x; d[o + 1] = y;
+    for (let i = 0; i < 8; i++) d[o + 2 + i] = U[i];
+    d[o + 10] = C[0]; d[o + 11] = C[1]; d[o + 12] = C[2]; d[o + 13] = C[3];
+    d[o + 14] = S[0]; d[o + 15] = S[1]; d[o + 16] = S[2]; d[o + 17] = S[3];
+    return this.n++;
+  }
+  tri(a, b, c) { const I = this.IB.data; I[this.ni++] = a; I[this.ni++] = b; I[this.ni++] = c; }
+  end() { this.B.update(); this.IB.update(); this.mesh.size = this.ni; this.mesh.visible = this.ni > 0; }
+}
+// a strip through screen points P ([x, y, k]) with u along it (U), widths (W, units) and colours (C), its v across
+function efxStrip(b, d, cur, sc, P, U, W, C, S) {
+  const L = P.length;
+  if (L < 2 || !b.room(L * 2, (L - 1) * 6)) return;
+  const uv = new Array(8).fill(0), base = b.n;
+  for (let i = 0; i < L; i++) {
+    const [x, y, k] = P[i], [x2, y2] = P[Math.min(L - 1, i + 1)], [x0, y0] = P[Math.max(0, i - 1)];
+    const dx = x2 - x0, dy = y2 - y0, dd = Math.hypot(dx, dy) || 1, w = W[i] * EFX.K * FLOOR.T * k / 2;
+    b.vert(x - dy / dd * w, y + dx / dd * w, efxUVs(d, cur, sc, U[i], 1, null, null, uv), C[i], S);
+    b.vert(x + dy / dd * w, y - dx / dd * w, efxUVs(d, cur, sc, U[i], 0, null, null, uv), C[i], S);
+  }
+  for (let i = 0; i < L - 1; i++) { const a = base + i * 2; b.tri(a, a + 1, a + 2); b.tri(a + 1, a + 3, a + 2); }
+}
+
+// ---- a particle system: emission (over time, over distance, bursts; a sub-emitter's from its parent's particles),
+// shapes, velocity and force over life, gravity, limit velocity, noise, inherited velocity, collision planes, and its
+// node's animation (local-space particles move with it; switched on, it starts over)
 class EfxSys {
   constructor(p, inst) {
-    this.p = p; this.inst = inst; this.ps = []; this.t = 0; this.acc = 0; this.fired = new Set(); this.pool = []; this.meshes = [];
+    this.p = p; this.inst = inst; this.ps = []; this.t = 0; this.acc = 0; this.fired = new Set(); this.pool = [];
     this.delay = mmEval(p.delay, 0, Math.random());
-    this.M = p.M || [1, 0, 0, 0, 1, 0, 0, 0, 1];
-    const s = p.scaling === 1 ? p.ls || [1, 1, 1] : p.scaling === 2 ? [1, 1, 1] : p.scl || [1, 1, 1];
-    this.sz = Math.abs(s[0]) || 1; this.shs = p.scl || [1, 1, 1];
-    this.pos = p.pos || [0, 0, 0];
+    this.cur = efxCur(p);
+    this.sub = p.subOf !== undefined;
+    this.place();
     this.shM = p.shape.on && p.shape.rot.some((a) => a) ? efxEuler(p.shape.rot) : null;
     this.blend = p.blend === 'add' ? ADD() : PIXI.BLEND_MODES.NORMAL;
     this.c = new PIXI.Container();
+    if (p.shaded) this.b = new EfxBatch(p, this.c);
+    if (p.trl && EFX.tex[p.trl.tex]) { this.tb = new EfxBatch(p.trl, this.c, 0); this.tcur = efxCur(p.trl); }
     // emitting until: a projectile's looping systems until it lands, a start or hit effect's for a second; a system
     // with bursts only until its last burst
     const rateOn = (p.rate && (p.rate.sc > 0 || p.rate.mn > 0)) || (p.rateD && p.rateD.sc > 0), dur = Math.max(0.01, p.dur);
     const lastBurst = Math.max(0, ...(p.bursts || []).map((b) => (b.cycles > 0 ? b.t + (b.cycles - 1) * b.iv : dur)));
     this.end = p.loop ? (inst.kind === 'trail' ? Infinity : rateOn ? Math.min(1, dur) : Math.min(dur, lastBurst + 0.25)) : rateOn ? dur : Math.min(dur, lastBurst + 0.25);
   }
-  get emitting() { return !this.inst.stopped && this.t < this.end; }
-  spawn(tn) {
+  place() {
+    const p = this.p, c = this.cur, s = p.scaling === 1 ? p.ls || [1, 1, 1] : p.scaling === 2 ? [1, 1, 1] : c.scl;
+    this.M = c.M; this.pos = c.pos; this.shs = c.scl; this.sz = Math.abs(s[0]) || 1;
+  }
+  get emitting() { return !this.inst.stopped && this.t < this.end && !this.sub && this.cur.on; }
+  // a particle at the system's shape (from: a parent particle, a sub-emitter's origin; inh: what it takes from it)
+  spawn(tn, from, inh) {
     const p = this.p, sh = p.shape, r = Math.random;
     if (this.ps.length >= Math.min(p.max || 1000, 120)) return;
     let x = 0, y = 0, z = 0, d = [0, 0, 1];
@@ -686,22 +824,50 @@ class EfxSys {
       if (this.shM) { [x, y, z] = efxRot(this.shM, [x, y, z]); d = efxRot(this.shM, d); }
       x += sh.pos[0]; y += sh.pos[1]; z += sh.pos[2];
     }
-    const s = this.shs, P = efxRot(this.M, [x * s[0], y * s[1], z * s[2]]), D = efxRot(this.M, d), sp = mmEval(p.speed, tn, r()) * this.sz;
-    const q = { x: this.pos[0] + P[0], y: this.pos[1] + P[1], z: this.pos[2] + P[2], vx: D[0] * sp, vy: D[1] * sp, vz: D[2] * sp, age: 0,
+    const s = this.shs, P = efxRot(this.M, [x * s[0], y * s[1], z * s[2]]), D = efxRot(this.M, d), sp = mmEval(p.speed, tn, r()) * this.sz, o = from || { x: this.pos[0], y: this.pos[1], z: this.pos[2] };
+    const q = { x: o.x + P[0], y: o.y + P[1], z: o.z + P[2], vx: D[0] * sp, vy: D[1] * sp, vz: D[2] * sp, age: 0,
       life: Math.max(0.02, mmEval(p.life, tn, r())), size: mmEval(p.size, tn, r()) * this.sz, sizeY: p.size3D ? mmEval(p.sizeY, tn, r()) * this.sz : 0,
-      rot: mmEval(p.rot, tn, r()), col: startColor(p.color, tn, r()), r1: r(), r2: r(), r3: r(), R: p.space === 1 ? { ...this.inst.R } : null };
+      rot: mmEval(p.rot, tn, r()), col: startColor(p.color, tn, r()), r1: r(), r2: r(), r3: r(),
+      R: from ? from.R : p.space === 1 ? { ...this.inst.R } : null };
+    if (p.inh) { const k = mmEval(p.inh.c, tn, r()), v = this.inst.v; q.vx += v[0] * k; q.vy += v[1] * k; q.vz += v[2] * k; }
+    // (a sub-emitter's particle takes its parent's colour 1, size 2, rotation 4, lifetime 8)
+    if (from && inh) {
+      if (inh & 1) q.col = q.col.map((c, i) => c * from.col[i]);
+      if (inh & 2) { q.size *= from.size; q.sizeY *= from.size; }
+      if (inh & 4) q.rot += from.rot;
+      if (inh & 8) q.life *= Math.max(0.02, (from.life - from.age) / from.life);
+    }
+    if (p.trl && r() < (p.trl.ratio ?? 1)) { q.tr = []; q.trLife = Math.max(0.02, mmEval(p.trl.life, 0, r()) * q.life); }
     this.ps.push(q);
   }
+  restart() { this.t = 0; this.acc = 0; this.fired.clear(); this.delay = mmEval(this.p.delay, 0, Math.random()); this.ps.length = 0; }
+  // local-space particles carried from the node's old place (P0 M0 S0) to its new one
+  carry(P0, M0, S0) {
+    const P1 = this.pos, M1 = this.M, S1 = this.shs, k = [0, 1, 2].map((i) => (Math.abs(S0[i]) > 1e-4 ? S1[i] / S0[i] : 1));
+    for (const q of this.ps) {
+      const l = efxRotT(M0, [q.x - P0[0], q.y - P0[1], q.z - P0[2]]), v = efxRotT(M0, [q.vx, q.vy, q.vz]);
+      const w = efxRot(M1, [l[0] * k[0], l[1] * k[1], l[2] * k[2]]), u = efxRot(M1, [v[0] * k[0], v[1] * k[1], v[2] * k[2]]);
+      q.x = P1[0] + w[0]; q.y = P1[1] + w[1]; q.z = P1[2] + w[2]; q.vx = u[0]; q.vy = u[1]; q.vz = u[2];
+    }
+  }
   step(dt) {
-    const p = this.p;
+    const p = this.p, inst = this.inst;
     dt *= p.speedMul || 1;
+    if (p.an) {
+      const was = this.cur.on, P0 = this.pos, M0 = this.M, S0 = this.shs;
+      efxAnimate(this.cur, p.an, inst.t);
+      if (p.an.tr) { this.place(); if (!p.space) this.carry(P0, M0, S0); }
+      if (this.cur.on && !was) this.restart();
+      else if (!this.cur.on) { this.ps.length = 0; return; }
+    }
+    if (this.sub) { this.age(dt); return; }
     if (this.delay > 0) { this.delay -= dt; this.age(dt); return; }
     const dur = Math.max(0.01, p.dur);
     if (this.emitting) {
       const lt = this.t % dur, lp = Math.floor(this.t / dur), tn = lt / dur;
       this.acc += (p.rate ? mmEval(p.rate, tn, Math.random()) : 0) * dt;
       // (and over distance: per unit the root moved since the last step)
-      const R = this.inst.R;
+      const R = inst.R;
       if (p.rateD && this.lastR) this.acc += mmEval(p.rateD, tn, Math.random()) * Math.hypot(R.x - this.lastR.x, R.y - this.lastR.y, R.h - this.lastR.h) / EFX.K;
       this.lastR = R;
       while (this.acc >= 1) { this.acc -= 1; this.spawn(tn); }
@@ -717,7 +883,7 @@ class EfxSys {
     this.age(dt);
   }
   age(dt) {
-    const p = this.p, g = p.gravity ? mmEval(p.gravity, 0, 0.5) * 9.81 : 0;
+    const p = this.p, g = p.gravity ? mmEval(p.gravity, 0, 0.5) * 9.81 : 0, N = p.noise, C = p.coll && p.coll.pl;
     this.ps = this.ps.filter((q) => (q.age += dt) < q.life);
     for (const q of this.ps) {
       const tl = q.age / q.life;
@@ -735,9 +901,70 @@ class EfxSys {
         const lim = mmEval(p.damp.v, tl, q.r2), v = Math.hypot(q.vx, q.vy, q.vz);
         if (v > lim && v > 0) { const k = Math.pow(1 - p.damp.d * (1 - lim / v), dt * 30); q.vx *= k; q.vy *= k; q.vz *= k; }
       }
+      if (N) { const n = this.noise(q, tl); vx += n[0]; vy += n[1]; vz += n[2]; }
       q.x += vx * dt; q.y += vy * dt; q.z += vz * dt;
       q.svx = vx; q.svy = vy; q.svz = vz;
       if (p.rotOL) q.rot += mmEval(p.rotOL, tl, q.r3) * dt;
+      if (C) this.collide(q, tl);
+      if (p.sub) this.emitSubs(q, dt);
+      if (q.tr) {
+        const T = q.tr, l = T[0];
+        for (const s of T) s.a += dt;
+        while (T.length && T[T.length - 1].a > q.trLife) T.pop();
+        if (!l || Math.hypot(q.x - l.x, q.y - l.y, q.z - l.z) > Math.max(0.02, p.trl.minDist || 0)) T.unshift({ x: q.x, y: q.y, z: q.z, a: 0 });
+        if (T.length > 40) T.length = 40;
+      }
+    }
+  }
+  // the noise module: a smooth field's push (units a second) on each axis, strength over the particle's life (÷ its
+  // frequency when damped), octaves, scrolling over time
+  noise(q, tl) {
+    const N = this.p.noise, f = N.f || 0.5, amt = N.p ? mmEval(N.p, tl, 0.5) : 1, k = amt / (N.d ? f : 1);
+    const s = [mmEval(N.s, tl, q.r1) * k, (N.sy ? mmEval(N.sy, tl, q.r2) : mmEval(N.s, tl, q.r1)) * k, (N.sz ? mmEval(N.sz, tl, q.r3) : mmEval(N.s, tl, q.r1)) * k];
+    if (!(s[0] || s[1] || s[2])) return [0, 0, 0];
+    const sc = (N.sc ? mmEval(N.sc, tl, 0.5) : 0) * this.inst.t, o = [0, 0, 0];
+    let a = 1, fr = f;
+    for (let i = 0; i < (N.o || 1); i++) {
+      o[0] += a * efxNoise(q.x * fr + 13.1, q.y * fr, q.z * fr + sc);
+      o[1] += a * efxNoise(q.x * fr, q.y * fr + 71.7, q.z * fr + sc);
+      o[2] += a * efxNoise(q.x * fr + 37.3, q.y * fr + 5.9, q.z * fr + sc);
+      a *= N.om ?? 0.5; fr *= N.os ?? 2;
+    }
+    return [o[0] * s[0], o[1] * s[1], o[2] * s[2]];
+  }
+  // planes the particle bounces off (the normal's part of its velocity × bounce, the rest dampened)
+  collide(q, tl) {
+    const C = this.p.coll, rad = Math.abs(q.size) * (C.rs ?? 1) / 2;
+    for (const P of C.pl) {
+      const d = (q.x - P[0]) * P[3] + (q.y - P[1]) * P[4] + (q.z - P[2]) * P[5];
+      if (d >= rad) continue;
+      const vn = q.vx * P[3] + q.vy * P[4] + q.vz * P[5];
+      if (vn < 0) {
+        const b = mmEval(C.b, tl, q.r2), k = 1 - mmEval(C.d, tl, q.r3);
+        q.vx = (q.vx - (1 + b) * vn * P[3]) * k; q.vy = (q.vy - (1 + b) * vn * P[4]) * k; q.vz = (q.vz - (1 + b) * vn * P[5]) * k;
+      }
+      q.x += (rad - d) * P[3]; q.y += (rad - d) * P[4]; q.z += (rad - d) * P[5];
+    }
+  }
+  // birth sub-emitters: each emits from the particle as its own emission says, over the particle's life
+  emitSubs(q, dt) {
+    for (const L of this.p.sub) {
+      const S = this.inst.sysAt[L.i];
+      if (!S || L.type !== 0) continue;
+      const sp = S.p, st = (q.subs || (q.subs = {}))[L.i] || (q.subs[L.i] = { acc: 0, fired: new Set(), last: null });
+      const lt = q.age - dt, dur = Math.max(0.01, sp.dur);
+      if (!sp.loop && lt > dur) continue;
+      const tn = (lt % dur) / dur, cyc = Math.floor(lt / dur), from = { x: q.x, y: q.y, z: q.z, R: q.R || (sp.space === 1 ? { ...this.inst.R } : null), col: q.col, size: q.size, rot: q.rot, life: q.life, age: q.age };
+      st.acc += (sp.rate ? mmEval(sp.rate, tn, Math.random()) : 0) * dt;
+      if (sp.rateD && st.last) st.acc += mmEval(sp.rateD, tn, Math.random()) * Math.hypot(q.x - st.last[0], q.y - st.last[1], q.z - st.last[2]);
+      st.last = [q.x, q.y, q.z];
+      while (st.acc >= 1) { st.acc -= 1; if (Math.random() < L.p) S.spawn(tn, from, L.inh); }
+      (sp.bursts || []).forEach((b, i) => {
+        for (let c = 0; c < Math.max(1, b.cycles); c++) {
+          const key = cyc + ':' + i + ':' + c;
+          if (lt % dur >= b.t + c * b.iv && !st.fired.has(key)) { st.fired.add(key); for (let k = Math.round(mmEval(b.n, tn, Math.random())); k > 0; k--) if (Math.random() < L.p) S.spawn(tn, from, L.inh); }
+        }
+      });
     }
   }
   sprite(i) {
@@ -746,198 +973,229 @@ class EfxSys {
     s.visible = true;
     return s;
   }
+  // a particle's quad on the screen: its centre and the half axes of its texture's x and y (y down) — a billboard
+  // (turned by its rotation), stretched along its screen velocity, or lying in the system's plane
+  axes(q, size, sizeY, R, mir) {
+    const p = this.p, [sx, sy, k] = efxScreen(R, [q.x, q.y, q.z]), U = EFX.K * FLOOR.T * k;
+    if (p.render.mode === 1) {
+      const [ax, ay] = efxScreen(R, [q.x + (q.svx || 0) * 0.02, q.y + (q.svy || 0) * 0.02, q.z + (q.svz || 0) * 0.02]);
+      const v = Math.hypot(q.svx || 0, q.svy || 0, q.svz || 0), len = (size * (p.render.lengthScale || 1) + v * (p.render.velScale || 0)) * U;
+      const ang = Math.atan2(ay - sy, ax - sx), c = Math.cos(ang), s = Math.sin(ang);
+      return [sx - c * len / 2, sy - s * len / 2, c * len / 2, s * len / 2, -s * size * U / 2, c * size * U / 2];
+    }
+    if (p.render.align === 2) {
+      const c = Math.cos(q.rot), n2 = Math.sin(q.rot), M = this.M;
+      const ux = efxRot(M, [c * size / 2, -n2 * size / 2, 0]), vy = efxRot(M, [n2 * sizeY / 2, c * sizeY / 2, 0]);
+      const [px, py] = efxScreen(R, [q.x + ux[0], q.y + ux[1], q.z + ux[2]]), [qx, qy] = efxScreen(R, [q.x + vy[0], q.y + vy[1], q.z + vy[2]]);
+      return [sx, sy, px - sx, py - sy, sx - qx, sy - qy];
+    }
+    const th = -q.rot * mir, c = Math.cos(th), s = Math.sin(th), w = size * U / 2, h = sizeY * U / 2;
+    return [sx, sy, c * w, s * w, -s * h, c * h];
+  }
   draw() {
-    const p = this.p, R0 = this.inst.R, mode = p.render.mode, mir = R0.ex[0] < 0 ? -1 : 1, tint = p.tint || [1, 1, 1, 1];
-    let n = 0, nm = 0;
-    for (const q of this.ps) {
+    const p = this.p, R0 = this.inst.R, mir = R0.ex[0] < 0 ? -1 : 1, tint = this.cur.tint, shaded = !!this.b;
+    let n = 0;
+    if (shaded) this.b.begin();
+    if (this.tb) this.tb.begin();
+    const sc = shaded ? efxScroll(p, this.inst.t) : null, uv = new Array(8).fill(0);
+    for (const q of this.cur.on ? this.ps : []) {
       const tl = q.age / q.life, R = q.R || R0;
-      let size = q.size * (p.sizeOL ? mmEval(p.sizeOL, tl, q.r2) : 1);
+      const size = q.size * (p.sizeOL ? mmEval(p.sizeOL, tl, q.r2) : 1);
       const sizeY = p.size3D ? q.sizeY * (p.sizeOLY ? mmEval(p.sizeOLY, tl, q.r2) : p.sizeOL ? mmEval(p.sizeOL, tl, q.r2) : 1) : size;
-      if (!(Math.abs(size) > 1e-3)) continue;
       const oc = p.col ? sampleGrad(p.col, tl) : null;
       let cr = q.col[0] * tint[0], cg = q.col[1] * tint[1], cb = q.col[2] * tint[2], ca = q.col[3] * tint[3];
       if (oc) { cr *= oc[0]; cg *= oc[1]; cb *= oc[2]; ca *= oc[3]; }
-      if (mode === 4 && p.mesh) { if (ca > 0.004) this.mesh(nm++, q, [cr, cg, cb, ca], q.col[3] * (oc ? oc[3] : 1), size, sizeY, R); continue; }
-      if (p.blend === 'add') { const m = Math.max(cr, cg, cb); if (m > 1) { cr /= m; cg /= m; cb /= m; ca *= m; } }
-      ca = Math.min(1, ca);
-      if (ca < 0.01) continue;
+      if (q.tr && this.tb) this.ribbon(q, tl, size, [q.col[0] * (oc ? oc[0] : 1), q.col[1] * (oc ? oc[1] : 1), q.col[2] * (oc ? oc[2] : 1), q.col[3] * (oc ? oc[3] : 1)], R);
+      // (render mode None: the trails only)
+      if (!(Math.abs(size) > 1e-3) || p.render.mode === 5) continue;
       let f = 0, tx = 1, ty = 1;
       if (p.uv) {
         tx = p.uv.x; ty = p.uv.y;
         const nF = tx * ty, fv = mmEval(p.uv.f, (tl * (p.uv.cycles || 1)) % 1, q.r1);
         f = ((Math.min(nF - 1, Math.floor(fv * nF)) + Math.floor(mmEval(p.uv.start, 0, q.r3))) % nF + nF) % nF;
       }
+      if (shaded) { this.shade(q, tl, size, sizeY, [cr, cg, cb, ca], q.col[3] * (oc ? oc[3] : 1), R, mir, f, tx, ty, sc, uv); continue; }
+      if (p.blend === 'add') { const m = Math.max(cr, cg, cb); if (m > 1) { cr /= m; cg /= m; cb /= m; ca *= m; } }
+      ca = Math.min(1, ca);
+      if (ca < 0.01) continue;
       const tex = p.uv ? efxFrame(p.tex, tx, ty, f) : EFX.tex[p.tex], col = (Math.round(clamp(cr, 0, 1) * 255) << 16) | (Math.round(clamp(cg, 0, 1) * 255) << 8) | Math.round(clamp(cb, 0, 1) * 255);
-      const [sx, sy, k] = efxScreen(R, [q.x, q.y, q.z]), U = EFX.K * FLOOR.T * k;
-      const s = this.sprite(n++);
+      const [cx, cy, ax, ay, bx, by] = this.axes(q, size, sizeY, R, mir), s = this.sprite(n++), fw = tex.frame.width, fh = tex.frame.height;
       s.texture = tex; s.tint = col; s.alpha = ca;
-      const fw = tex.frame.width, fh = tex.frame.height;
-      if (mode === 1) {
-        // stretched along the screen velocity, the texture's x along it, back from the particle
-        const [ax, ay] = efxScreen(R, [q.x + (q.svx || 0) * 0.02, q.y + (q.svy || 0) * 0.02, q.z + (q.svz || 0) * 0.02]);
-        const v = Math.hypot(q.svx || 0, q.svy || 0, q.svz || 0), len = (size * (p.render.lengthScale || 1) + v * (p.render.velScale || 0)) * U;
-        const ang = Math.atan2(ay - sy, ax - sx);
-        s.transform.setFromMatrix(EFX.M.set(Math.cos(ang) * len / fw, Math.sin(ang) * len / fw, -Math.sin(ang) * size * U / fh, Math.cos(ang) * size * U / fh,
-          sx - Math.cos(ang) * len / 2, sy - Math.sin(ang) * len / 2));
-      } else if (p.render.align === 2) {
-        // lying in the system's plane: its x and y axes, turned by the particle's rotation
-        const c = Math.cos(q.rot), n2 = Math.sin(q.rot), M = this.M;
-        const ux = efxRot(M, [c * size / 2, -n2 * size / 2, 0]), vy = efxRot(M, [n2 * sizeY / 2, c * sizeY / 2, 0]);
-        const [px, py] = efxScreen(R, [q.x + ux[0], q.y + ux[1], q.z + ux[2]]), [qx, qy] = efxScreen(R, [q.x + vy[0], q.y + vy[1], q.z + vy[2]]);
-        s.transform.setFromMatrix(EFX.M.set((px - sx) * 2 / fw, (py - sy) * 2 / fw, -(qx - sx) * 2 / fh, -(qy - sy) * 2 / fh, sx, sy));
-      } else {
-        s.skew.set(0, 0); s.position.set(sx, sy); s.scale.set(size * U / fw, sizeY * U / fh); s.rotation = -q.rot * mir;
-      }
+      s.transform.setFromMatrix(EFX.M.set(ax * 2 / fw, ay * 2 / fw, bx * 2 / fh, by * 2 / fh, cx, cy));
     }
     for (let i = n; i < this.pool.length; i++) this.pool[i].visible = false;
-    for (let i = nm; i < this.meshes.length; i++) this.meshes[i].visible = false;
+    if (shaded) this.b.end();
+    if (this.tb) this.tb.end();
   }
-  // a mesh particle: its mesh scaled by its size, turned by its rotation (about z), in its system's axes, drawn by the
-  // particle shaders' own rule (EFX_FS): its UVs the material's tiling and scroll plus custom data 1 (main xy,
-  // dissolve zw); a dissolve's amount the material's plus custom data 2 x (border + 2 y), or 1 − the vertex alpha
-  mesh(i, q, C, va, size, sizeY, R) {
-    const p = this.p, m3 = p.mesh, n = m3.v.length / 3, D = p.diss;
-    let m = this.meshes[i];
-    if (!m) {
-      const g = new PIXI.Geometry().addAttribute('aVertexPosition', new Float32Array(n * 2), 2).addAttribute('aTextureCoord', new Float32Array(n * 2), 2)
-        .addAttribute('aDissCoord', new Float32Array(n * 2), 2).addIndex(new Uint16Array(m3.f));
-      m = new PIXI.Mesh(g, PIXI.Shader.from(EFX_VS, EFX_FS, { uMain: EFX.tex[p.tex], uDiss: (D && EFX.tex[D.tex]) || PIXI.Texture.WHITE, uColor: new Float32Array(4), uDiss3: new Float32Array(3) }));
-      m.blendMode = this.blend; this.c.addChild(m); this.meshes[i] = m;
-    }
-    const tl = q.age / q.life, t = this.inst.t, st = p.uvst || [1, 1, 0, 0], sp = p.uvspd || [0, 0, 0, 0], c1 = p.cd && p.cd.c1, c2 = p.cd && p.cd.c2;
+  // a shaded particle: its quad (a sheet cell's UVs) or its mesh, with custom data's offsets and the dissolve driven by
+  // the material, custom data 2 (amount; border, or a distortion's strength) or the vertex alpha (VertexColor Major)
+  shade(q, tl, size, sizeY, C, va, R, mir, f, tx, ty, sc, uv) {
+    const p = this.p, D = p.diss, X = p.dist, cdOn = p.cd && ((D && D.cd) || (X && X.cd)), c1 = cdOn && p.cd.c1, c2 = cdOn && p.cd.c2;
     const cv = (c, j, r) => (c && c[j] ? mmEval(c[j], tl, r) : 0);
-    const ou = st[2] + cv(c1, 0, q.r1) + sp[0] * t, ov = st[3] + cv(c1, 1, q.r2) + sp[1] * t;
-    const ds = D ? D.st : [1, 1, 0, 0], du = ds[2] + cv(c1, 2, q.r3) + sp[2] * t, dv = ds[3] + cv(c1, 3, q.r1) + sp[3] * t;
-    const geo = m.geometry, ub = geo.getBuffer('aTextureCoord'), db = geo.getBuffer('aDissCoord'), vb = geo.getBuffer('aVertexPosition');
-    for (let j = 0; j < n; j++) {
-      const u0 = m3.uv[j * 2], v0 = m3.uv[j * 2 + 1];
-      ub.data[j * 2] = u0 * st[0] + ou; ub.data[j * 2 + 1] = 1 - (v0 * st[1] + ov);
-      db.data[j * 2] = u0 * ds[0] + du; db.data[j * 2 + 1] = 1 - (v0 * ds[1] + dv);
+    const o1 = c1 ? [cv(c1, 0, q.r1), cv(c1, 1, q.r2), cv(c1, 2, q.r3), cv(c1, 3, q.r1)] : null, ox = c2 && X && X.cd ? [cv(c2, 2, q.r2), cv(c2, 3, q.r3)] : null;
+    const S = [this.cur.amt, this.cur.bw, this.cur.xi[0], this.cur.xi[1]];
+    if (D && D.vc) { S[0] = 1 - va; C[3] /= Math.max(1e-4, va); }
+    else if (c2) {
+      S[0] += cv(c2, 0, q.r2);
+      if (X && X.cd) { const a = cv(c2, 1, q.r3); S[2] += a; S[3] += a; } else S[1] = clamp(S[1] + cv(c2, 1, q.r3), 1e-4, 1);
     }
-    ub.update(); db.update();
-    const U = m.shader.uniforms;
-    U.uColor[0] = C[0]; U.uColor[1] = C[1]; U.uColor[2] = C[2]; U.uColor[3] = C[3];
-    if (D) {
-      U.uDiss3[0] = D.vc ? 1 - va : D.amount + cv(c2, 0, q.r2);
-      U.uDiss3[1] = clamp(D.border + cv(c2, 1, q.r3), 1e-4, 1); U.uDiss3[2] = 1;
-      // (the vertex alpha drives a VertexColor Major dissolve, not the colour)
-      if (D.vc) U.uColor[3] = C[3] / Math.max(1e-4, va);
-    } else U.uDiss3[2] = 0;
-    m.visible = true;
-    const c = Math.cos(q.rot), s = Math.sin(q.rot), M = p.render.align === 2 || p.render.align === 1 ? this.M : null;
-    for (let j = 0; j < n; j++) {
-      const x = m3.v[j * 3] * size, y = m3.v[j * 3 + 1] * sizeY, z = m3.v[j * 3 + 2] * size;
-      let w = [x * c - y * s, x * s + y * c, z];
-      if (M) w = efxRot(M, w);
-      const [sx, sy] = efxScreen(R, [q.x + w[0], q.y + w[1], q.z + w[2]]);
-      vb.data[j * 2] = sx; vb.data[j * 2 + 1] = sy;
+    if (C[3] <= 0.004) return;
+    const b = this.b, cur = this.cur;
+    if (p.render.mode === 4 && p.mesh) {
+      const m3 = p.mesh, nv = m3.v.length / 3;
+      if (!b.room(nv, m3.f.length)) return;
+      const c = Math.cos(q.rot), s = Math.sin(q.rot), M = p.render.align === 2 || p.render.align === 1 ? this.M : null, base = b.n;
+      for (let j = 0; j < nv; j++) {
+        const x = m3.v[j * 3] * size, y = m3.v[j * 3 + 1] * sizeY, z = m3.v[j * 3 + 2] * size;
+        let w = [x * c - y * s, x * s + y * c, z];
+        if (M) w = efxRot(M, w);
+        const [px, py] = efxScreen(R, [q.x + w[0], q.y + w[1], q.z + w[2]]);
+        b.vert(px, py, efxUVs(p, cur, sc, m3.uv[j * 2], m3.uv[j * 2 + 1], o1, ox, uv), C, S);
+      }
+      for (let j = 0; j < m3.f.length; j += 3) b.tri(base + m3.f[j], base + m3.f[j + 1], base + m3.f[j + 2]);
+      return;
     }
-    vb.update();
+    if (!b.room(4, 6)) return;
+    const [cx, cy, ax, ay, bx, by] = this.axes(q, size, sizeY, R, mir), col = f % tx, row = Math.floor(f / tx), base = b.n;
+    for (const [du, dv] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
+      const u = (col + (du + 1) / 2) / tx, v = (ty - 1 - row + (1 - dv) / 2) / ty;
+      b.vert(cx + du * ax + dv * bx, cy + du * ay + dv * by, efxUVs(p, cur, sc, u, v, o1, ox, uv), C, S);
+    }
+    b.tri(base, base + 1, base + 2); b.tri(base + 1, base + 3, base + 2);
   }
-  get alive() { return this.emitting || this.delay > 0 || this.ps.length > 0; }
+  // a particle's trail (the trail module): its past places, as wide as the particle (× width over the trail), coloured
+  // by the particle (× colour over its life and over the trail)
+  ribbon(q, tl, size, col, R) {
+    const T = this.p.trl, pts = [{ x: q.x, y: q.y, z: q.z }, ...q.tr];
+    if (pts.length < 2) return;
+    const n = pts.length, P = [], U = [], W = [], C = [], cl = T.colL ? startColor(T.colL, tl, q.r1) : [1, 1, 1, 1], tint = this.tcur.tint;
+    let dist = 0;
+    for (let i = 0; i < n; i++) {
+      const a = pts[i], u = i / (n - 1);
+      if (i) dist += Math.hypot(a.x - pts[i - 1].x, a.y - pts[i - 1].y, a.z - pts[i - 1].z);
+      P.push(efxScreen(R, [a.x, a.y, a.z]));
+      U.push(T.texMode === 1 ? dist : T.texMode === 3 ? i : u);
+      W.push((T.sizeW ? size : 1) * (T.w ? mmEval(T.w, u, 0.5) : 1));
+      const ct = T.colT ? startColor(T.colT, u, 0.5) : [1, 1, 1, 1], pc = T.inhCol ? col : [1, 1, 1, 1];
+      C.push([0, 1, 2, 3].map((j) => pc[j] * cl[j] * ct[j] * tint[j]));
+    }
+    efxStrip(this.tb, T, this.tcur, efxScroll(T, this.inst.t), P, U, W, C, [this.tcur.amt, this.tcur.bw, 0, 0]);
+  }
+  get alive() { return this.sub ? this.ps.length > 0 : this.emitting || this.delay > 0 || this.ps.length > 0; }
 }
-// a TrailRenderer (the points its node leaves, kept for its time) or a LineRenderer (its points in the effect's space)
+// a TrailRenderer (the points its node leaves, kept for its time) or a LineRenderer (its points at its node), coloured
+// along its length (u: 0 at the head) by its gradient and tint
 class EfxTrail {
   constructor(t, inst) {
-    this.t = t; this.inst = inst; this.pts = []; this.N = t.kind === 'line' ? Math.max(2, t.points.length) : 40;
-    const n = this.N, idx = new Uint16Array((n - 1) * 6);
-    for (let i = 0; i < n - 1; i++) idx.set([i * 2, i * 2 + 1, i * 2 + 2, i * 2 + 1, i * 2 + 3, i * 2 + 2], i * 6);
-    this.m = new PIXI.SimpleMesh(efxStripTex(t), new Float32Array(n * 4), new Float32Array(n * 4), idx, PIXI.DRAW_MODES.TRIANGLES);
-    this.m.blendMode = t.blend === 'add' ? ADD() : PIXI.BLEND_MODES.NORMAL;
-    inst.c.addChildAt(this.m, 0);
+    this.t = t; this.inst = inst; this.pts = []; this.cur = efxCur(t);
+    this.b = new EfxBatch(t, inst.c, 0);
   }
   step(dt) {
-    const t = this.t;
+    const t = this.t, inst = this.inst;
+    efxAnimate(this.cur, t.an, inst.t);
+    if (!this.cur.on) { this.pts.length = 0; return; }
     if (t.kind === 'line') return;
     for (const p of this.pts) p.age += dt;
     this.pts = this.pts.filter((p) => p.age < t.time);
-    if (!this.inst.stopped) {
-      const R = this.inst.R, o = t.pos || [0, 0, 0], K = EFX.K;
+    if (!inst.stopped) {
+      const R = inst.R, o = this.cur.pos, K = EFX.K;
       const pt = { x: R.x + (o[0] * R.ex[0] + o[2] * R.ez[0]) * K, y: R.y + (o[0] * R.ex[1] + o[2] * R.ez[1]) * K, h: R.h + o[1] * K, age: 0 };
       const last = this.pts[0];
       if (!last || Math.hypot(pt.x - last.x, pt.y - last.y, pt.h - last.h) > 0.02) this.pts.unshift(pt);
       else { last.x = pt.x; last.y = pt.y; last.h = pt.h; last.age = 0; }
-      if (this.pts.length > this.N) this.pts.length = this.N;
+      if (this.pts.length > 40) this.pts.length = 40;
     }
   }
   draw() {
-    const t = this.t, m = this.m, v = m.vertices, uv = m.uvBuffer.data, n = this.N;
-    let scr;
-    if (t.kind === 'line') {
-      const R = this.inst.R, M = t.M || [1, 0, 0, 0, 1, 0, 0, 0, 1], o = t.pos || [0, 0, 0];
-      scr = t.points.map((p) => { const w = t.world ? p : efxRot(M, p); return efxScreen(R, [o[0] + w[0], o[1] + w[1], o[2] + w[2]]); });
-    } else scr = this.pts.map((p) => { const [sx, sy, k] = proj(p.x, p.y); return [sx, sy - p.h * FLOOR.T * k, k]; });
-    const L = scr.length;
-    m.visible = L >= 2;
-    if (L < 2) return;
-    const a = this.inst.fade;
-    m.alpha = a;
-    for (let i = 0; i < n; i++) {
-      const j = Math.min(i, L - 1), [x, y, k] = scr[j], [x2, y2] = scr[Math.min(L - 1, j + 1)], [x0, y0] = scr[Math.max(0, j - 1)];
-      const dx = x2 - x0, dy = y2 - y0, d = Math.hypot(dx, dy) || 1, u = L > 1 ? j / (L - 1) : 0;
-      const w = t.width * (t.wcurve ? mmEval(t.wcurve, u, 0.5) : 1) * EFX.K * FLOOR.T * k / 2;
-      v[i * 4] = x - dy / d * w; v[i * 4 + 1] = y + dx / d * w; v[i * 4 + 2] = x + dy / d * w; v[i * 4 + 3] = y - dx / d * w;
-      uv[i * 4] = u; uv[i * 4 + 1] = 0; uv[i * 4 + 2] = u; uv[i * 4 + 3] = 1;
+    const t = this.t, cur = this.cur, b = this.b;
+    b.begin();
+    let P;
+    if (!cur.on) P = [];
+    else if (t.kind === 'line') {
+      const R = this.inst.R, s = cur.scl;
+      P = t.points.map((p) => { const w = t.world ? p : efxRot(cur.M, [p[0] * s[0], p[1] * s[1], p[2] * s[2]]); return efxScreen(R, t.world ? w : [cur.pos[0] + w[0], cur.pos[1] + w[1], cur.pos[2] + w[2]]); });
+    } else P = this.pts.map((p) => { const [sx, sy, k] = proj(p.x, p.y); return [sx, sy - p.h * FLOOR.T * k, k]; });
+    const L = P.length;
+    if (L >= 2) {
+      const U = [], W = [], C = [], a = this.inst.fade, tint = cur.tint;
+      let dist = 0;
+      for (let i = 0; i < L; i++) {
+        const u = i / (L - 1);
+        if (i) dist += Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1]) / (EFX.K * FLOOR.T * P[i][2]);
+        U.push(t.texMode === 1 ? dist : t.texMode === 3 ? i : u);
+        W.push(cur.wid * (t.wcurve ? mmEval(t.wcurve, u, 0.5) : 1));
+        const g = sampleGrad(t.grad, u);
+        C.push([g[0] * tint[0], g[1] * tint[1], g[2] * tint[2], g[3] * tint[3] * a]);
+      }
+      efxStrip(b, t, cur, efxScroll(t, this.inst.t), P, U, W, C, [cur.amt, cur.bw, cur.xi[0], cur.xi[1]]);
     }
-    m.uvBuffer.update();
+    b.end();
   }
   get alive() { return this.t.kind === 'line' ? this.inst.t < this.inst.e.d : this.pts.length > 0 || !this.inst.stopped; }
 }
-// a static mesh (MeshRenderer: a projectile's body), at its node's place in the effect, drawn like a mesh particle with
-// its material's colour (an Animator's motion is not exported: animated ones are drawn only on projectiles)
+// a mesh (MeshRenderer: a projectile's body, a ring, a slash) at its node, drawn by the shaders' rule with its
+// material's colour and its animation
 class EfxMR {
-  constructor(d, inst) {
-    this.d = d; this.inst = inst;
-    const n = d.mesh.v.length / 3, D = d.diss;
-    const g = new PIXI.Geometry().addAttribute('aVertexPosition', new Float32Array(n * 2), 2).addAttribute('aTextureCoord', new Float32Array(n * 2), 2)
-      .addAttribute('aDissCoord', new Float32Array(n * 2), 2).addIndex(new Uint16Array(d.mesh.f));
-    const tint = d.tint || [1, 1, 1, 1];
-    this.m = new PIXI.Mesh(g, PIXI.Shader.from(EFX_VS, EFX_FS, { uMain: EFX.tex[d.tex], uDiss: (D && EFX.tex[D.tex]) || PIXI.Texture.WHITE,
-      uColor: new Float32Array(tint), uDiss3: new Float32Array(D ? [D.amount, Math.max(1e-4, D.border), 1] : [0, 1, 0]) }));
-    this.m.blendMode = d.blend === 'add' ? ADD() : PIXI.BLEND_MODES.NORMAL;
-    this.a = tint[3];
-    inst.c.addChild(this.m);
-  }
+  constructor(d, inst) { this.d = d; this.inst = inst; this.cur = efxCur(d); this.b = new EfxBatch(d, inst.c); }
+  step() { efxAnimate(this.cur, this.d.an, this.inst.t); }
   draw() {
-    const d = this.d, m3 = d.mesh, n = m3.v.length / 3, R = this.inst.R, t = this.inst.t, M = d.M || [1, 0, 0, 0, 1, 0, 0, 0, 1], sc = d.scl || [1, 1, 1], o = d.pos || [0, 0, 0];
-    const st = d.uvst || [1, 1, 0, 0], sp = d.uvspd || [0, 0, 0, 0], ds = d.diss ? d.diss.st : [1, 1, 0, 0], geo = this.m.geometry;
-    const vb = geo.getBuffer('aVertexPosition'), ub = geo.getBuffer('aTextureCoord'), db = geo.getBuffer('aDissCoord');
-    for (let j = 0; j < n; j++) {
-      const w = efxRot(M, [m3.v[j * 3] * sc[0], m3.v[j * 3 + 1] * sc[1], m3.v[j * 3 + 2] * sc[2]]), [sx, sy] = efxScreen(R, [o[0] + w[0], o[1] + w[1], o[2] + w[2]]);
-      vb.data[j * 2] = sx; vb.data[j * 2 + 1] = sy;
-      const u0 = m3.uv[j * 2], v0 = m3.uv[j * 2 + 1];
-      ub.data[j * 2] = u0 * st[0] + st[2] + sp[0] * t; ub.data[j * 2 + 1] = 1 - (v0 * st[1] + st[3] + sp[1] * t);
-      db.data[j * 2] = u0 * ds[0] + ds[2] + sp[2] * t; db.data[j * 2 + 1] = 1 - (v0 * ds[1] + ds[3] + sp[3] * t);
+    const d = this.d, cur = this.cur, m3 = d.mesh, n = m3.v.length / 3, R = this.inst.R, b = this.b;
+    b.begin();
+    if (cur.on && !this.inst.stopped && b.room(n, m3.f.length)) {
+      const M = cur.M, sc = cur.scl, o = cur.pos, s = efxScroll(d, this.inst.t), uv = new Array(8).fill(0), t = cur.tint;
+      const C = [t[0], t[1], t[2], t[3] * this.inst.fade], S = [cur.amt, cur.bw, cur.xi[0], cur.xi[1]];
+      for (let j = 0; j < n; j++) {
+        const w = efxRot(M, [m3.v[j * 3] * sc[0], m3.v[j * 3 + 1] * sc[1], m3.v[j * 3 + 2] * sc[2]]), [sx, sy] = efxScreen(R, [o[0] + w[0], o[1] + w[1], o[2] + w[2]]);
+        b.vert(sx, sy, efxUVs(d, cur, s, m3.uv[j * 2], m3.uv[j * 2 + 1], null, null, uv), C, S);
+      }
+      for (let j = 0; j < m3.f.length; j += 3) b.tri(m3.f[j], m3.f[j + 1], m3.f[j + 2]);
     }
-    vb.update(); ub.update(); db.update();
-    this.m.shader.uniforms.uColor[3] = this.a * this.inst.fade;
-    this.m.visible = !this.inst.stopped;
+    b.end();
   }
 }
-// one playing effect: R = its root (field x, y; height h in tiles; ex / ez the field directions of its x and z axes)
+// one playing effect: R = its root (field x, y; height h in tiles; ex / ez the field directions of its x and z axes),
+// sp its playback speed; it waits its prefab's wait (w) first
 class EfxInst {
-  constructor(name, R, kind) {
-    this.e = EFX.data.fx[name]; this.R = R; this.kind = kind; this.t = 0; this.stopped = false; this.fade = 1;
+  constructor(name, R, kind, sp) {
+    this.e = EFX.data.fx[name]; this.R = R; this.kind = kind; this.sp = sp || 1; this.t = 0; this.wait = this.e.w || 0; this.stopped = false; this.fade = 1; this.v = [0, 0, 0];
     this.c = new PIXI.Container();
     arena.fx.addChild(this.c);
-    this.trails = this.e.tr.filter((t) => EFX.img[t.tex]).map((t) => new EfxTrail(t, this));
-    this.sys = this.e.ps.filter((p) => EFX.tex[p.tex]).map((p) => new EfxSys(p, this));
-    this.mrs = (this.e.mr || []).filter((m) => EFX.tex[m.tex] && (!m.anim || kind === 'trail')).map((m) => new EfxMR(m, this));
+    this.trails = this.e.tr.filter((t) => EFX.tex[t.tex]).map((t) => new EfxTrail(t, this));
+    this.mrs = (this.e.mr || []).filter((m) => EFX.tex[m.tex]).map((m) => new EfxMR(m, this));
+    this.sysAt = this.e.ps.map((p) => (EFX.tex[p.tex] ? new EfxSys(p, this) : null));
+    this.sys = this.sysAt.filter(Boolean);
     // drawn in the prefab's order, a higher sorting fudge further back
     [...this.sys].sort((a, b) => (b.p.render.fudge || 0) - (a.p.render.fudge || 0)).forEach((s) => this.c.addChild(s.c));
-    // (a start or hit effect's looping systems run for a second; a projectile's until it lands)
+    // (a start or hit effect's looping systems run for a second; a projectile's until it lands; it lasts at least
+    // as long as its animation, which may switch renderers on late)
     this.cap = kind === 'trail' ? Infinity : Math.min(3, Math.max(0.3, this.e.d));
+    this.hold = Math.min(this.cap, Math.max(0.05, ...[...this.e.ps, ...this.e.tr, ...(this.e.mr || [])].map((d) => (d.an && !d.an.loop ? d.an.L : 0))));
   }
-  stop() { this.stopped = true; this.stopT = this.t; }
+  stop() { if (!this.stopped) { this.stopped = true; this.stopT = this.t; } }
   step(dt) {
+    dt *= this.sp;
+    // the root's velocity in the effect's axes (units a second), for the systems that inherit it
+    const R = this.R, P = this.Rp;
+    if (P && dt > 0) { const dx = R.x - P.x, dy = R.y - P.y, K = EFX.K * dt; this.v = [(dx * R.ex[0] + dy * R.ex[1]) / K, (R.h - P.h) / K, (dx * R.ez[0] + dy * R.ez[1]) / K]; }
+    this.Rp = R;
+    if (this.wait > 0) {
+      this.wait -= dt;
+      if (this.wait > 0) { if (this.stopped) this.fade = 0; return; }
+      dt = -this.wait; this.wait = 0;
+    }
     this.t += dt;
     if (this.t > this.cap && !this.stopped) this.stop();
+    for (const m of this.mrs) m.step();
     for (const s of this.sys) s.step(dt);
     for (const t of this.trails) t.step(dt);
     if (this.stopped) this.fade = clamp(1 - (this.t - this.stopT - 0.4) / 0.6, 0, 1);
   }
-  draw() { for (const s of this.sys) s.draw(); for (const t of this.trails) t.draw(); for (const m of this.mrs) m.draw(); }
-  get done() { return (this.stopped && this.fade <= 0) || (this.t > 0.05 && !this.sys.some((s) => s.alive) && !this.trails.some((t) => t.alive) && (!this.mrs.length || this.stopped || this.t > this.cap)); }
+  draw() { if (this.wait > 0) return; for (const s of this.sys) s.draw(); for (const t of this.trails) t.draw(); for (const m of this.mrs) m.draw(); }
+  get done() {
+    if (this.stopped && this.fade <= 0) return true;
+    if (this.wait > 0 || this.t <= this.hold) return false;
+    return !this.sys.some((s) => s.alive) && !this.trails.some((t) => t.alive) && (!this.mrs.length || this.stopped || this.t > this.cap);
+  }
   destroy() { this.c.destroy({ children: true }); }
 }
 // a root at a unit: at its feet (start) or its chest (hit), facing along dir (±1: mirrored, as the client flips the unit)
@@ -945,27 +1203,34 @@ function efxRootAt(u, chestAt, dir) {
   const [, by, k] = proj(u.x, u.y), [, cy] = chestAt ? chest(u, 0.5) : [0, by - (u.hover || 0) * FLOOR.T * k * 0.6];
   return { x: u.x, y: u.y, h: (by - cy) / (FLOOR.T * k), ex: [dir, 0], ez: [0, -1] };
 }
-function efxPlay(name, R, kind) {
+function efxPlay(name, R, kind, sp) {
   if (!name || !EFX.data.fx[name] || EFX.live.length >= EFX.MAX) return null;
-  const i = new EfxInst(name, R, kind);
+  const i = new EfxInst(name, R, kind, sp);
   EFX.live.push(i);
   return i;
 }
-// an attack clip starting: the start effects timed from it (their systems wait for the swing: lead ≥ 0.15 s) play now;
-// the others when the hit lands (a melee swing) or the shot leaves
+// an effect's playback speed with its attacker's: the attack clip sped up to fit the attack interval, up to the
+// effect's limit (ParticleEffect._limitedPlaybackSpeed; 1 when it keeps its own)
+function efxSpeed(u, name) {
+  const e = EFX.data.fx[name], aa = u && u.f && u.f.attackAnim;
+  return e && e.ups && aa ? Math.min(e.ups, Math.max(1, aa.dur / Math.max(0.2, u.attackIv || 1))) : 1;
+}
+// an attack clip starting: the start effects timed from it (they wait: lead ≥ 0.15 s) play now; the others when the
+// hit lands (a melee swing) or the shot leaves
 const efxEarly = (E) => E && E.s && EFX.data.fx[E.s] && EFX.data.fx[E.s].lead >= 0.15;
 function efxSwing(u) {
   if (!EFX.ready || !u.f) return;
   const E = EFX.data.by[u.f.key];
-  if (efxEarly(E)) efxPlay(E.s, efxRootAt(u, false, u.facing || 1), 'start');
+  if (efxEarly(E)) efxPlay(E.s, efxRootAt(u, false, u.facing || 1), 'start', efxSpeed(u, E.s));
 }
 // a hit of a's on b (sim event 'hit'): a melee swing's start effect at a (once a step), the hit effect at b; false when
 // the effects are not loaded (the generic sparks then)
 function efxHit(b, a, W) {
   if (!EFX.ready || !a || !a.f) return false;
   const E = EFX.data.by[a.f.key] || {}, dir = Math.sign(b.x - a.x) || a.facing || 1;
-  if (!a.ranged && E.s && !efxEarly(E) && a.efxN !== W.n && a.view) { a.efxN = W.n; efxPlay(E.s, efxRootAt(a, false, a.facing || dir), 'start'); }
-  return !!efxPlay(E.h || EFX.data.common[a.f.dmg === 'arts' ? 'arts' : 'phys'], efxRootAt(b, true, dir), 'hit');
+  if (!a.ranged && E.s && !efxEarly(E) && a.efxN !== W.n && a.view) { a.efxN = W.n; efxPlay(E.s, efxRootAt(a, false, a.facing || dir), 'start', efxSpeed(a, E.s)); }
+  const h = E.h || EFX.data.common[a.f.dmg === 'arts' ? 'arts' : 'phys'];
+  return !!efxPlay(h, efxRootAt(b, true, dir), 'hit', efxSpeed(a, h));
 }
 // a shot leaving (W.shots, first drawn): the start effect at its source (once a step); with a trail effect, the shot's
 // view (s.g: the sim destroys it when it lands)
@@ -974,7 +1239,7 @@ function efxShot(s, W) {
   const E = EFX.data.by[s.src.f.key];
   if (!E) return null;
   const u = s.src;
-  if (E.s && !efxEarly(E) && u.efxN !== W.n && u.view) { u.efxN = W.n; efxPlay(E.s, efxRootAt(u, false, u.facing || 1), 'start'); }
+  if (E.s && !efxEarly(E) && u.efxN !== W.n && u.view) { u.efxN = W.n; efxPlay(E.s, efxRootAt(u, false, u.facing || 1), 'start', efxSpeed(u, E.s)); }
   if (!E.t || !EFX.data.fx[E.t]) return null;
   const R0 = efxRootAt(u, true, 1), R1 = efxRootAt(s.tgt, true, 1);
   const inst = efxPlay(E.t, { ...R0, x: s.x, y: s.y }, 'trail');
