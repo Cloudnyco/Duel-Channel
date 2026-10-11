@@ -172,10 +172,12 @@ export class Match {
     this.told(p);
   }
   supporters() { return [0, 1].map((sd) => this.players.filter((q) => q.choice && !q.choice.skip && q.choice.side === sd).length); }
-  async waitHumans(pred, ms) {
+  // until every human still in the match satisfies pred, at most ms: one whose connection is down is not waited for —
+  // with unseated, neither is one that has not connected yet (the first connection is waited for: it may come late)
+  async waitHumans(pred, ms, unseated = true) {
     const until = Date.now() + ms;
     while (Date.now() < until) {
-      if (this.humans().every((p) => !p.connected || p.left || pred(p))) return true;
+      if (this.humans().every((p) => p.left || (unseated && !p.connected) || pred(p))) return true;
       await sleep(100);
     }
     return false;
@@ -185,9 +187,9 @@ export class Match {
   async run() {
     try {
       this.log(`match ${this.id} (${this.mode}) seats: ${this.players.map((p) => p.name + (p.human ? '' : '·NPC')).join(', ')}`);
-      // everyone connects, sees STARTING SOON, loads
+      // everyone connects (a seat not connected yet is waited for, up to connectMax), sees STARTING SOON, loads
       const T = this.T;
-      await this.waitHumans((p) => p.connected, T.connectMax);
+      await this.waitHumans((p) => p.connected, T.connectMax, false);
       this.phase = 'show'; this.bcast({ t: 'phase', name: 'show' });
       await sleep(T.show);
       this.phase = 'loading'; this.bcast({ t: 'phase', name: 'loading', ms: T.loadMax });
