@@ -46,7 +46,8 @@ test('a round: no seed before the bets close; the seed and salt then match the c
   assert.ok(Number.isInteger(battle.seed)); assert.match(battle.salt, /^[0-9a-f]{32}$/);
   assert.equal(commitOf(battle.seed, battle.salt), round.commit);
   const lineups = round.lineups.map((side) => side.map(([k, n]) => ({ f: SIM.POOL.find((f) => f.key === k), n })));
-  assert.equal(SIM.predict(lineups, battle.seed).winner, result.w);
+  // (with the round's field traps, which the server predicts with too)
+  assert.equal(SIM.predict(lineups, battle.seed, round.traps).winner, result.w);
   // the secret part: 1.5 s after the round opens, only one's own pick comes back; the NPC who knows the winner never
   // shows before
   const secret = s.got.find((x) => x.t === 'secret');
