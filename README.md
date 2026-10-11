@@ -2,7 +2,7 @@
 
 《明日方舟》限时玩法「争锋频道」中**礼物对决**与**竞猜对决**的**非官方同人复刻**：在浏览器里观看敌人之间的对战，每轮选择你看好的一方——礼物对决里 8 名观众比拼礼物点数，竞猜对决里最多 30 名观众猜到只剩最后一人。可以单机游玩，也可以在本机或局域网开服联机。
 
-![version](https://img.shields.io/badge/version-0.2.0-2ea44f)
+![version](https://img.shields.io/badge/version-0.2.1-2ea44f)
 ![license](https://img.shields.io/badge/code%20license-AGPL--3.0--or--later-blue)
 ![node](https://img.shields.io/badge/node-22%20%7C%2024-339933)
 [![CI](https://github.com/Cloudnyco/Duel-Channel/actions/workflows/ci.yml/badge.svg)](https://github.com/Cloudnyco/Duel-Channel/actions/workflows/ci.yml)
