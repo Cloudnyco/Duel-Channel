@@ -28,6 +28,13 @@
 - 固定步长 1/30 秒，`mulberry32` 随机数。只用 IEEE 精确的运算（`sqrt`、`abs`、`floor`、`round`、`min`、`max`、`imul` 和加减乘除），时间按整数步计数，所以 Node 和各浏览器逐位一致。
   - ESLint 在 `shared/sim.js` 里禁止三角函数、`hypot`、`pow`、`exp`、`log`、`**` 和 `Math.random`：各引擎在这些函数上的最后几位不同（例如 V8 的 `hypot` 最多差 2 ulp）。
   - 已验证：1740 场对战（40 场黄金对局、竞猜对决 10 轮各 30 场、200 场领袖战、三期全部 150 个轮次版本各 4 场）在 Node、Chrome、Firefox、WebKit 中的最终状态逐位相同。
+  - 模拟一致性检查（`npm run simcheck`，`tools/sim-check.mjs`）：343 场对战（81 场黄金对局，礼物对决与竞猜对决全部 60 张轮次表各 3 场，每包场地装置各 2 场）在 Node 中逐步记录，写出检查页 `public/sim-check.html`（模拟、数据、对战与参考结果在一个文件里，网关在 `/sim-check` 提供）。任何浏览器打开它都会重放这些对战并与 Node 逐步比较：
+    - 每步的状态（时间、步数、安全区，每个单位的生命、位置、各种计时、屏障、增益与目标，装置的生命）按数值的二进制位求哈希，每 30 步一组；
+    - 每 150 步记一次全部内部状态（单位与装置可达的所有值）；
+    - 结果（胜方、结束步数、最终状态）。
+
+    不一致时指出最早从哪一步开始不同、是状态、内部状态还是结果；「下载这一段的状态」得到那 30 步的数据，`node tools/sim-check.mjs --diff <文件>` 与 Node 逐项比较，指出第一个不同的单位和字段。`--engines chromium,firefox,webkit` 用 Playwright 在无界面的浏览器里跑整套检查；CI 在 Linux（Chromium、Firefox、WebKit）和 macOS（Apple 芯片上的 WebKit、Firefox）上运行它。
+  - 检查的核心（`tools/simcheck/core.js`、`ui.js`、`node.mjs`）与 Stronghold Protocol 的同名检查共用（同一作者为两个项目编写，两边保持一致），各自只有对战的接入部分（这里是 `tools/simcheck/duel.js`）不同。
 - 倒计时（攻击间隔、技能、晕眩、重生等）每步减 1/30，小于 1e-9 即视为到点。1/30 无法精确表示，不加容差时 3.5 / 4 / 7 秒这类间隔总会晚一步，而 1.5 秒不会（修正前 48% 的连续攻击晚一步，修正后 1.3%，余下来自安全区等改变攻速的情况）。游戏本身用定点数计算（PRTS），整数步的间隔是精确的。
 - `makeWorld(lineups, seed)` → `simStep(W)` 直到 `W.done`；`predict` 是无渲染的快速版本，服务端用它预先算出结果。
 - 单位的属性 = 数据 × 关卡符文，再叠加增益（`addBuff` / `stackBuff`：攻击力百分比、攻速、防御、法抗、移速、减伤、闪避）。各敌人的技能与天赋集中在 `ENEMIES` 表（领袖在 `LEADERS`，绿藤城的巨型与协同在 `GIANTS`），以钩子接入主循环：出场、每步、攻击前、攻击、命中、受伤、倒下、他人倒下、被晕眩、屏障破碎。持续施法（`chan`）、地面效果（`ground`）和延时事件（`after`）都按整数步计时。

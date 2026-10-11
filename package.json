@@ -17,7 +17,8 @@
     "data": "node tools/build-data.mjs",
     "test": "node --test \"test/**/*.test.mjs\"",
     "lint": "eslint .",
-    "check": "node tools/check.mjs"
+    "check": "node tools/check.mjs",
+    "simcheck": "node tools/sim-check.mjs"
   },
   "dependencies": {
     "ws": "^8.22.0"
@@ -29,6 +30,7 @@
     "eslint": "^10.12.0",
     "globals": "^17.13.0",
     "pixi-spine": "^4.0.6",
-    "pixi.js": "^7.4.2"
+    "pixi.js": "^7.4.2",
+    "playwright": "^1.64.0"
   }
 }

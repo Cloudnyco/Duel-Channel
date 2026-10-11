@@ -118,6 +118,37 @@ jobs:
       - name: Lint
         run: npm run lint
 
+  # the sim gives the same bits in the browsers' engines as in Node (tools/sim-check.mjs): a corpus of battles traced in
+  # Node, then replayed and compared step by step by the check page in Chromium, Firefox and WebKit on Linux, and in
+  # WebKit and Firefox on Apple silicon
+  simcheck:
+    name: sim check (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest, engines: 'chromium,firefox,webkit', install: 'firefox webkit' }
+          - { os: macos-latest, engines: 'webkit,firefox', install: 'webkit firefox' }
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install
+        run: npm ci --no-audit --no-fund
+
+      # (chromium: the runner's Google Chrome)
+      - name: Browsers
+        run: npx playwright install --with-deps ${{ matrix.install }}
+
+      - name: Check
+        run: node tools/sim-check.mjs --engines ${{ matrix.engines }}
+
   # the server image (no push here; see docker.yml): built and started natively on x64 and on arm64; on x64 also built
   # for both at once, as a release does — without emulation, so the image's own stage must run nothing
   docker:

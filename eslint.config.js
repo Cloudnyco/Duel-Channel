@@ -30,6 +30,11 @@ export default [
       'no-restricted-syntax': ['error', { selector: "BinaryExpression[operator='**'], AssignmentExpression[operator='**=']", message: '** is Math.pow: not bit-identical across engines' }],
     },
   },
+  // the cross-engine check's modules (tools/simcheck, shared with Stronghold Protocol): Node and the check page
+  {
+    files: ['tools/simcheck/*.js'],
+    languageOptions: { ecmaVersion: 2024, sourceType: 'module', globals: { ...globals.browser, ...globals.node } },
+  },
   {
     files: ['server/**/*.mjs', 'tools/**/*.mjs', 'test/**/*.mjs', 'eslint.config.js'],
     languageOptions: { ecmaVersion: 2024, sourceType: 'module', globals: { ...globals.node } },

@@ -6,7 +6,8 @@
 // port is the only one players need). GET /status shows the instances, the queues and the rooms.
 // The page: public/index.html (the code) and public/pack/duel-pack.<hash>.json (the assets) from `npm run build`, sent
 // precompressed (brotli / gzip, whichever the browser takes) with validators; the pack, named after its content, may be
-// cached for good. A build from before the split (public/duel-flow.html only) is served as it is.
+// cached for good. A build from before the split (public/duel-flow.html only) is served as it is. /sim-check is the
+// cross-engine check of the sim (public/sim-check.html from `npm run simcheck`).
 // Fair play in the public queues: a browser (the page's own id, kept in its storage) holds one seat at a time — not a
 // second place in a queue, nor one while its seat in a match is still in play — and viewers from one address are put
 // at different tables (behind a reverse proxy set TRUST_PROXY=1 so the address is the client's, X-Forwarded-For; at a
@@ -32,7 +33,7 @@ const MIN_ROOM = SIM.DCFG.consts.minRoomNum || 2;
 const QUEUE_MODES = ['multiOperationMatch', 'multiStandMatch'], ROOM_MODES = ['multiOperationRoom', 'multiStandRoom'];
 const seatsOf = (mode) => (SIM.DCFG.modes[mode] || {}).maxPlayer || 8;
 const PUBLIC = process.env.DUEL_PUBLIC || fileURLToPath(new URL('../public', import.meta.url));
-const SHELL = join(PUBLIC, 'index.html'), SINGLE = join(PUBLIC, 'duel-flow.html');
+const SHELL = join(PUBLIC, 'index.html'), SINGLE = join(PUBLIC, 'duel-flow.html'), CHECK = join(PUBLIC, 'sim-check.html');
 const hasPage = () => existsSync(SHELL) || existsSync(SINGLE);
 const log = (s) => console.log(`[gateway] ${s}`);
 installCrashLog('gateway');
@@ -306,6 +307,12 @@ const server = http.createServer((req, res) => {
   // the enemies' attack effects (named after their content like the pack)
   const ef = /^\/fx\/(enemyfx\.[0-9a-f]{16}\.json)$/.exec(u.pathname);
   if (ef) { sendFile(req, res, join(PUBLIC, 'fx', ef[1]), 'application/json; charset=utf-8', 'public, max-age=31536000, immutable'); return; }
+  // the cross-engine check of the sim (npm run simcheck writes it): any browser on the LAN can open it
+  if (u.pathname === '/sim-check' || u.pathname === '/sim-check.html') {
+    if (existsSync(CHECK)) { sendFile(req, res, CHECK, 'text/html; charset=utf-8', 'no-cache'); return; }
+    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }); res.end('模拟一致性检查页面尚未生成：运行 npm run simcheck');
+    return;
+  }
   if (u.pathname === '/report' && req.method === 'POST') { takeReport(req, res); return; }
   if (u.pathname === '/favicon.ico') { res.writeHead(204); res.end(); return; }
   // a liveness probe for containers and CI: the gateway answers, and how many instances it can reach

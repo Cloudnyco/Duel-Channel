@@ -2,6 +2,8 @@
 
 ## [未发布]
 
+- 模拟一致性检查：`npm run simcheck` 生成检查页（网关 `/sim-check`），任何浏览器打开后重放 343 场对战，逐步与服务器（Node）比较状态、内部状态和结果，不一致时指出从哪一步开始、哪个单位的哪个字段不同。CI 在 Chromium、Firefox、WebKit（Linux）和 Apple 芯片上的 WebKit、Firefox（macOS）里跑整套检查，目前全部逐位一致。检查的核心与 Stronghold Protocol 共用。
+
 ## [0.2.1] - 2026-10-11
 
 - 敌人攻击特效进一步还原：
