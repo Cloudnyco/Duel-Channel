@@ -25,6 +25,8 @@
 | Linux / macOS | 在仓库根目录运行 `./start.sh` |
 | 任意系统 | `npm run host` 或 `node tools/host.mjs` |
 
+x64 和 arm64 都可以：64 位 ARM 的 Linux（树莓派 4 / 5 的 64 位系统、ARM 云服务器）、Apple 芯片的 Mac、Windows on ARM，只要装了对应架构的 Node.js 22 或更新版本。服务器和构建都是纯 JavaScript，不需要编译任何东西；CI 在这几种平台上都跑测试和开服脚本。
+
 脚本（`tools/host.mjs`）会依次：
 
 1. 检查 Node.js（22 或更新）；
@@ -170,11 +172,13 @@ npm start -- --debug            # 或 DUEL_DEBUG=1 npm start
 docker run --rm -p 127.0.0.1:8600:8600 ghcr.io/cloudnyco/duel-channel
 ```
 
-自己构建：`docker build -t duel-channel .`，再用同样的参数运行 `duel-channel`。
+镜像同时提供 `linux/amd64` 和 `linux/arm64`，Docker 会自动拉取与本机对应的版本（树莓派 4 / 5 需要 64 位系统；32 位 ARM 没有镜像，可以用一键开服脚本）。
+
+自己构建：`docker build -t duel-channel .`，再用同样的参数运行 `duel-channel`。同时构建两种架构：`docker buildx build --platform linux/amd64,linux/arm64 .`。页面和依赖与架构无关，只在构建机上做一次，镜像本身的那一步不执行任何命令，所以跨架构构建不需要模拟器，也不会变慢。
 
 - 容器内网关监听 `0.0.0.0`，端口映射决定谁能访问；上面的写法只对本机开放。局域网联机时把 `127.0.0.1:` 去掉。对战实例只在容器内部使用，不需要映射。
 - 想用自己构建的页面，可以挂载进去覆盖：`-v "$PWD/public:/app/public:ro"`。
-- 推送 `v*.*.*` 标签时，CI 会把镜像发布到 `ghcr.io/<owner>/duel-channel`。
+- 推送 `v*.*.*` 标签时，CI 会把镜像（amd64 + arm64）发布到 `ghcr.io/<owner>/duel-channel`，再分别在 x64 和 arm64 机器上拉取、启动并检查一遍。
 
 ## 6. 机器人
 

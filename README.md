@@ -90,7 +90,7 @@ npm run lint         # ESLint
 node tools/golden.mjs   # 规则或数值有意改动后，重新生成黄金对局并审阅 diff
 ```
 
-CI（GitHub Actions）在 Ubuntu / Windows × Node 22 / 24 上运行检查、测试和服务端冒烟测试，并单独跑 lint 和 Docker 镜像构建；推送 `v*.*.*` 标签时发布 Release（源码包）和服务端镜像（ghcr.io）。
+CI（GitHub Actions）在 Ubuntu、Windows（x64 / arm64）和 macOS（Apple 芯片）× Node 22 / 24 上运行检查、测试和服务端冒烟测试，并单独跑 lint，在 x64 和 arm64 上分别构建并启动 Docker 镜像；推送 `v*.*.*` 标签时发布 Release（源码包）和服务端镜像（ghcr.io，amd64 + arm64）。
 
 数据由官方数据表生成，需要 [ArknightsGameData](https://github.com/Kengxxiao/ArknightsGameData)：
 

@@ -1,5 +1,7 @@
 # The server image on GitHub Container Registry (ghcr.io/<owner>/duel-channel) for each release tag: the server, the
-# sim, the data and the page built from the repository's asset pack — ready to play (docs/DEPLOY.md).
+# sim, the data and the page built from the repository's asset pack — ready to play (docs/DEPLOY.md). One image for
+# linux/amd64 and linux/arm64 (the Dockerfile's last stage runs nothing, so arm64 builds without emulation); each
+# architecture's image is then pulled and started on a machine of its own kind.
 name: Docker
 
 on:
@@ -15,6 +17,8 @@ jobs:
   image:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    outputs:
+      digest: ${{ steps.push.outputs.digest }}
     steps:
       - uses: actions/checkout@v7
 
@@ -35,9 +39,54 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=sha
 
-      - uses: docker/build-push-action@v7
+      - id: push
+        uses: docker/build-push-action@v7
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      # the index lists both architectures
+      - name: Platforms
+        shell: bash
+        run: |
+          ref="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/duel-channel@${{ steps.push.outputs.digest }}"
+          docker buildx imagetools inspect "$ref" | tee index.txt
+          grep -q 'linux/amd64' index.txt && grep -q 'linux/arm64' index.txt
+
+  # the published image on each architecture: it starts, reports its CPU, answers /healthz and serves the page
+  run:
+    needs: image
+    name: run (${{ matrix.arch }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest, arch: x64 }
+          - { os: ubuntu-24.04-arm, arch: arm64 }
+    steps:
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Pull and run
+        shell: bash
+        run: |
+          ref="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/duel-channel@${{ needs.image.outputs.digest }}"
+          docker pull "$ref"
+          arch=$(docker run --rm "$ref" node -p process.arch)
+          echo "node in the image: $arch"
+          [ "$arch" = "${{ matrix.arch }}" ]
+          docker run -d --name duel -p 127.0.0.1:8600:8600 "$ref"
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8600/healthz -o health.json && break; sleep 1; done
+          cat health.json; echo
+          grep -q '"page":true' health.json || { docker logs duel; exit 1; }
+          code=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8600/)
+          [ "$code" = "200" ] || { echo "the page answered $code"; docker logs duel; exit 1; }
+          docker rm -f duel
