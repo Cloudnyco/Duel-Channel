@@ -161,7 +161,8 @@ function mountCheck(root, o) {
     const tr = tracer(o.adapter, o.scenarios.find((x) => x.id === r.id), { every, deepEvery, dump: [r.c.at.from, r.c.at.to] });
     while (!tr.advance(25)) await yieldTask();
     const got = tr.finish();
-    download(`simcheck-${o.project}-${r.id}-${r.c.at.from}.json`, JSON.stringify({ simcheck: VERSION, project: o.project, id: r.id, window: [r.c.at.from, r.c.at.to],
+    // (the project's name as a file name: letters, digits and CJK, the rest a dash)
+    download(`simcheck-${String(o.project).replace(/[^\w\u4e00-\u9fff]+/g, '-').toLowerCase()}-${r.id}-${r.c.at.from}.json`, JSON.stringify({ simcheck: VERSION, project: o.project, id: r.id, window: [r.c.at.from, r.c.at.to],
       engine, ua: navigator.userAgent, dumps: got.dumps }));
     btn.disabled = false; btn.textContent = old;
   };
