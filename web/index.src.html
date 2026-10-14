@@ -21,6 +21,13 @@
 }
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; background: #000; overflow: hidden; color: var(--ink); font: 13px/1.5 var(--cn); }
+/* touch screens: no double-tap zoom, pull-to-refresh, tap flashes or long-press menus on the game (pinch zoom stays) */
+html { touch-action: manipulation; overscroll-behavior: none; -webkit-tap-highlight-color: transparent; -webkit-text-size-adjust: 100%; }
+/* the window the game is laid out in (FRAME, below): the stage, the gear and the panels. Its transform makes it the
+   containing block of its fixed children, so they follow it when it turns a quarter for a phone held upright. */
+#frame { position: fixed; left: 0; top: 0; width: 100%; height: 100%; overflow: hidden; transform-origin: 0 0; }
+#stage { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+#stage input { -webkit-user-select: text; user-select: text; }
 #stage { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; overflow: hidden; background: #070a0a; }
 #arena, #uispine { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; }
 #uispine { display: none; pointer-events: none; }
@@ -154,7 +161,7 @@ canvas.video { position: absolute; inset: 0; width: 100%; height: 100%; }
 #gear[aria-expanded="true"] .hole { fill: #f6e033; }
 #gear[aria-expanded="true"] svg { transform: rotate(180deg); }
 #gear:focus-visible { outline: 3px solid #f6e033; outline-offset: 3px; }
-#settings { position: fixed; right: max(14px, var(--gear-in)); bottom: calc(var(--gear-in) + var(--gear) + 12px); z-index: 2000; width: 344px; max-width: calc(100vw - 28px); max-height: calc(100vh - 92px); overflow: auto;
+#settings { position: fixed; right: max(14px, var(--gear-in)); bottom: calc(var(--gear-in) + var(--gear) + 12px); z-index: 2000; width: 344px; max-width: calc(var(--fw, 100vw) - 28px); max-height: calc(var(--fh, 100vh) - 92px); overflow: auto;
   display: grid; gap: 16px; padding: 18px 18px 18px; color: #efeee6; background: #1b1c1c; font: 500 13px/1.5 var(--cn);
   clip-path: polygon(22px 0, 100% 0, 100% 100%, 0 100%, 0 22px); box-shadow: inset 0 3px 0 #f6e033;
   transform-origin: calc(100% - var(--gear) / 2) calc(100% + var(--gear) / 2 + 12px);
@@ -189,7 +196,7 @@ canvas.video { position: absolute; inset: 0; width: 100%; height: 100%; }
 #avGrid button:hover { transform: scale(1.08); }
 #avGrid button[aria-checked="true"] { box-shadow: 0 0 0 2px #1b1c1c, 0 0 0 4px #f6e033; }
 #avGrid button:focus-visible { outline: 2px solid #f6e033; outline-offset: 3px; }
-#logbox { position: fixed; right: 372px; bottom: calc(var(--gear-in) + var(--gear) + 12px); z-index: 2000; width: min(520px, calc(100vw - 392px)); max-height: 60vh; overflow: auto; padding: 12px 14px;
+#logbox { position: fixed; right: 372px; bottom: calc(var(--gear-in) + var(--gear) + 12px); z-index: 2000; width: min(520px, calc(var(--fw, 100vw) - 392px)); max-height: calc(var(--fh, 100vh) * .6); overflow: auto; padding: 12px 14px;
   border-radius: 4px; background: #1b1c1c; box-shadow: inset 0 3px 0 #f6e033, 0 12px 32px rgba(0, 0, 0, .5); font-size: 12px; color: #efeee6; }
 #logbox b { display: block; margin: 6px 0 2px; color: var(--accent); }
 #logbox .l { color: #ff8c84; } #logbox .r { color: #7db7ff; }
@@ -206,7 +213,7 @@ canvas.video { position: absolute; inset: 0; width: 100%; height: 100%; }
 #rpNotice:focus-visible { outline: 2px solid #f6e033; outline-offset: 2px; }
 #report { position: fixed; inset: 0; z-index: 3000; display: grid; place-items: center; padding: 16px; background: rgba(8, 8, 8, .58); }
 #report[hidden] { display: none; }
-#report .rp { width: min(640px, 100%); max-height: calc(100vh - 32px); overflow: auto; display: grid; gap: 14px; padding: 20px 20px 18px;
+#report .rp { width: min(640px, 100%); max-height: calc(var(--fh, 100vh) - 32px); overflow: auto; display: grid; gap: 14px; padding: 20px 20px 18px;
   color: #efeee6; background: #1b1c1c; font: 500 13px/1.55 var(--cn); clip-path: polygon(22px 0, 100% 0, 100% 100%, 0 100%, 0 22px);
   box-shadow: inset 0 3px 0 #f6e033; animation: rp-in .3s cubic-bezier(.2, .9, .25, 1.1) both; }
 #report h2 { margin: 0; padding-left: 10px; font: 900 21px/1.25 var(--cn); letter-spacing: .03em; text-wrap: balance; }
@@ -216,7 +223,7 @@ canvas.video { position: absolute; inset: 0; width: 100%; height: 100%; }
 #rpDesc:focus-visible { outline: 2px solid #f6e033; outline-offset: 1px; }
 #report details { border-radius: 4px; background: #121313; }
 #report summary { padding: 8px 11px; color: #9fa39f; font-size: 12px; cursor: pointer; }
-#rpBody { margin: 0; max-height: 34vh; overflow: auto; padding: 0 11px 10px; color: #c9ccc6; font: 12px/1.5 ui-monospace, "Cascadia Mono", Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+#rpBody { margin: 0; max-height: calc(var(--fh, 100vh) * .34); overflow: auto; padding: 0 11px 10px; color: #c9ccc6; font: 12px/1.5 ui-monospace, "Cascadia Mono", Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
 #report .rp-row { display: flex; flex-wrap: wrap; gap: 8px; }
 #report .rp-row button { font: 500 13px/1 var(--cn); color: #efeee6; background: #282a2a; border: 1px solid rgba(255, 255, 255, .08); border-radius: 4px; padding: 9px 14px; cursor: pointer; }
 #report .rp-row button:hover { background: #333636; }
@@ -232,6 +239,7 @@ canvas.video { position: absolute; inset: 0; width: 100%; height: 100%; }
 </style>
 </head>
 <body>
+<div id="frame">
 <div id="stage">
   <canvas id="arena" width="1280" height="720"></canvas>
   <div id="ui"></div>
@@ -279,10 +287,13 @@ canvas.video { position: absolute; inset: 0; width: 100%; height: 100%; }
     <div class="st-row"><div class="st-seg" id="tracks" role="group" aria-label="背景音乐"></div><button id="pick" type="button" class="st-btn">本地文件…</button></div>
     <small id="trackName" class="st-note"></small><input type="file" id="file" accept="audio/*" hidden>
   </div>
-  <div class="st-sec" style="--i:3"><span class="st-label">比赛</span>
+  <div class="st-sec" id="fsSec" style="--i:3"><span class="st-label">显示</span>
+    <div class="st-row"><button id="fs" type="button" class="st-btn" aria-pressed="false">全屏</button></div>
+  </div>
+  <div class="st-sec" style="--i:4"><span class="st-label">比赛</span>
     <div class="st-row"><button id="ff" type="button" class="st-btn">快进本场战斗</button><button id="log" type="button" class="st-btn">回合记录</button></div>
   </div>
-  <div class="st-sec st-foot" style="--i:4"><small id="buildTag"></small><button id="feedback" type="button" class="st-btn">反馈问题…</button></div>
+  <div class="st-sec st-foot" style="--i:5"><small id="buildTag"></small><button id="feedback" type="button" class="st-btn">反馈问题…</button></div>
 </section>
 <div id="logbox" hidden></div>
 <button id="rpNotice" type="button" hidden><span>出现了一个错误</span><b>反馈</b></button>
@@ -303,6 +314,35 @@ canvas.video { position: absolute; inset: 0; width: 100%; height: 100%; }
     <p class="rp-privacy">报告包含版本、浏览器与显卡、窗口大小、当前对局的状态与每轮的阵容种子、错误与最近的操作记录；不含账号、密码或本机文件路径。</p>
   </div>
 </div>
+</div>
+<script>
+// The frame the game is laid out in, fitted to the window, with the 1280 × 720 stage scaled into it (letterboxed); the
+// loader and the game both fit through it. On a touch screen held upright the frame is the window turned a quarter
+// (clockwise): the game is landscape, and a phone with its rotation locked still shows it full size, read with the
+// phone turned sideways. The window's size is the root element's (clientWidth / Height): a phone's innerWidth / Height
+// grow with content that overflows them, here the stage before it is scaled, which then kept it at full size.
+const FRAME = {
+  rot: false, k: 1, w: 1280, h: 720,
+  touch: matchMedia('(pointer: coarse)').matches,
+  fit() {
+    const d = document.documentElement, W = d.clientWidth || innerWidth, H = d.clientHeight || innerHeight;
+    const rot = this.touch && H > W, w = rot ? H : W, h = rot ? W : H, k = Math.min(w / 1280, h / 720);
+    const fr = document.getElementById('frame'), st = document.getElementById('stage');
+    fr.style.width = w + 'px'; fr.style.height = h + 'px';
+    fr.style.transform = rot ? `translate(${W}px, 0) rotate(90deg)` : 'translate(0, 0)';
+    st.style.transform = `scale(${k})`;
+    st.style.left = (w - 1280 * k) / 2 + 'px'; st.style.top = (h - 720 * k) / 2 + 'px';
+    d.style.setProperty('--fw', w + 'px'); d.style.setProperty('--fh', h + 'px');
+    Object.assign(this, { rot, k, w, h });
+    return k;
+  },
+  // a pointer's movement on the screen as a movement on the stage, in stage pixels
+  delta(dx, dy) { return this.rot ? [dy / this.k, -dx / this.k] : [dx / this.k, dy / this.k]; },
+  // refit on every change of the window: resizing, turning, a phone's browser bars showing or hiding
+  watch(f) { addEventListener('resize', f); addEventListener('orientationchange', f); if (window.visualViewport) visualViewport.addEventListener('resize', f); },
+  unwatch(f) { removeEventListener('resize', f); removeEventListener('orientationchange', f); if (window.visualViewport) visualViewport.removeEventListener('resize', f); },
+};
+</script>
 <script>/*PIXI*/</script>
 <script>/*PIXISPINE*/</script>
 <script>/*DUELCFG*/

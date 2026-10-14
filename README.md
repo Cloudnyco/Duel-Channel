@@ -48,6 +48,7 @@ English summary: [below](#english).
 - **表情**：押注和对战时从顶栏打开表情面板，5 个官方表情主题（对战主题和愚人节、源石虫主题）左右翻页，表情以弹幕形式从画面上方飘落（官方的轨道、缓动和缩放参数）；可以一键屏蔽。单机时 NPC 观众也会发表情。
 - **联机**：网关 + 多个对战实例；礼物对决和竞猜对决各自的匹配队列（满 8 / 30 人开局，等待超时由 NPC 补位）；6 位邀请码的群组房间（最多 8 / 30 人）；只需开放网关一个端口；断线重连（对局中 30 秒、房间 45 秒内自动接回，刷新页面也能回到比赛）；实时延迟显示；自定义头像（敌人头像或自己的图片）。
 - **设置**：右下角齿轮里调整速度、音乐和音效、在两首内置背景音乐间切换（也能播放本地文件）、快进战斗、查看回合记录、更换头像，并显示当前版本。
+- **手机与平板**：画面按屏幕大小完整显示；竖着拿时整个画面自动转成横向，开着方向锁也能玩（把手机横过来看）；点按和滑动都按触屏处理，不会误触缩放或下拉刷新；浏览器支持时可以在设置里切换全屏（安卓上同时锁定横屏）。
 - **错误报告**：页面出错时提示并生成报告（版本、浏览器与显卡、对局状态、每轮的阵容与种子、错误与最近的操作记录），可以复制、打开预先填好的 GitHub Issue，或在联机时发送给服务器主机（保存在服务器的 `logs/reports/`）。也可以随时从「设置 → 反馈问题」提交。
 
 ## 快速开始
@@ -143,6 +144,6 @@ docs/           部署、素材、机制、架构
 
 ## English
 
-**Duel Channel** is an unofficial fan re-creation of the *Gift Duel* and *Guess Duel* modes of Arknights' limited event *Duel Channel*: watch enemies fight, back a side each round, and outlast seven other viewers (gifts) or up to twenty-nine (last one standing). It plays offline in one HTML file or online through a small Node.js server (gateway + battle instances, deterministic battles replayed by every client).
+**Duel Channel** is an unofficial fan re-creation of the *Gift Duel* and *Guess Duel* modes of Arknights' limited event *Duel Channel*: watch enemies fight, back a side each round, and outlast seven other viewers (gifts) or up to twenty-nine (last one standing). It plays offline in one HTML file or online through a small Node.js server (gateway + battle instances, deterministic battles replayed by every client), on desktops and on phones and tablets (held upright, the whole game turns to landscape).
 
 It is not affiliated with or endorsed by Hypergryph. The repository includes the asset pack the page needs (`assets/`, exported from the game client); like the game data, it is not covered by the AGPL and may be used for **non-commercial purposes only** (NOTICE.md). Clone it and run `start.cmd` (Windows) or `./start.sh` (Linux / macOS). The code is AGPL-3.0-or-later.

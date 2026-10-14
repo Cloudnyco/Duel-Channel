@@ -5,16 +5,12 @@
 // placeholders filling in; then the game starts (duelMain). The single-file page inlines the pack instead.
 (() => {
   const $ = (id) => document.getElementById(id);
-  const stage = $('stage'), start = $('start'), status = $('startStatus'), go = $('go');
+  const start = $('start'), status = $('startStatus'), go = $('go');
   const skel = document.querySelector('#start .sb-skel'), bars = skel ? [...skel.querySelectorAll('b')] : [];
-  // the stage scaled into the window, as the game's own fit() does once it runs
-  const fit = () => {
-    const k = Math.min(innerWidth / 1280, innerHeight / 720);
-    stage.style.transform = `scale(${k})`;
-    stage.style.left = (innerWidth - 1280 * k) / 2 + 'px'; stage.style.top = (innerHeight - 720 * k) / 2 + 'px';
-  };
+  // the stage scaled into the window (FRAME, in the page), as the game's own fit() does once it runs
+  const fit = () => FRAME.fit();
   fit();
-  addEventListener('resize', fit);
+  FRAME.watch(fit);
   const idle = status.textContent;
   // served means online (the game says the same once it runs)
   $('startMode').textContent = `联机模式：频道服务器 ${location.host}`;
@@ -54,7 +50,7 @@
     globalThis.MODEL_FILES = pack.models || {};
     // the enemies' attack effects: fetched once the game runs (arena.js efxLoad); the generic ones until then
     globalThis.ENEMY_FX_URL = pack.efx || '';
-    removeEventListener('resize', fit);
+    FRAME.unwatch(fit);
     if (skel) { skel.classList.remove('loading'); bars.forEach((b) => b.style.removeProperty('--fill')); }
     status.removeAttribute('aria-busy'); go.removeAttribute('aria-busy');
     status.textContent = idle;

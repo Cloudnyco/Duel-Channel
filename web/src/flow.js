@@ -76,14 +76,16 @@ function stack(items, h, gap = 4, ax = 0.5) {
 // still reach them.
 function scrollable(viewport, content, total) {
   const el = viewport.el, lim = (y) => clamp(y, 0, Math.max(0, (typeof total === 'function' ? total() : total) - (viewport.h || 0)));
-  el.classList.add('hot'); el.style.cursor = 'grab';
+  el.classList.add('hot'); el.style.cursor = 'grab'; el.style.touchAction = 'none';
   el.addEventListener('wheel', (e) => { e.preventDefault(); content.rt.pos[1] = lim(content.rt.pos[1] + e.deltaY * 0.5); }, { passive: false });
   let drag = null;
-  el.onpointerdown = (e) => { drag = { y: e.clientY, p: content.rt.pos[1], id: e.pointerId, moved: false }; };
+  el.onpointerdown = (e) => { drag = { x: e.clientX, y: e.clientY, p: content.rt.pos[1], id: e.pointerId, moved: false }; };
   el.onpointermove = (e) => {
     if (!drag) return;
-    if (!drag.moved && Math.abs(drag.y - e.clientY) > 6) { drag.moved = true; el.setPointerCapture(drag.id); }
-    if (drag.moved) content.rt.pos[1] = lim(drag.p + (drag.y - e.clientY) / stageK);
+    // the movement along the stage's vertical (the screen's horizontal when the frame is turned), in stage pixels
+    const dy = FRAME.delta(e.clientX - drag.x, e.clientY - drag.y)[1];
+    if (!drag.moved && Math.abs(dy) * stageK > 6) { drag.moved = true; el.setPointerCapture(drag.id); }
+    if (drag.moved) content.rt.pos[1] = lim(drag.p - dy);
   };
   el.onpointerup = el.onpointercancel = () => { drag = null; };
   return (y) => { content.rt.pos[1] = lim(y); };
@@ -1177,15 +1179,13 @@ async function stFinish() {
 // ---- boot / frame ---------------------------------------------------------------------------------------------------
 let stageK = 1;
 function fit() {
-  const W = innerWidth, H = innerHeight, k = Math.min(W / 1280, H / 720);
+  // the frame (the window, turned a quarter on an upright phone) and the stage scaled into it: FRAME, in the page
+  const k = FRAME.fit();
   stageK = k;
-  const st = $('stage');
-  st.style.transform = `scale(${k})`;
-  st.style.left = ((W - 1280 * k) / 2) + 'px'; st.style.top = ((H - 720 * k) / 2) + 'px';
   // the gear keeps the stage's proportions (38 px and 7 px in from the corner at 1280×720), so it stays clear of the
-  // official buttons that run close to the corner; it stops shrinking at 30 px to remain easy to hit
+  // official buttons that run close to the corner; it stops shrinking at 30 px (40 px for a finger) to remain easy to hit
   const rs = document.documentElement.style;
-  rs.setProperty('--gear', Math.round(clamp(38 * k, 30, 56)) + 'px'); rs.setProperty('--gear-in', Math.max(4, Math.round(7 * k)) + 'px');
+  rs.setProperty('--gear', Math.round(clamp(38 * k, FRAME.touch ? 40 : 30, 56)) + 'px'); rs.setProperty('--gear-in', Math.max(4, Math.round(7 * k)) + 'px');
   const res = Math.min(2, k * (window.devicePixelRatio || 1));
   for (const app of [arenaApp]) if (app) { app.renderer.resolution = res; app.renderer.resize(1280, 720); app.view.style.width = '1280px'; app.view.style.height = '720px'; }
 }
@@ -1313,6 +1313,26 @@ function controls() {
     if (!box.hidden) box.innerHTML = '<b>回合记录</b>' + (G.log.length ? G.log.map((x) => `<div>第${x.r}轮：<span class="l">${x.lineups[0]}（${x.cost[0]}）</span> vs <span class="r">${x.lineups[1]}（${x.cost[1]}）</span> → ${x.w === undefined ? '进行中' : (x.w === 'draw' ? '平局' : x.w === 0 ? '左胜' : '右胜') + ` · ${x.len.toFixed(0)}s`}</div>`).join('') : '<div>还没有回合</div>')
       + '<b>玩家</b>' + ranked().map((p, i) => `<div>${i + 1}. ${p.name}${p.me ? '（我）' : ''} ${fmt(p.pts)}${p.out ? ' 已淘汰' : ''}</div>`).join('');
   };
+  fullScreen();
+}
+// 全屏: the browser's bars take a good part of a phone's landscape height. Entering full screen also asks to hold the
+// screen in landscape (Android; elsewhere it is refused and an upright phone keeps the turned frame). Hidden where the
+// browser has no full screen for pages (iPhone Safari).
+function fullScreen() {
+  const btn = $('fs'), doc = document, root = doc.documentElement;
+  const request = root.requestFullscreen || root.webkitRequestFullscreen, exit = doc.exitFullscreen || doc.webkitExitFullscreen;
+  if (!(doc.fullscreenEnabled || doc.webkitFullscreenEnabled) || !request) { $('fsSec').style.display = 'none'; return; }
+  const on = () => !!(doc.fullscreenElement || doc.webkitFullscreenElement);
+  const sync = () => btn.setAttribute('aria-pressed', String(on()));
+  btn.onclick = async () => {
+    try {
+      if (on()) { await exit.call(doc); return; }
+      await request.call(root, { navigationUI: 'hide' });
+      try { await screen.orientation.lock('landscape'); } catch (e) { /* not on this device */ }
+    } catch (e) { toast('无法切换全屏：' + e.message, 3); }
+  };
+  doc.addEventListener('fullscreenchange', sync); doc.addEventListener('webkitfullscreenchange', sync);
+  sync();
 }
 // the opening screen: the client's LIVE badge and breadcrumb sprites, the 礼物对决 key art, a standby clock, the mode
 function startScreen() {
@@ -1339,7 +1359,7 @@ async function boot() {
     arenaApp || initArena();
     uiApp = new PIXI.Application({ view: $('uispine'), width: 1280, height: 720, backgroundAlpha: 0, antialias: true, autoStart: false });
     fit();
-    addEventListener('resize', fit);
+    FRAME.watch(fit);
     controls();
     phase('加载素材……');
     await Promise.all([preloadSprites(), preloadPtex(), document.fonts ? document.fonts.ready : null]);
@@ -1354,7 +1374,7 @@ async function boot() {
       const nick = $('nick');
       $('nickrow').hidden = false;
       try { nick.value = localStorage.getItem('duel.nick') || ''; } catch (e) { /* no storage */ }
-      setTimeout(() => nick.focus(), 900);
+      if (!FRAME.touch) setTimeout(() => nick.focus(), 900);
       nick.onkeydown = (e) => { if (e.key === 'Enter') $('start').click(); };
     }
     await new Promise((res) => { $('start').onclick = (e) => { if (!e.target.closest('#nickrow, a')) res(); }; });

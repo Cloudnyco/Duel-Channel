@@ -177,15 +177,17 @@ const EMO = (() => {
       // (the viewport takes the pointer itself: a swipe may start on an empty slot)
       view.el.style.pointerEvents = 'auto'; view.el.style.touchAction = 'none';
       let drag = null;
-      view.el.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, base: content.rt.pos[0], id: e.pointerId }; pg.dragged = false; });
+      view.el.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, y: e.clientY, base: content.rt.pos[0], id: e.pointerId }; pg.dragged = false; });
+      // the movement along the stage's horizontal (FRAME.delta: the frame may be turned), in stage pixels
+      const along = (e) => FRAME.delta(e.clientX - drag.x, e.clientY - drag.y)[0];
       view.el.addEventListener('pointermove', (e) => {
         if (!drag || e.pointerId !== drag.id) return;
-        const dx = (e.clientX - drag.x) / stageK;
+        const dx = along(e);
         if (Math.abs(dx) > 8) { pg.dragged = true; pg.anim = null; content.rt.pos[0] = drag.base + dx; }
       });
       const up = (e) => {
         if (!drag || e.pointerId !== drag.id) return;
-        const dx = (e.clientX - drag.x) / stageK;
+        const dx = along(e);
         drag = null;
         if (pg.dragged) go(pg.cur + (dx < -60 ? 1 : dx > 60 ? -1 : 0));
         // a click that ends a swipe is not a pick
