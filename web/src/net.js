@@ -137,7 +137,8 @@ class Link {
   close() { this.closing = true; this.reconnecting = false; try { this.ws.close(); } catch (e) { /* gone */ } this.end(); }
 }
 
-// the waiting overlay while a connection is being reopened: the battle page's own pnl_connect (等待自己重新联网...)
+// the waiting overlay while a connection is being reopened: the battle page's own pnl_connect, with its line
+// (等待自己重新联网...) reading 正在重连
 const RECONNECT = {
   scr: null, n: 0,
   state(s) {
@@ -154,6 +155,7 @@ const RECONNECT = {
           // the prefab's soft dark spot, over a light dim of the whole stage; clicks still go through (a bet placed now
           // is sent once the connection is back)
           Object.assign(this.scr.wrap.style, { background: 'rgba(12, 12, 12, .42)', pointerEvents: 'none' });
+          this.scr.text('text_info', '正在重连');
           playLoops(this.scr);
         }
       }
