@@ -29,13 +29,15 @@ const C = SIM.DCFG.consts;
 
 // timings (ms): the client's STARTING SOON + loading, the bet window (official 20 s in both modes), the round-end panel
 // (the clip at 0.6×) and the scoreboard (official 8 s in both modes); a battle is waited for until every connected human has watched it, at most
-// its simulated length + the round-start banner + a margin
+// its simulated length + the round-start banner + a margin; a match whose viewers have all dropped (none left) waits as
+// long as the page keeps retrying (maxRetryTimeInBattle) for one to come back
 // (DUEL_*_MS env overrides are for quick test runs)
 const env = (k, d) => (process.env[k] ? Number(process.env[k]) : d);
 const timings = (stand) => ({
   show: env('DUEL_SHOW_MS', 4500), loadMax: (C.maxLoadingTime || 15) * 1000, connectMax: 12000,
   bet: env('DUEL_BET_MS', ((stand ? C.modeStandSelectTime : C.modeOperationSelectTime) || 20) * 1000), result: env('DUEL_RESULT_MS', 3200),
   rank: env('DUEL_RANK_MS', ((stand ? C.modeStandRankTime : C.modeOperationRankTime) || 8) * 1000), battleExtra: 14000,
+  rejoin: env('DUEL_REJOIN_MS', (C.maxRetryTimeInBattle || 30) * 1000),
 });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const token = () => randomBytes(12).toString('hex');
@@ -183,6 +185,17 @@ export class Match {
     return false;
   }
   anyHumanHere() { return this.humans().some((p) => p.connected && !p.left); }
+  // Before a round: if every viewer has dropped but not left, wait (up to `ms`, the page's own retry window) for one to
+  // come back. Without this a short outage of the only human at a round's end closed the match while the page was still
+  // reconnecting. True when someone is here.
+  async waitRejoin(ms) {
+    const dropped = () => !this.anyHumanHere() && this.humans().some((p) => !p.left);
+    if (!dropped()) return this.anyHumanHere();
+    this.log(`match ${this.id}: every viewer dropped, waiting up to ${Math.round(ms / 1000)} s for one to come back`);
+    const until = Date.now() + ms;
+    while (dropped() && Date.now() < until) await sleep(100);
+    return this.anyHumanHere();
+  }
 
   async run() {
     try {
@@ -198,7 +211,7 @@ export class Match {
       // rounds past the table repeating its last row, at most modeStandRoundNumber
       const total = this.stand ? SIM.STAND.cap : this.rounds.length;
       for (let r = 1; r <= total; r++) {
-        if (!this.anyHumanHere()) { this.log(`match ${this.id}: no one left, closing`); break; }
+        if (!(await this.waitRejoin(T.rejoin))) { this.log(`match ${this.id}: no one left, closing`); break; }
         if (this.stand ? SIM.standOver(this.players) : this.players.filter((p) => !p.out).length <= 1) break;
         await this.playRound(SIM.pickRound(this.stand ? SIM.standRow(this.rounds, r) : this.rounds[r - 1], Math.random), r);
       }
