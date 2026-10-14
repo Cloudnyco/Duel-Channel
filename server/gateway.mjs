@@ -46,6 +46,39 @@ function clientIp(req) {
   if (TRUST_PROXY) { const f = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim(); if (f) ip = f; }
   return !ip || LOOPBACK.has(ip) ? null : ip.replace(/^::ffff:/, '');
 }
+// ---- abuse limits ---------------------------------------------------------------------------------------------------
+// Rooms and matches cost the server: a room started with NPC seats is a match on its own, and a match is simulated on an
+// instance for its ten rounds. One network (an IPv4 address, or an IPv6 /64 — one subscriber, as Stronghold Protocol
+// counts) may hold only so many lobby connections, open rooms and matches in play, and create rooms only so often; the
+// server as a whole only so many rooms and matches. A queued viewer over a limit keeps their place and waits; a room
+// start or a room over one is refused with the reason. Connections from this machine (no known address: local play,
+// a tunnel without TRUST_PROXY, the tests' bots) are not limited. env: MAX_SESSIONS_PER_IP, MAX_ROOMS_PER_IP,
+// ROOM_CREATES_PER_MIN, MAX_ROOMS, MAX_MATCHES_PER_IP, MAX_MATCHES (0 = no limit)
+const lim = (k, d) => (process.env[k] != null && process.env[k] !== '' ? Number(process.env[k]) : d);
+const LIMIT = {
+  sessionsPerNet: lim('MAX_SESSIONS_PER_IP', 16), roomsPerNet: lim('MAX_ROOMS_PER_IP', 2), roomCreatesPerMin: lim('ROOM_CREATES_PER_MIN', 6),
+  rooms: lim('MAX_ROOMS', 200), matchesPerNet: lim('MAX_MATCHES_PER_IP', 3), matches: lim('MAX_MATCHES', 60),
+};
+// the network an address belongs to: the IPv4 address itself, an IPv6 address's /64
+function netOf(ip) {
+  if (!ip || !ip.includes(':')) return ip;
+  const [head, tail] = ip.split('::'), h = head ? head.split(':') : [], t = tail ? tail.split(':') : [];
+  const g = ip.includes('::') ? [...h, ...Array(Math.max(0, 8 - h.length - t.length)).fill('0'), ...t] : h;
+  return g.slice(0, 4).map((x) => parseInt(x || '0', 16).toString(16)).join(':') + '::/64';
+}
+// the times a key did something in the last minute (a list the caller pushes to when it lets the next one through)
+function lastMinute(map, key) {
+  const now = Date.now(), times = (map.get(key) || []).filter((t) => now - t < 60000);
+  map.set(key, times);
+  return times;
+}
+// a refusal in the log, at most once a minute per network and reason (a flood must not flood the log too)
+const refusedLogged = new Map();
+function logRefused(net, why) {
+  const k = net + '|' + why, now = Date.now();
+  if (now - (refusedLogged.get(k) || 0) < 60000) return;
+  refusedLogged.set(k, now); log(`limit: ${why} (${net})`);
+}
 // a lobby connection's messages: a bucket of 20, refilled at 10 a second; one that keeps flooding is disconnected
 function allow(s) {
   const now = Date.now(), b = s.bucket;
@@ -55,7 +88,7 @@ function allow(s) {
   return true;
 }
 // a room code's failed tries: at most 10 a minute from one address (or connection)
-const joinFails = new Map();
+const joinFails = new Map(), roomCreates = new Map();
 const joinBlocked = (who) => (joinFails.get(who) || []).filter((t) => Date.now() - t < 60000).length >= 10;
 const joinFailed = (who) => joinFails.set(who, (joinFails.get(who) || []).filter((t) => Date.now() - t < 60000).concat(Date.now()));
 
@@ -75,6 +108,19 @@ async function poll() {
     try { const r = await fetch(`http://127.0.0.1:${i.port}/status`, { signal: AbortSignal.timeout(1500) }); Object.assign(i, await r.json(), { up: true }); }
     catch (e) { i.up = false; }
   }
+  // a match the instances no longer list is over (one just started is kept until a poll has it)
+  const live = new Set();
+  for (const i of inst.values()) for (const m of i.list || []) live.add(m.id);
+  for (const [id, x] of playing) if (!live.has(id) && Date.now() - x.at > 6000) playing.delete(id);
+}
+// the matches this gateway started that are still in play, and the networks seated in each (the abuse limits)
+const playing = new Map();
+const matchesOf = (net) => { let n = 0; for (const x of playing.values()) if (x.nets.has(net)) n++; return n; };
+// why a new match for these viewers cannot start now, or null
+function matchRefused(members) {
+  if (LIMIT.matches && playing.size >= LIMIT.matches) return '服务器正忙，请稍后再开局';
+  if (LIMIT.matchesPerNet) for (const s of members) if (s.net && matchesOf(s.net) >= LIMIT.matchesPerNet) return '同一网络正在进行的比赛已达上限，请等其中一场结束后再开局';
+  return null;
 }
 setInterval(poll, 2000); poll();
 async function createMatch(mode, members, npcFill) {
@@ -86,6 +132,7 @@ async function createMatch(mode, members, npcFill) {
   const o = await r.json();
   if (!r.ok) throw new Error(o.error || 'create failed');
   live[0].matches++;
+  playing.set(o.matchId, { nets: new Set(members.map((s) => s.net).filter(Boolean)), at: Date.now() });
   for (const s of members) if (s.cid) justSeated.set(s.cid, Date.now());
   members.forEach((s, i) => { s.state = 'idle'; s.room = null; send(s, { t: 'matched', port: o.port, matchId: o.matchId, token: o.seats[i].token, mode }); });
   log(`match ${o.matchId} → instance ${o.port}: ${members.map((s) => s.name).join(', ')}${npcFill ? ' + NPC' : ''}`);
@@ -104,7 +151,7 @@ const send = (s, m) => {
 };
 function newSession(ws, ip) {
   const s = { id: 'u' + (++sid), key: randomBytes(12).toString('hex'), ws, name: '', tag: '#' + (1000 + Math.floor(Math.random() * 9000)),
-    avatar: nextAvatar(), state: 'idle', room: null, held: null, awayTimer: 0, ip, cid: null, bucket: { n: 20, at: Date.now() }, dropped: 0 };
+    avatar: nextAvatar(), state: 'idle', room: null, held: null, awayTimer: 0, ip, net: netOf(ip), cid: null, bucket: { n: 20, at: Date.now() }, dropped: 0 };
   sessions.add(s);
   return s;
 }
@@ -150,12 +197,16 @@ async function matchQueue(mode) {
   const waited = Date.now() - here[0].queuedAt;
   for (const s of here) send(s, { t: 'queue', mode, n: here.length, max, waited: (Date.now() - s.queuedAt) / 1000, filling: waited > QUEUE_FILL_MS * 0.6 });
   // a table: the earliest first, but one viewer per address (QUEUE_SAME_IP aside); the others wait for the next
+  // (the abuse limits: a full server holds every table; a viewer whose network has its most matches in play waits)
+  if (LIMIT.matches && playing.size >= LIMIT.matches) { logRefused('*', 'queue held: server at its match limit'); return; }
   const group = [], ips = new Set();
   for (const s of here) {
     if (group.length >= max) break;
     if (!SAME_IP_OK && s.ip && ips.has(s.ip)) continue;
+    if (s.net && LIMIT.matchesPerNet && matchesOf(s.net) >= LIMIT.matchesPerNet) { logRefused(s.net, 'queue: network at its match limit'); continue; }
     group.push(s); if (s.ip) ips.add(s.ip);
   }
+  if (!group.length) return;
   if (group.length >= max || waited >= QUEUE_FILL_MS) {
     queues[mode] = queues[mode].filter((s) => !group.includes(s));
     try { await createMatch(mode, group, group.length < max); }
@@ -203,10 +254,17 @@ function onMessage(s, m) {
     case 'ping': if (Number.isFinite(m.c)) send(s, { t: 'pong', c: m.c }); break;   // the page's latency probe
     case 'avatar': { const a = cleanAvatar(m.avatar); if (a) { s.avatar = a; const r = s.room && rooms.get(s.room); if (r) pushRoom(r); } break; }
     case 'room.create': {
+      // (only rooms actually made count towards the minute's: a refused try costs nothing)
+      if (s.net && LIMIT.roomCreatesPerMin && lastMinute(roomCreates, s.net).length >= LIMIT.roomCreatesPerMin) { logRefused(s.net, 'room creates per minute'); send(s, { t: 'error', msg: '创建房间过于频繁，请稍后再试' }); break; }
+      if (s.net && LIMIT.roomsPerNet && [...rooms.values()].filter((r) => r.host !== s && r.host.net === s.net).length >= LIMIT.roomsPerNet) {
+        logRefused(s.net, 'rooms per network'); send(s, { t: 'error', msg: '同一网络创建的房间已达上限，请先关闭其他房间' }); break;
+      }
+      if (LIMIT.rooms && rooms.size >= LIMIT.rooms && !(s.room && rooms.get(s.room) && rooms.get(s.room).host === s)) { logRefused('*', 'rooms in all'); send(s, { t: 'error', msg: '服务器房间已满，请稍后再试' }); break; }
       leaveQueue(s); leaveRoom(s);
       let code; do code = String(100000 + Math.floor(Math.random() * 900000)); while (rooms.has(code));
       const r = { code, mode: ROOM_MODES.includes(m.mode) ? m.mode : 'multiOperationRoom', host: s, members: [s], npc: false };
       rooms.set(code, r); s.room = code; s.state = 'room';
+      if (s.net) lastMinute(roomCreates, s.net).push(Date.now());
       pushRoom(r);
       break;
     }
@@ -227,6 +285,8 @@ function onMessage(s, m) {
       const r = rooms.get(s.room);
       if (!r || r.host !== s) break;
       if (r.members.length < MIN_ROOM && !r.npc) { send(s, { t: 'error', msg: `至少需要 ${MIN_ROOM} 名玩家，或勾选“开局时添加NPC进行补位”` }); break; }
+      const refused = matchRefused(r.members);
+      if (refused) { logRefused(s.net || '*', 'room start: ' + refused); send(s, { t: 'error', msg: refused }); break; }
       rooms.delete(r.code);
       createMatch(r.mode, r.members, r.npc).catch((e) => { recordError('gateway', 'create match (room)', e); for (const x of r.members) send(x, { t: 'error', msg: '开局失败：' + e.message }); });
       break;
@@ -319,7 +379,7 @@ const server = http.createServer((req, res) => {
   if (u.pathname === '/healthz') { res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ ok: true, instances: [...inst.values()].filter((i) => i.up).length, page: hasPage() })); return; }
   if (u.pathname === '/status') {
     res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-    res.end(JSON.stringify({ gateway: { port: PORT, pid: process.pid, sessions: sessions.size, relays, queues: Object.fromEntries(QUEUE_MODES.map((m) => [m, queues[m].map((s) => s.name)])), errors: recentErrors(), reports: reportCount() },
+    res.end(JSON.stringify({ gateway: { port: PORT, pid: process.pid, sessions: sessions.size, relays, limits: LIMIT, playing: playing.size, queues: Object.fromEntries(QUEUE_MODES.map((m) => [m, queues[m].map((s) => s.name)])), errors: recentErrors(), reports: reportCount() },
       // a room's code only for this machine: anyone else could walk into a private room with it
       rooms: [...rooms.values()].map((r) => ({ ...(LOOPBACK.has(req.socket.remoteAddress) ? { code: r.code } : {}), mode: r.mode, host: r.host.name, members: r.members.map((m) => m.name), npc: r.npc })),
       instances: [...inst.values()].map((i) => ({ port: i.port, up: i.up, matches: i.matches, players: i.players, list: i.list })) }, null, 1));
@@ -356,8 +416,13 @@ server.on('upgrade', (req, socket, head) => {
   const u = new URL(req.url, 'http://x');
   if (u.pathname === '/match') { relayMatch(req, socket, head, u); return; }
   if (u.pathname !== '/lobby') { socket.destroy(); return; }
+  const ip = clientIp(req), net = netOf(ip);
+  if (net && LIMIT.sessionsPerNet) {
+    let n = 0; for (const x of sessions) if (x.net === net) n++;
+    if (n >= LIMIT.sessionsPerNet) { logRefused(net, 'lobby connections per network'); socket.end('HTTP/1.1 429 Too Many Requests\r\nConnection: close\r\nContent-Length: 0\r\n\r\n'); return; }
+  }
   wss.handleUpgrade(req, socket, head, (ws) => {
-    const cx = { s: newSession(ws, clientIp(req)) };
+    const cx = { s: newSession(ws, ip) };
     ws.on('message', (d) => {
       if (!allow(cx.s)) { if (cx.s.dropped > 200) try { ws.close(4008, 'too many messages'); } catch (e) { /* gone */ } return; }
       let m; try { m = JSON.parse(d); } catch (e) { return; }
