@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Arvo:wght@700&display=swap">
 <style>
-/* a local play-through of the 争锋频道 flow: the game's 1280 × 720 reference canvas scaled to the window (letterboxed),
+/* a local play-through of the 争锋频道 flow: the game's 1280 × 720 reference canvas scaled to the window (letterboxed; a touch screen is filled edge to edge, FRAME),
    the arena canvas under the UI, UI Spine canvas over it, a small control strip in the corner */
 @font-face { font-family: "Bender"; src: /*FONT_BENDER*/; font-weight: 400 900; }
 @font-face { font-family: "Novecento"; src: /*FONT_NOVECENTO*/; font-weight: 300 900; }
@@ -29,7 +29,7 @@ html { touch-action: manipulation; overscroll-behavior: none; -webkit-tap-highli
 #stage { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 #stage input { -webkit-user-select: text; user-select: text; }
 #stage { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; overflow: hidden; background: #070a0a; }
-#arena, #uispine { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; }
+#arena, #uispine { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
 #uispine { display: none; pointer-events: none; }
 #ui { position: absolute; inset: 0; z-index: 10; pointer-events: none; }
 .screen { position: absolute; inset: 0; pointer-events: none; }
@@ -42,7 +42,7 @@ html { touch-action: manipulation; overscroll-behavior: none; -webkit-tap-highli
 .pc { position: absolute; pointer-events: none; }
 .g.wipe { background: linear-gradient(100deg, #f6e033 0 78%, #161616 78% 86%, #f6e033 86%); }
 /* screen change: a block dissolve over the stage (drawn by wipe() in flow.js) */
-#wipe { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; z-index: 950; pointer-events: none; display: none; }
+#wipe { position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 950; pointer-events: none; display: none; }
 .inj { position: absolute; inset: 0; background: center / cover no-repeat; pointer-events: none; }
 .inj.avatar { inset: 12px; border-radius: 50%; box-shadow: 0 0 0 3px rgba(255, 255, 255, .85), 0 6px 18px rgba(0, 0, 0, .5); background-color: #182120; }
 canvas.video { position: absolute; inset: 0; width: 100%; height: 100%; }
@@ -86,7 +86,7 @@ canvas.video { position: absolute; inset: 0; width: 100%; height: 100%; }
 #start .sb-art::after { content: ""; position: absolute; inset: 0; mix-blend-mode: multiply;
   background: radial-gradient(circle, rgba(22, 22, 22, .28) 1px, transparent 1.6px) 0 0 / 5px 5px, linear-gradient(180deg, rgba(22, 22, 22, 0) 70%, rgba(22, 22, 22, .5)); }
 /* a lower third at the window's left edge: the settings gear owns the bottom-right corner */
-#start .sb-caption { position: absolute; left: 744px; bottom: 34px; z-index: 3; pointer-events: none; color: #fff;
+#start .sb-caption { position: absolute; left: calc(100% - 536px); bottom: 34px; z-index: 3; pointer-events: none; color: #fff;
   font: 700 13px/1.35 var(--nove); letter-spacing: .12em; text-shadow: 0 1px 6px rgba(0, 0, 0, .6); }
 #start .sb-caption b { display: block; font-size: 28px; letter-spacing: .04em; color: #f6e033; }
 /* the slate */
@@ -316,24 +316,32 @@ canvas.video { position: absolute; inset: 0; width: 100%; height: 100%; }
 </div>
 </div>
 <script>
-// The frame the game is laid out in, fitted to the window, with the 1280 × 720 stage scaled into it (letterboxed); the
-// loader and the game both fit through it. On a touch screen held upright the frame is the window turned a quarter
-// (clockwise): the game is landscape, and a phone with its rotation locked still shows it full size, read with the
-// phone turned sideways. The window's size is the root element's (clientWidth / Height): a phone's innerWidth / Height
-// grow with content that overflows them, here the stage before it is scaled, which then kept it at full size.
+// The frame the game is laid out in, fitted to the window, and the stage scaled into it; the loader and the game both fit
+// through it. On a touch screen held upright the frame is the window turned a quarter (clockwise): the game is
+// landscape, and a phone with its rotation locked still shows it full size, read with the phone turned sideways.
+// The stage is the game's 1280 × 720 reference canvas, letterboxed on a desktop. On a touch screen it fills the screen
+// edge to edge, as the game's own CanvasScaler does: it grows to the screen's shape (wider, up to 2.4 : 1, for a phone
+// held sideways; taller, down to 4 : 3, for a tablet), the UI lays out to that size by its anchors, and the battle
+// scene widens around its centre (sw × sh: the stage's size in reference pixels).
+// The window's size is the root element's (clientWidth / Height): a phone's innerWidth / Height grow with content that
+// overflows them, here the stage before it is scaled, which then kept it at full size.
 const FRAME = {
-  rot: false, k: 1, w: 1280, h: 720,
+  rot: false, k: 1, w: 1280, h: 720, sw: 1280, sh: 720,
   touch: matchMedia('(pointer: coarse)').matches,
   fit() {
     const d = document.documentElement, W = d.clientWidth || innerWidth, H = d.clientHeight || innerHeight;
-    const rot = this.touch && H > W, w = rot ? H : W, h = rot ? W : H, k = Math.min(w / 1280, h / 720);
+    const rot = this.touch && H > W, w = rot ? H : W, h = rot ? W : H, a = w / h;
+    let sw = 1280, sh = 720;
+    if (this.touch) { if (a > 16 / 9) sw = Math.round(720 * Math.min(a, 2.4)); else sh = Math.round(1280 / Math.max(a, 4 / 3)); }
+    const k = Math.min(w / sw, h / sh);
     const fr = document.getElementById('frame'), st = document.getElementById('stage');
     fr.style.width = w + 'px'; fr.style.height = h + 'px';
     fr.style.transform = rot ? `translate(${W}px, 0) rotate(90deg)` : 'translate(0, 0)';
+    st.style.width = sw + 'px'; st.style.height = sh + 'px';
     st.style.transform = `scale(${k})`;
-    st.style.left = (w - 1280 * k) / 2 + 'px'; st.style.top = (h - 720 * k) / 2 + 'px';
+    st.style.left = (w - sw * k) / 2 + 'px'; st.style.top = (h - sh * k) / 2 + 'px';
     d.style.setProperty('--fw', w + 'px'); d.style.setProperty('--fh', h + 'px');
-    Object.assign(this, { rot, k, w, h });
+    Object.assign(this, { rot, k, w, h, sw, sh });
     return k;
   },
   // a pointer's movement on the screen as a movement on the stage, in stage pixels

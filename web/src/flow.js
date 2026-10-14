@@ -101,6 +101,12 @@ async function fadeOut(scr, sec = 0.25) {
 // ink behind it — the channel's ident holds a beat over the ink while `fn` swaps the screen, then the blocks drop away
 // the same way, yellow at the trailing front, onto the new screen.
 const WIPE = { cell: 40, cols: 32, rows: 18, thr: null, ink: '#161616', yellow: '#f6e033' };
+// the wipe's canvas and block grid sized to the stage (1280 × 720, or a touch screen's own shape: FRAME)
+function wipeSize(cv) {
+  const W = FRAME.sw, H = FRAME.sh, cols = Math.ceil(W / WIPE.cell), rows = Math.ceil(H / WIPE.cell);
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  if (cols !== WIPE.cols || rows !== WIPE.rows) Object.assign(WIPE, { cols, rows, thr: null });
+}
 function wipeThresholds() {
   if (WIPE.thr) return WIPE.thr;
   const { cols, rows } = WIPE, thr = new Float32Array(cols * rows);
@@ -121,7 +127,7 @@ function wipeThresholds() {
 }
 let wipeImg = null;
 function wipeDraw(x, p, out, label, hold) {
-  const { cell, cols, rows } = WIPE, thr = wipeThresholds(), W = 1280, H = 720, span = 0.24, front = 0.1;
+  const { cell, cols, rows } = WIPE, thr = wipeThresholds(), W = x.canvas.width, H = x.canvas.height, span = 0.24, front = 0.1;
   x.clearRect(0, 0, W, H);
   const k = p * (1 + span + front);                       // at p = 1 every block is past its front
   for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
@@ -152,12 +158,14 @@ function wipeDraw(x, p, out, label, hold) {
 }
 async function wipe(fn, label = '') {
   const cv = $('wipe'), x = cv.getContext('2d');
+  wipeSize(cv);
+  const W = cv.width, H = cv.height;
   if (!wipeImg && FXTEX.dissolve) { wipeImg = new Image(); wipeImg.src = FXTEX.dissolve; await wipeImg.decode().catch(() => {}); }
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   cv.style.display = 'block';
   const run = (sec, f) => new Promise((res) => { const t0 = performance.now(); const step = (now) => { const u = Math.min(1, (now - t0) / 1000 / sec); f(u); if (u < 1) requestAnimationFrame(step); else res(); }; requestAnimationFrame(step); });
   const ease = (u) => (u < 0.5 ? 2 * u * u : 1 - (-2 * u + 2) ** 2 / 2);
-  if (reduce) { await run(0.18, (u) => { x.fillStyle = WIPE.ink; x.globalAlpha = u; x.clearRect(0, 0, 1280, 720); x.fillRect(0, 0, 1280, 720); x.globalAlpha = 1; }); }
+  if (reduce) { await run(0.18, (u) => { x.fillStyle = WIPE.ink; x.globalAlpha = u; x.clearRect(0, 0, W, H); x.fillRect(0, 0, W, H); x.globalAlpha = 1; }); }
   else await run(0.46, (u) => wipeDraw(x, ease(u), false, label, 0));
   sfx('g_ui_tabswitch');
   const holdStart = performance.now();
@@ -167,9 +175,9 @@ async function wipe(fn, label = '') {
   await fn();
   await wait(Math.max(0.05, 0.34 - (performance.now() - holdStart) / 1000));
   holding = false;
-  if (reduce) await run(0.18, (u) => { x.clearRect(0, 0, 1280, 720); x.globalAlpha = 1 - u; x.fillStyle = WIPE.ink; x.fillRect(0, 0, 1280, 720); x.globalAlpha = 1; });
+  if (reduce) await run(0.18, (u) => { x.clearRect(0, 0, W, H); x.globalAlpha = 1 - u; x.fillStyle = WIPE.ink; x.fillRect(0, 0, W, H); x.globalAlpha = 1; });
   else await run(0.46, (u) => wipeDraw(x, ease(u), true, label, 1 - u * 4));
-  x.clearRect(0, 0, 1280, 720);
+  x.clearRect(0, 0, W, H);
   cv.style.display = 'none';
 }
 function whenTapped(scr, map) {
@@ -226,22 +234,29 @@ function trimEntry(scr) {
   const br = n('entry_state/panel_browser');
   if (br) {
     // the window opens out of the side bar's icon (its own x keys in the open / close clips): remap them so it opens
-    // from, and settles at, the centre of the desk (x' = A + B·x keeps the curves' shape)
-    const end = br.rt.size[0], x1 = br.rt.pos[0], to1 = -(1280 + end) / 2;
+    // from, and settles at, the centre of the desk (x' = A + B·x keeps the curves' shape). The window is anchored to
+    // the right edge, so the centre depends on the stage's width (wider on a touch screen: FRAME): the clips are
+    // remapped from their own keys (kept on first use) whenever that width changes.
+    const SW = FRAME.sw, end = br.rt.size[0], x1 = br.rt.pos[0], to1 = -(SW + end) / 2;
     br.rt.pos[0] = to1;
     // the music player widget sat wholly behind the window's right part; keep it there (not half out from under it)
     const mp = n('entry_state/group_music_player');
-    if (mp) mp.rt.pos[0] = (1280 + to1 + end) - 16 - mp.rt.size[0] / 2 - 1280;
-    if (!trimEntry.done) {
-      trimEntry.done = true;
-      const op = D.clips.act1enemyduel_entry_browser_open, cx = op && op.curves.find((c) => c.path === '' && c.attr === 'm_AnchoredPosition.x');
-      const cw = op && op.curves.find((c) => c.path === '' && c.attr === 'm_SizeDelta.x');
-      if (cx && cw) {
-        const x0 = cx.keys[0][1], w0 = cw.keys[0][1], to0 = 640 - w0 / 2 - 1280, B = (to1 - to0) / (x1 - x0), A = to1 - B * x1;
-        for (const name of ['act1enemyduel_entry_browser_open', 'act1enemyduel_entry_browser_close']) {
-          const c = D.clips[name] && D.clips[name].curves.find((k) => k.path === '' && k.attr === 'm_AnchoredPosition.x');
-          if (c) c.keys = c.keys.map(([t, v, i, o]) => [t, A + B * v, Math.abs(i) >= 1e29 ? i : B * i, Math.abs(o) >= 1e29 ? o : B * o]);
-        }
+    if (mp) mp.rt.pos[0] = to1 + end - 16 - mp.rt.size[0] / 2;
+    // both are anchored to the bottom: on a taller stage (a tablet) they move up to the middle of its height
+    const dy = (FRAME.sh - 720) / 2;
+    br.rt.pos[1] += dy; if (mp) mp.rt.pos[1] += dy;
+    const curve = (name, attr) => { const c = D.clips[name] && D.clips[name].curves.find((k) => k.path === '' && k.attr === attr); if (c && !c.orig) c.orig = c.keys; return c; };
+    const cx = curve('act1enemyduel_entry_browser_open', 'm_AnchoredPosition.x'), cw = curve('act1enemyduel_entry_browser_open', 'm_SizeDelta.x');
+    if (cx && cw && trimEntry.size !== `${SW}x${FRAME.sh}`) {
+      trimEntry.size = `${SW}x${FRAME.sh}`;
+      const x0 = cx.orig[0][1], w0 = cw.orig[0][1], to0 = -(SW + w0) / 2, B = (to1 - to0) / (x1 - x0), A = to1 - B * x1;
+      for (const name of ['act1enemyduel_entry_browser_open', 'act1enemyduel_entry_browser_close']) {
+        const c = curve(name, 'm_AnchoredPosition.x');
+        if (c) c.keys = c.orig.map(([t, v, i, o]) => [t, A + B * v, Math.abs(i) >= 1e29 ? i : B * i, Math.abs(o) >= 1e29 ? o : B * o]);
+      }
+      for (const name of ['act1enemyduel_entry_browser_open', 'act1enemyduel_entry_browser_close', 'act1enemyduel_entry_music_open', 'act1enemyduel_entry_music_close']) {
+        const c = curve(name, 'm_AnchoredPosition.y');
+        if (c) c.keys = c.orig.map(([t, v, i, o]) => [t, v + dy, i, o]);
       }
     }
   }
@@ -1187,7 +1202,10 @@ function fit() {
   const rs = document.documentElement.style;
   rs.setProperty('--gear', Math.round(clamp(38 * k, FRAME.touch ? 40 : 30, 56)) + 'px'); rs.setProperty('--gear-in', Math.max(4, Math.round(7 * k)) + 'px');
   const res = Math.min(2, k * (window.devicePixelRatio || 1));
-  for (const app of [arenaApp]) if (app) { app.renderer.resolution = res; app.renderer.resize(1280, 720); app.view.style.width = '1280px'; app.view.style.height = '720px'; }
+  // the battle canvas covers the stage (wider or taller than 1280 × 720 on a touch screen: FRAME), the scene centred in it
+  const { sw, sh } = FRAME;
+  for (const app of [arenaApp]) if (app) { app.renderer.resolution = res; app.renderer.resize(sw, sh); app.view.style.width = sw + 'px'; app.view.style.height = sh + 'px'; }
+  if (arena) arenaFit(sw, sh);
 }
 let last = performance.now(), video = null;
 function frame(now) {
@@ -1198,7 +1216,7 @@ function frame(now) {
   tickAnims(dt);
   tickSpinners(dt);
   EMO.tick(dt);
-  for (const scr of screens.slice()) layout(scr.root, 1280, 720, [0.5, 0.5], true);
+  for (const scr of screens.slice()) layout(scr.root, FRAME.sw, FRAME.sh, [0.5, 0.5], true);
   tickParticles(dt, stageK);
   arenaFrame(dt);
   if (FLOW.ctx.video && FLOW.ctx.video.app && FLOW.ctx.video.cv.isConnected) FLOW.ctx.video.frame(dt);

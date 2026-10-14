@@ -1,5 +1,6 @@
 // ---- UGUI re-creation engine --------------------------------------------------------------------------------------
-// The exported node trees become absolutely positioned divs on the 1280 × 720 reference canvas: RectTransform layout
+// The exported node trees become absolutely positioned divs on the stage (the 1280 × 720 reference canvas, or the
+// screen's own shape on a touch screen: FRAME, in the page; anchors place the UI as the game's CanvasScaler would): RectTransform layout
 // (y up → y down), a simplified Horizontal/VerticalLayoutGroup + ContentSizeFitter + LayoutElement pass, legacy
 // AnimationClip playback (cubic Hermite keys, ±1e30 slopes stepped), clickable hotspots and prefab templates
 // instantiated into list containers at run time. Everything runs on one game clock (CLOCK) that the speed control scales.
@@ -507,7 +508,7 @@ class Screen {
     $('ui').appendChild(this.wrap);
     screens.push(this);
     for (const [k, v] of Object.entries(init)) this.show(k, v);
-    layout(this.root, 1280, 720, [0.5, 0.5], true);
+    layout(this.root, FRAME.sw, FRAME.sh, [0.5, 0.5], true);
     setupUiSpines(this);
   }
   // nodes whose path ends with the given suffix (a node name or a "parent/child" tail)

@@ -87,13 +87,17 @@ function buildStage() {
   buildFloor();
   buildLights();
   buildFlash();
+  arenaFit(FRAME.sw, FRAME.sh);
 }
-// behind the field: the studio wall, the LED screen (key art + dot mask + ticker), the truss, the crowd at the sides
+// behind the field: the studio wall, the LED screen (key art + dot mask + ticker), the truss, the crowd at the sides.
+// The wall, the truss and the crowd run on past the 1280 × 720 reference frame: on a touch screen the stage is up to
+// 2.4 : 1 wide or 4 : 3 tall (FRAME), the scene centred in it (arenaFit).
 function buildBackdrop() {
-  const B = arena.back, g = new PIXI.Graphics();
-  for (let i = 0; i < 24; i++) { g.beginFill(lerpCol(0x050707, 0x0d1112, i / 23)); g.drawRect(0, i * 30, 1280, 31); g.endFill(); }
+  const B = arena.back, g = new PIXI.Graphics(), XL = -336, XR = 1616;
+  g.beginFill(0x050707); g.drawRect(XL, -160, XR - XL, 160); g.endFill();
+  for (let i = 0; i < 24; i++) { g.beginFill(lerpCol(0x050707, 0x0d1112, i / 23)); g.drawRect(XL, i * 30, XR - XL, 31); g.endFill(); }
   // wall panels with seams
-  for (let x = 0; x < 1280; x += 64) { g.beginFill(0x0b0f10, 0.9); g.drawRect(x + 1, 30, 62, 210); g.endFill(); }
+  for (let x = XL; x < XR; x += 64) { g.beginFill(0x0b0f10, 0.9); g.drawRect(x + 1, 30, 62, 210); g.endFill(); }
   B.addChild(g);
   // the LED wall
   const L = { x: 138, y: 58, w: 1004, h: 168 };
@@ -128,15 +132,16 @@ function buildBackdrop() {
   arena.ledDots = dots;
   // the truss and its lamp heads (the follow-spots hang here)
   const truss = new PIXI.Graphics();
-  truss.beginFill(0x111617); truss.drawRect(0, 0, 1280, 16); truss.endFill();
-  truss.lineStyle(2, 0x1f2729); for (let x = 0; x < 1280; x += 24) { truss.moveTo(x, 0); truss.lineTo(x + 12, 16); truss.moveTo(x + 12, 16); truss.lineTo(x + 24, 0); }
+  truss.beginFill(0x111617); truss.drawRect(XL, 0, XR - XL, 16); truss.endFill();
+  truss.lineStyle(2, 0x1f2729); for (let x = XL; x < XR; x += 24) { truss.moveTo(x, 0); truss.lineTo(x + 12, 16); truss.moveTo(x + 12, 16); truss.lineTo(x + 24, 0); }
   truss.lineStyle(0);
   for (const x of [230, 640, 1050]) { truss.beginFill(0x232b2d); truss.drawRoundedRect(x - 16, 8, 32, 20, 4); truss.endFill(); truss.beginFill(0xfff2b0, 0.9); truss.drawRoundedRect(x - 10, 22, 20, 5, 2); truss.endFill(); }
   B.addChild(truss);
   // the crowd beside the field: silhouette rows, phone lights twinkling (updated in stageFrame)
   const crowd = new PIXI.Graphics();
   arena.crowdPts = [];
-  for (const side of [0, 1]) for (let row = 0; row < 4; row++) for (let i = 0; i < 9; i++) {
+  // nine seats a row each side of the field, more outwards for a wider stage
+  for (const side of [0, 1]) for (let row = 0; row < 4; row++) for (let i = side ? 0 : -12; i < (side ? 21 : 9); i++) {
     const x = side ? 1100 + i * 21 + (row % 2) * 10 : 8 + i * 21 + (row % 2) * 10, y = 250 + row * 34 + Math.sin(i * 1.7 + row) * 3;
     crowd.beginFill(lerpCol(0x0a0d0e, 0x15191a, row / 3)); crowd.drawCircle(x, y, 8); crowd.drawRoundedRect(x - 12, y + 6, 24, 26, 8); crowd.endFill();
     arena.crowdPts.push([x, y]);
@@ -286,7 +291,7 @@ function buildLights() {
   for (let i = 0; i < 46; i++) {
     const m = new PIXI.Sprite(tex('point')); m.anchor.set(0.5); m.blendMode = ADD(); m.tint = COL.spot;
     const sc = 0.02 + Math.random() * 0.035; m.scale.set(sc);
-    arena.air.addChild(m); arena.motes.push({ s: m, x: Math.random() * 1280, y: 240 + Math.random() * 420, v: 4 + Math.random() * 10, ph: Math.random() * 7 });
+    arena.air.addChild(m); arena.motes.push({ s: m, x: moteX(), y: 240 + Math.random() * 420, v: 4 + Math.random() * 10, ph: Math.random() * 7 });
   }
   arena.twinkles = [];
   // a vignette, like the broadcast camera's
@@ -295,6 +300,16 @@ function buildLights() {
     g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,0.6)'); x.fillStyle = g; x.fillRect(0, 0, w, h);
   }));
   vig.width = 1280; vig.height = 720; arena.root.addChild(vig);
+  arena.vig = vig;
+}
+// a dust mote's x: anywhere across the stage (wider than the reference frame on a touch screen)
+function moteX() { return (Math.random() - 0.5) * FRAME.sw + 640; }
+// the scene centred on the stage, which is wider or taller than 1280 × 720 on a touch screen (FRAME); the broadcast
+// vignette and the flash cover all of it
+function arenaFit(sw, sh) {
+  const ox = (sw - 1280) / 2, oy = (sh - 720) / 2;
+  arena.root.position.set(ox, oy);
+  for (const s of [arena.vig, arena.flash]) if (s) { s.position.set(-ox, -oy); s.width = sw; s.height = sh; }
 }
 function stageFrame(dt) {
   if (!arena.built) return;
@@ -324,7 +339,7 @@ function stageFrame(dt) {
   // dust motes glow inside the cones
   for (const m of arena.motes) {
     m.y -= m.v * dt; m.x += Math.sin(t * 0.6 + m.ph) * 4 * dt;
-    if (m.y < 230) { m.y = 690; m.x = Math.random() * 1280; }
+    if (m.y < 230) { m.y = 690; m.x = moteX(); }
     let lit = 0;
     for (const sp of arena.spots) { const [px, py] = proj(sp.x, sp.y), d = Math.abs(m.x - lerp(sp.ox, px, clamp((m.y - sp.oy) / (py - sp.oy), 0, 1))); lit = Math.max(lit, 1 - d / 60); }
     m.s.position.set(m.x, m.y); m.s.alpha = 0.05 + Math.max(0, lit) * 0.6;
