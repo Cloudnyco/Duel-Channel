@@ -117,6 +117,7 @@ node server/launch.mjs --host 0.0.0.0       # 网关监听所有网卡（局域�
 | `MAX_ROOMS_PER_IP` / `MAX_ROOMS` | 2 / 200 | 同一网络 / 全服同时存在的群组房间数上限 |
 | `ROOM_CREATES_PER_MIN` | 6 | 同一网络每分钟最多创建几个房间 |
 | `MAX_MATCHES_PER_IP` / `MAX_MATCHES` | 3 / 60 | 同一网络有座位的、全服的进行中比赛数上限：达到时房主开局被拒绝并提示原因，匹配队列里的人保留位置继续等待 |
+| `NCN_GAME_DIGIT` / `NCN_GAME_PEERS` | 无 | 同一个服务开在几台服务器上时使用：本机的编号（1–9），以及每台服务器的「编号=域名」（逗号分隔，包括本机）。房间号以所在服务器的编号开头；输入别的服务器的房间号时，页面会连到那台服务器加入。域名须在页面域名的下一级（页面在 `play.example.org` 时为 `<名字>.play.example.org`）。不设时为单台服务器，房间号与以前相同 |
 | `DUEL_DEBUG` | 关 | 设为 `1` 等同 `--debug`：调试模式，见下面的「录制用的调试模式」 |
 | `DUEL_BET_MS` / `DUEL_SECRET_MS` / `DUEL_RANK_MS` / `DUEL_RESULT_MS` / `DUEL_SHOW_MS` | 官方值 | 押注时长、其中暗选的时长、计分板、结算面板、开场展示（毫秒，测试用） |
 | `BOT_PACE` | 1 | 机器人思考与观战延迟的倍率（测试用） |

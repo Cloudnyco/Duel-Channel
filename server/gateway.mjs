@@ -13,8 +13,12 @@
 // at different tables (behind a reverse proxy set TRUST_PROXY=1 so the address is the client's, X-Forwarded-For; at a
 // LAN event behind one NAT, QUEUE_SAME_IP=1 lets them share). Rooms are the host's: none of this applies there. Every
 // connection's messages are rate-limited, and so are a room code's failed tries from one address.
+// One node of several: the same gateway may run on several machines, each with its own rooms and queues. A room's code
+// then begins with the node's digit; a code of another node is answered with that node's host name ({ t: 'elsewhere' }),
+// and the page connects there to join it — a code of another node is no failed try.
 // env: PORT (default 8600), HOST (bind, default 127.0.0.1), INSTANCES (comma-separated instance ports), QUEUE_FILL_MS,
-//      DUEL_PUBLIC (the built page's folder, default ../public), TRUST_PROXY, QUEUE_SAME_IP
+//      DUEL_PUBLIC (the built page's folder, default ../public), TRUST_PROXY, QUEUE_SAME_IP,
+//      NCN_GAME_DIGIT (this node's digit, 1–9) and NCN_GAME_PEERS (every node's "digit=host", comma-separated) for a node
 import http from 'node:http';
 import { connect } from 'node:net';
 import { readFileSync, existsSync, statSync, createReadStream } from 'node:fs';
@@ -38,6 +42,23 @@ const hasPage = () => existsSync(SHELL) || existsSync(SINGLE);
 const log = (s) => console.log(`[gateway] ${s}`);
 installCrashLog('gateway');
 const TRUST_PROXY = process.env.TRUST_PROXY === '1', SAME_IP_OK = process.env.QUEUE_SAME_IP === '1';
+// this gateway as one node of several (see the top): its digit and every node's host; null without them, or when they
+// are not right (then it is a node of its own, and says why)
+function nodeOf(env) {
+  const d = (env.NCN_GAME_DIGIT || '').trim(), list = (env.NCN_GAME_PEERS || '').trim(), peers = {};
+  if (!d && !list) return null;
+  if (!/^[1-9]$/.test(d)) { console.log(`[gateway] NCN_GAME_DIGIT is not a digit from 1 to 9: "${d}" — a node of its own`); return null; }
+  for (const part of list.split(',').map((x) => x.trim()).filter(Boolean)) {
+    const m = /^([1-9])=([a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+)$/.exec(part.toLowerCase());
+    if (!m || peers[m[1]]) { console.log(`[gateway] NCN_GAME_PEERS has a bad entry "${part}" — a node of its own`); return null; }
+    peers[m[1]] = m[2];
+  }
+  return { digit: Number(d), peers };
+}
+const NODE = nodeOf(process.env);
+// a code of another listed node: that node's host; null for this node's own codes, unknown digits, or no node
+const elsewhere = (code) => (NODE && /^\d{6}$/.test(code) && code[0] !== String(NODE.digit) && NODE.peers[code[0]]) || null;
+const newCode = () => (NODE ? `${NODE.digit}${String(Math.floor(Math.random() * 1e5)).padStart(5, '0')}` : String(100000 + Math.floor(Math.random() * 900000)));
 // a connection's address for the queues: the socket's, or behind a trusted proxy the first X-Forwarded-For hop; this
 // machine's own (a tunnel or proxy here that does not pass the client's) counts as unknown
 const LOOPBACK = new Set(['127.0.0.1', '::1', '::ffff:127.0.0.1']);
@@ -261,7 +282,7 @@ function onMessage(s, m) {
       }
       if (LIMIT.rooms && rooms.size >= LIMIT.rooms && !(s.room && rooms.get(s.room) && rooms.get(s.room).host === s)) { logRefused('*', 'rooms in all'); send(s, { t: 'error', msg: '服务器房间已满，请稍后再试' }); break; }
       leaveQueue(s); leaveRoom(s);
-      let code; do code = String(100000 + Math.floor(Math.random() * 900000)); while (rooms.has(code));
+      let code; do code = newCode(); while (rooms.has(code));
       const r = { code, mode: ROOM_MODES.includes(m.mode) ? m.mode : 'multiOperationRoom', host: s, members: [s], npc: false };
       rooms.set(code, r); s.room = code; s.state = 'room';
       if (s.net) lastMinute(roomCreates, s.net).push(Date.now());
@@ -271,7 +292,8 @@ function onMessage(s, m) {
     case 'room.join': {
       const who = s.ip || s.id;
       if (joinBlocked(who)) { send(s, { t: 'error', msg: '尝试过于频繁，请稍后再试' }); break; }
-      const r = rooms.get(String(m.code || '').trim());
+      const code = String(m.code || '').trim(), r = rooms.get(code), host = r ? null : elsewhere(code);
+      if (host) { send(s, { t: 'elsewhere', code, host }); break; }
       if (!r) { joinFailed(who); send(s, { t: 'error', msg: '房间不存在或已无法加入' }); break; }
       if (r.members.length >= seatsOf(r.mode)) { send(s, { t: 'error', msg: '房间已满' }); break; }
       leaveQueue(s); leaveRoom(s);

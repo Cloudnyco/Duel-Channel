@@ -19,10 +19,10 @@ const get = (port, path, headers = {}, method = 'GET') => new Promise((res, rej)
   const r = request({ host: '127.0.0.1', port, path, method, headers }, (m) => { const b = []; m.on('data', (c) => b.push(c)); m.on('end', () => res({ status: m.statusCode, h: m.headers, body: Buffer.concat(b) })); });
   r.on('error', rej); r.end();
 });
-async function gateway(dir, logs = join(dir, 'logs')) {
+async function gateway(dir, logs = join(dir, 'logs'), extra = {}) {
   const port = await free(), ip = await free();
   const p = spawn(process.execPath, [fileURLToPath(new URL('../server/gateway.mjs', import.meta.url))], {
-    env: { ...process.env, PORT: String(port), HOST: '127.0.0.1', INSTANCES: String(ip), DUEL_PUBLIC: dir, DUEL_LOGS: logs }, stdio: 'ignore' });
+    env: { ...process.env, PORT: String(port), HOST: '127.0.0.1', INSTANCES: String(ip), DUEL_PUBLIC: dir, DUEL_LOGS: logs, ...extra }, stdio: 'ignore' });
   for (let i = 0; i < 100; i++) { try { await get(port, '/healthz'); return { port, stop: () => p.kill() }; } catch (e) { await new Promise((r) => setTimeout(r, 100)); } }
   p.kill(); throw new Error('gateway did not start');
 }
@@ -204,4 +204,34 @@ test('the launcher starts a battle instance again after it dies', { timeout: 600
     assert.notEqual(again.pid, first.pid);
     assert.match(out, /starting it again in 1 s/);
   } finally { p.kill(); rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('one node of several: room codes begin with its digit; another node code is answered with its host, no failed try', { timeout: 30000 }, async () => {
+  const { default: WebSocket } = await import('ws');
+  const dir = mkdtempSync(join(tmpdir(), 'duel-pub-'));
+  const gw = await gateway(dir, join(dir, 'logs'), { NCN_GAME_DIGIT: '2', NCN_GAME_PEERS: '1=hkg.play.example.org,2=tyo.play.example.org,3=lon.play.example.org' });
+  const open = () => new Promise((res, rej) => {
+    const ws = new WebSocket(`ws://127.0.0.1:${gw.port}/lobby`), q = [], waits = [];
+    ws.on('message', (d) => { const m = JSON.parse(d); const i = waits.findIndex((w) => w.t === m.t); if (i >= 0) waits.splice(i, 1)[0].res(m); else q.push(m); });
+    const next = (t) => { const i = q.findIndex((m) => m.t === t); if (i >= 0) return Promise.resolve(q.splice(i, 1)[0]); return new Promise((r) => waits.push({ t, res: r })); };
+    ws.on('open', () => res({ ws, next, say: (o) => ws.send(JSON.stringify(o)) })); ws.on('error', rej);
+  });
+  try {
+    const a = await open();
+    a.say({ t: 'hello', name: '房主' }); await a.next('welcome');
+    a.say({ t: 'room.create', mode: 'multiOperationRoom' });
+    assert.match((await a.next('room')).code, /^2\d{5}$/);
+    const b = await open();
+    b.say({ t: 'hello', name: '房客' }); await b.next('welcome');
+    // more than the 10 failed tries a minute: a code of another node is none of them
+    for (let i = 0; i < 12; i++) {
+      b.say({ t: 'room.join', code: '312345' });
+      assert.deepEqual(await b.next('elsewhere'), { t: 'elsewhere', code: '312345', host: 'lon.play.example.org' });
+    }
+    b.say({ t: 'room.join', code: '299999' });
+    assert.match((await b.next('error')).msg, /房间不存在/, 'this node code of no room');
+    b.say({ t: 'room.join', code: '912345' });
+    assert.match((await b.next('error')).msg, /房间不存在/, 'a digit of no node');
+    a.ws.close(); b.ws.close();
+  } finally { gw.stop(); rmSync(dir, { recursive: true, force: true }); }
 });

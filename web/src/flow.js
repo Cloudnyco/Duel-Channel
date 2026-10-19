@@ -1183,6 +1183,8 @@ async function stFinish() {
   await fadeOut(scr, 0.3);
   // the seat is forgotten once the match is over or left; a match lost to the network keeps it (a reload rejoins)
   if (G.online && NET.match) { NET.match.close(); NET.match = null; if (G.matchOver || G.left) forgetSeat(); }
+  // a room's match on another node is over: back to the page's own node for what comes next (net.js moveLobby)
+  if (G.online && WS_HOST !== location.host) { try { await moveLobby(location.host); } catch (e) { toast('与大厅的连接已断开', 3); } }
   if (r !== 'match') return 'entry';
   const wasOnline = G.online;
   G.online = false;

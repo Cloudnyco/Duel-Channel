@@ -207,11 +207,25 @@ function watchPing(scr, suffix, under, wrap = (t) => t, offline = '单机') {
 // queue screen ends as if the lobby had closed
 // the lobby and the matches both go through the gateway's own address (it relays a match's connection to its instance),
 // over wss:// when the page came over HTTPS
-const WS_BASE = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`;
+// A room on another node of the same service (the gateway's elsewhere: its host one level under the page's own name,
+// e.g. <node>.play.example.org for a page on play.example.org): the lobby and the match connect there instead, the page
+// stays where it is (its storage, its assets). WS_HOST is that node while the page is in its room, else the page's own.
+let WS_HOST = location.host;
+const wsBase = () => `${location.protocol === 'https:' ? 'wss' : 'ws'}://${WS_HOST}`;
+function nodeHost(h) {
+  const own = location.hostname;
+  return typeof h === 'string' && /^[a-z0-9.-]+$/.test(h) && h.endsWith('.' + own) && !h.slice(0, -own.length - 1).includes('.');
+}
+// the lobby connection moved to a node (or back to the page's own): the old one closed, a new session there
+async function moveLobby(host) {
+  if (NET.lobby) NET.lobby.close();
+  WS_HOST = host;
+  await connectLobby(ME_NAME);
+}
 async function connectLobby(name) {
   let live = false;
   const hello = () => ({ t: 'hello', name, avatar: myAvatar.value() || undefined, cid: clientId() });
-  NET.lobby = new Link(`${WS_BASE}/lobby`, {
+  NET.lobby = new Link(`${wsBase()}/lobby`, {
     retry: C.maxRetryTimeInTeamRoom || 45, onstate: (st) => RECONNECT.state(st),
     reopen: (link) => ({ url: link.url, first: { t: 'resume', key: NET.me.key } }),
     intercept: (m) => {
@@ -259,7 +273,9 @@ function applyServerPlayers(list) {
 const SEAT_KEY = 'duel.seat';
 async function joinMatch(m) {
   if (NET.match) NET.match.close();
-  const url = `${WS_BASE}/match?port=${encodeURIComponent(m.port)}&m=${encodeURIComponent(m.matchId)}&k=${encodeURIComponent(m.token)}`;
+  // the match is on the node of its room (a seat kept from a reload names it)
+  if (m.host && nodeHost(m.host)) WS_HOST = m.host;
+  const url = `${wsBase()}/match?port=${encodeURIComponent(m.port)}&m=${encodeURIComponent(m.matchId)}&k=${encodeURIComponent(m.token)}`;
   NET.match = new Link(url, {
     retry: C.maxRetryTimeInBattle || 30, onstate: (st) => RECONNECT.state(st),
     reopen: (link) => ({ url: `${url}&since=${link.seq}` }),
@@ -276,7 +292,7 @@ async function joinMatch(m) {
   if (G.debugMatch) { if (PAGE_DEBUG) console.info('debug match: seeds come with the line-ups'); else toast('这是一场调试模式的对局：服务器在押注前就公开了种子', 4); }
   G.mode = MODES.find((x) => x.id === h.mode) || G.mode;
   G.matchId = m.matchId;
-  try { sessionStorage.setItem(SEAT_KEY, JSON.stringify({ port: m.port, matchId: m.matchId, token: m.token })); } catch (e) { /* no storage */ }
+  try { sessionStorage.setItem(SEAT_KEY, JSON.stringify({ port: m.port, matchId: m.matchId, token: m.token, ...(WS_HOST !== location.host ? { host: WS_HOST } : {}) })); } catch (e) { /* no storage */ }
   return h;
 }
 const forgetSeat = () => { debugMark(false); try { sessionStorage.removeItem(SEAT_KEY); } catch (e) { /* no storage */ } };
@@ -349,7 +365,7 @@ async function stRoomOnline(ctx) {
   watchPing(scr, 'delay_layout/text_delay', null, (t) => `当前延迟  ${t}`);
   NET.lobby.drain('room');
   if (ctx.joinCode) NET.lobby.send({ t: 'room.join', code: ctx.joinCode }); else NET.lobby.send({ t: 'room.create', mode: G.mode.id });
-  const joined = !!ctx.joinCode;
+  let joined = !!ctx.joinCode;
   ctx.joinCode = null;
   playLoops(scr);
   scr.play('duel_room', 'in_room');
@@ -396,14 +412,21 @@ async function stRoomOnline(ctx) {
   scr.tap('panel_top/button_back', () => { result = 'back'; });
   const tick = setInterval(() => { roomT = Math.max(0, roomT - 1); scr.text('time_layout/text_time', mmss(roomT)); }, 1000);
   while (!result) {
-    const m = await NET.lobby.next(['room', 'matched', 'error'], 300);
+    const m = await NET.lobby.next(['room', 'matched', 'error', 'elsewhere'], 300);
     if (m.t === 'room') { room = m; draw(m); }
+    else if (m.t === 'elsewhere') {
+      // the room is on another node: join it there
+      if (!nodeHost(m.host)) { toast('这个房间在另一台服务器上，请从游戏入口页进入后再加入', 4); result = 'back'; continue; }
+      try { await moveLobby(m.host); NET.lobby.send({ t: 'room.join', code: m.code }); joined = true; } catch (e) { toast('无法连接房间所在的服务器', 3); result = 'back'; }
+    }
     else if (m.t === 'matched') { try { await joinMatch(m); result = 'show'; } catch (e) { toast(e.message, 3); } }
     else if (m.t === 'error') { toast(m.msg, 3); if (!room) result = 'back'; }
     else if (m.t === 'closed') { toast('与大厅的连接已断开', 3); result = 'back'; }
   }
   clearInterval(tick);
   if (result === 'back') NET.lobby.send({ t: 'room.leave' });
+  // out of another node's room: back to the page's own node for the queues and new rooms
+  if (result === 'back' && WS_HOST !== location.host) { try { await moveLobby(location.host); } catch (e) { toast('与大厅的连接已断开', 3); } }
   scr.close();
   return result === 'show' ? 'show' : joined ? 'entry' : 'prepare';
 }
