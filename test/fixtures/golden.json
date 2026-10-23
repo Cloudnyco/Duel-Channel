@@ -486,8 +486,8 @@
    ]
   ],
   "winner": 0,
-  "steps": 1101,
-  "hash": "b1f65e84e6c699a2"
+  "steps": 1293,
+  "hash": "782a6d7152b78c26"
  },
  {
   "round": 6,
@@ -942,8 +942,8 @@
    ]
   ],
   "winner": 1,
-  "steps": 1848,
-  "hash": "c65cb936b96357b6"
+  "steps": 1811,
+  "hash": "6cde602773f87a3e"
  },
  {
   "round": 10,
@@ -1063,7 +1063,7 @@
   ],
   "winner": 1,
   "steps": 1477,
-  "hash": "6db235ffd6b29aea"
+  "hash": "3ebc4bd297715f8c"
  },
  {
   "round": 2,
@@ -3371,7 +3371,7 @@
   ],
   "winner": 0,
   "steps": 1095,
-  "hash": "f13a923a23153557"
+  "hash": "b674077bc5884c8a"
  },
  {
   "round": 2,

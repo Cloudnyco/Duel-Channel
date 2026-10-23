@@ -26,6 +26,7 @@
 //                                 excel/skill_table.json, levels/enemydata/enemy_database.json,
 //                                 levels/activities/<act>/level_<stage>.json
 //   isHarryh/Ark-Models           models_data.json and models_enemies/<key>/ (the enemies' Spine models)
+//   torappu.prts.wiki             assets/enemy_spine/<orig>/ (PRTS's copy, for the originals Ark-Models has no files for)
 //   yuanyan3060/ArknightsGameResource   enemy/<id>.png (portraits)
 //
 // usage: node tools/build-data.mjs [--gamedata <zh_CN/gamedata dir>]   (a local checkout instead of downloading the tables)
@@ -182,11 +183,29 @@ console.log(`  merged: ${duelcfg.roster.length} enemies (${Object.values(pools).
 console.log('models …');
 const index = (await getJson(REPOS.models, 'models_data.json')).data;
 const enemyDir = 'models_enemies';
-// originals whose model Ark-Models indexes with no files (registered, never uploaded): drawn with the closest model it
-// has — the same enemy's other version, or (灼热源石虫, as Stronghold Protocol does) the plain 源石虫
-const MODEL_ALIAS = { enemy_1300_ymmir: 'enemy_1300_ymmir_2', enemy_1307_mhrhcr: 'enemy_1307_mhrhcr_2', enemy_7002_veingd: 'enemy_7002_veingd_2', enemy_1305_mhslim: 'enemy_1007_slime' };
-const modelOf = (orig) => MODEL_ALIAS[orig] || orig;
-const origs = [...new Set([...allEnemies.values()].map((e) => modelOf(e.originalEnemyId)))];
+// every original is drawn with its own model
+const origs = [...new Set([...allEnemies.values()].map((e) => e.originalEnemyId))];
+// the page names of a Spine atlas: the first line of each block
+const atlasPages = (text) => text.replace(/\r\n?/g, '\n').split(/\n\s*\n/).map((b) => b.trim().split('\n')[0].trim()).filter((n) => n.endsWith('.png'));
+/**
+ * An original's Spine files: from Ark-Models; an original it only names (registered, no files: 灼热源石虫, 山海众窥魅人,
+ * 岩冠兽, 矿脉守卫) from PRTS's copy, enemy_spine/<orig>/. Null when neither has it.
+ */
+async function modelFiles(orig) {
+  const key = orig.replace(/^enemy_/, ''), entry = index[key];
+  const al = entry && entry.assetList, base = `${enemyDir}/${key}/`;
+  if (al && al['.skel'] && al['.atlas'] && al['.png']) {
+    const pageNames = one(al['.png']);
+    const [skel, atlasBuf, ...pngs] = await Promise.all([getFile(REPOS.models, base + one(al['.skel'])[0]), getFile(REPOS.models, base + one(al['.atlas'])[0]),
+      ...pageNames.map((f) => getFile(REPOS.models, base + f))]);
+    return { skel, atlasBuf, pageNames, pngs };
+  }
+  const dir = `enemy_spine/${orig}/`, atlasBuf = await getFile(REPOS.prts, `${dir}${orig}.atlas`, { optional: true });
+  if (!atlasBuf) return null;
+  const pageNames = atlasPages(atlasBuf.toString('utf8'));
+  const [skel, ...pngs] = await Promise.all([getFile(REPOS.prts, `${dir}${orig}.skel`), ...pageNames.map((f) => getFile(REPOS.prts, dir + f))]);
+  return { skel, atlasBuf, pageNames, pngs };
+}
 const looks = {}, modelDir = join(ROOT, 'assets', 'models');
 mkdirSync(modelDir, { recursive: true });
 const b64 = (buf) => buf.toString('base64');
@@ -194,12 +213,9 @@ const one = (v) => (Array.isArray(v) ? v : v ? [v] : []);
 let done = 0;
 const missing = [];
 await Promise.all(origs.map(async (orig) => {
-  const key = orig.replace(/^enemy_/, ''), entry = index[key];
-  const al = entry && entry.assetList, base = `${enemyDir}/${key}/`;
-  if (!al || !al['.skel'] || !al['.atlas'] || !al['.png']) { missing.push(orig); return; }
-  const [skel, atlasBuf, ...pngs] = await Promise.all([getFile(REPOS.models, base + one(al['.skel'])[0]), getFile(REPOS.models, base + one(al['.atlas'])[0]),
-    ...one(al['.png']).map((f) => getFile(REPOS.models, base + f))]);
-  const pageNames = one(al['.png']);
+  const files = await modelFiles(orig);
+  if (!files) { missing.push(orig); return; }
+  const { skel, atlasBuf, pageNames, pngs } = files;
   const sizes = Object.fromEntries(pageNames.map((n, i) => [n, pngSize(pngs[i])]));
   const atlas = normaliseAtlas(atlasBuf.toString('utf8'), (page) => sizes[page] || null);
   const info = parseSkel(skel);
@@ -232,7 +248,7 @@ const deathSpawnOf = (eid, T) => DEATH_SPAWN[eid] || (typeof T['deathrattle.enem
 const abilitiesOf = (orig) => ((HB[orig] && HB[orig].abilityList) || []).map((a) => ({ text: a.text.replace(/<\$?[^>]*>/g, ''), title: a.textFormat === 'TITLE' }));
 const roster = [];
 for (const [eid, e] of allEnemies) {
-  const d = enemyAt(eid, levelOf[eid] || 0), orig = e.originalEnemyId, hb = HB[orig] || HB[eid], model = modelOf(orig);
+  const d = enemyAt(eid, levelOf[eid] || 0), orig = e.originalEnemyId, hb = HB[orig] || HB[eid], model = orig;
   if (!looks[model]) continue;
   const at = d.attributes, v = (k, dflt) => (at[k] && at[k].m_defined ? at[k].m_value : dflt);
   const hp = v('maxHp', 1000), atk = v('atk', 100), bat = v('baseAttackTime', 2), aspd = v('attackSpeed', 100);

@@ -242,7 +242,7 @@
  {
   "key": "enemy_5029_dqslim",
   "orig": "enemy_1305_mhslim",
-  "model": "enemy_1007_slime",
+  "model": "enemy_1305_mhslim",
   "tag": "tag_single",
   "name": "巧克力流心虫虫",
   "desc": "努力地向敌人喷出滚烫巧克力液，很诱人但是真的很烫。",
@@ -290,8 +290,8 @@
   "mirrorX": false,
   "attackAnim": {
    "clip": "Attack",
-   "dur": 0.767,
-   "hit": 0.333
+   "dur": 1,
+   "hit": 0.667
   },
   "power": 150
  },
@@ -2296,7 +2296,7 @@
  {
   "key": "enemy_5046_dqmir",
   "orig": "enemy_1300_ymmir",
-  "model": "enemy_1300_ymmir_2",
+  "model": "enemy_1300_ymmir",
   "tag": "tag_single",
   "name": "镜子机关枪",
   "desc": "拥有金酒之杯的镜之术师。等他蓄力完毕会发生恐怖的事。",
@@ -2816,7 +2816,7 @@
  {
   "key": "enemy_15055_dqrhcr",
   "orig": "enemy_1307_mhrhcr",
-  "model": "enemy_1307_mhrhcr_2",
+  "model": "enemy_1307_mhrhcr",
   "tag": "tag_single",
   "name": "石头脑袋",
   "desc": "如果你看到它们抬不起头，那十有八九不是因为它们有愧疚感。",
@@ -3929,7 +3929,7 @@
  {
   "key": "enemy_5048_dqingd",
   "orig": "enemy_7002_veingd",
-  "model": "enemy_7002_veingd_2",
+  "model": "enemy_7002_veingd",
   "tag": "tag_single",
   "name": "扎人的石头",
   "desc": "被它打了很疼，打它还是很疼。",

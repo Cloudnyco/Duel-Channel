@@ -8,17 +8,21 @@ import { fileURLToPath } from 'node:url';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 export const CACHE = join(ROOT, '.cache', 'sources');
 
-// a repository on GitHub: { owner, repo, ref }
+// a repository on GitHub: { owner, repo, ref }; or a site's files under one base URL: { owner, repo, base } (owner and
+// repo only name its cache folder)
 export const REPOS = {
   gamedata: { owner: 'Kengxxiao', repo: 'ArknightsGameData', ref: 'master' },
   models: { owner: 'isHarryh', repo: 'Ark-Models', ref: 'main' },
   icons: { owner: 'yuanyan3060', repo: 'ArknightsGameResource', ref: 'main' },
+  // PRTS's own copies of the enemies' Spine models, for the originals Ark-Models only names
+  prts: { owner: 'prts', repo: 'torappu', base: 'https://torappu.prts.wiki/assets/' },
 };
 const enc = (p) => p.split('/').map(encodeURIComponent).join('/');
-const urlsOf = (r, path) => [
+const urlsOf = (r, path) => (r.base ? [`${r.base}${enc(path)}`] : [
   `https://raw.githubusercontent.com/${r.owner}/${r.repo}/${r.ref}/${enc(path)}`,
   `https://cdn.jsdelivr.net/gh/${r.owner}/${r.repo}@${r.ref}/${enc(path)}`,
-];
+]);
+const HEADERS = { 'User-Agent': 'Duel-Channel data tools (https://github.com/Cloudnyco/Duel-Channel)' };
 
 let active = 0;
 const waiting = [];
@@ -31,7 +35,7 @@ async function slot(fn) {
 
 /**
  * A repository file's bytes, from the cache or downloaded into it.
- * @param {{owner:string,repo:string,ref:string}} r the repository
+ * @param {{owner:string,repo:string,ref?:string,base?:string}} r the repository, or a site's base URL
  * @param {string} path its path in the repository
  * @param {{optional?: boolean}} [o] optional: a file the repository does not have resolves to null instead of failing
  * @returns {Promise<Buffer|null>}
@@ -44,7 +48,7 @@ export async function getFile(r, path, o = {}) {
     for (const url of urlsOf(r, path)) {
       for (let attempt = 0; attempt < 3; attempt++) {
         try {
-          const res = await fetch(url, { signal: AbortSignal.timeout(90000) });
+          const res = await fetch(url, { headers: HEADERS, signal: AbortSignal.timeout(90000) });
           if (res.status === 404) { last = new Error(`404 ${url}`); break; }
           if (!res.ok) throw new Error(`${res.status} ${url}`);
           const buf = Buffer.from(await res.arrayBuffer());

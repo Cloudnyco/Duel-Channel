@@ -53,7 +53,7 @@ assets/
 
 三期争锋频道（青草城、蜜果城、绿藤城）全部 113 种敌人的模型。争锋频道的敌人在客户端里按原型敌人（`originalEnemyId`）绘制，所以一个文件对应一个原型。来源都是社区维护的公开仓库：
 
-- Spine 3.8 模型（skel、atlas、png）：[isHarryh/Ark-Models](https://github.com/isHarryh/Ark-Models) 的 `models_enemies/`；
+- Spine 3.8 模型（skel、atlas、png）：[isHarryh/Ark-Models](https://github.com/isHarryh/Ark-Models) 的 `models_enemies/`；Ark-Models 只登记了名字、没有文件的 4 个原型（灼热源石虫、山海众窥魅人、岩冠兽、矿脉守卫）取 PRTS 资源站 `torappu.prts.wiki` 的 `assets/enemy_spine/<原型>/`；
 - 头像：[yuanyan3060/ArknightsGameResource](https://github.com/yuanyan3060/ArknightsGameResource) 的 `enemy/`，转成 WebP（质量 90，保留透明通道；`tools/lib/webp.mjs`，用编译成 WebAssembly 的 squoosh 编解码器 `@jsquash/png` / `@jsquash/webp`，不需要本机编译），全部头像从约 4.9 MB 减到约 1.2 MB；
 - 数据表：[Kengxxiao/ArknightsGameData](https://github.com/Kengxxiao/ArknightsGameData)。
 
@@ -62,8 +62,6 @@ node tools/build-data.mjs        # 下载到 .cache/sources/，写出 data/duelc
 ```
 
 处理：atlas 补上每页的实际尺寸和 `pma: true`；从骨骼读出动画的名称、时长与 `OnAttack` 命中时间，按 Stronghold Protocol 的规则识别动画角色（待机、移动、攻击、技能、死亡、晕眩）；模型的显示缩放沿用 Stronghold Protocol 从客户端量出的原型缩放表（`tools/lib/model-scales.mjs`）。
-
-Ark-Models 有 4 个原型只登记了名字、没有文件，用最接近的模型代替：山海众窥魅人、岩冠兽、矿脉守卫用同一敌人的另一版本（`_2`），灼热源石虫用普通源石虫（与 Stronghold Protocol 相同）。
 
 ### enemyfx.json
 
