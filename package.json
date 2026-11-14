@@ -21,7 +21,7 @@
     "simcheck": "node tools/sim-check.mjs"
   },
   "dependencies": {
-    "ws": "^8.22.0"
+    "ws": "^8.22.2"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
